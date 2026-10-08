@@ -11,6 +11,10 @@ export const routes: Routes = [
         loadComponent: () => import('./shared/auth/register/register').then((m) => m.Register),
     },
     {
+        path: 'privacy-notice',
+        loadComponent: () => import('./shared/auth/privacy-notice/privacy-notice').then((m) => m.PrivacyNotice),
+    },
+    {
         path: 'patient',
         canActivate: [roleGuard('PATIENT')],
         loadChildren: () => import('./patient/patient.routes').then((m) => m.PATIENT_ROUTES),

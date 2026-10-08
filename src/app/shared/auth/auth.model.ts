@@ -8,11 +8,11 @@ export interface LoginRequest {
 export interface RegisterRequest {
     email: string;
     password: string;
-    nome: string;
-    cognome: string;
-    dataNascita: string;
-    consensoGdpr: boolean;
-    consensoGdprVersion: string;
+    firstName: string;
+    lastName: string;
+    birthDate: string;
+    gdprConsent: boolean;
+    gdprConsentVersion: string;
 }
 
 export interface AuthResponse {

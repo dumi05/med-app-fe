@@ -1,0 +1,9 @@
+<div class="form-check mb-3">
+  <input id="consent" type="checkbox" class="form-check-input" formControlName="gdprConsent"
+         [class.is-invalid]="form.controls.gdprConsent.touched && form.controls.gdprConsent.invalid" />
+  <label for="consent" class="form-check-label">
+    Ho letto l'<a routerLink="/privacy-notice" target="_blank">informativa privacy</a> (versione {{ consentVersion }})
+    e acconsento al trattamento dei miei dati sanitari.
+  </label>
+  <div class="invalid-feedback">Il consenso è obbligatorio per registrarsi.</div>
+</div>

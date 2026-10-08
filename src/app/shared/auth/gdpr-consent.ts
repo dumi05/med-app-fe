@@ -1,0 +1,1 @@
+export const GDPR_CONSENT_VERSION = 'v1.0';

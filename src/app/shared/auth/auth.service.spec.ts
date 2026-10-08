@@ -45,8 +45,8 @@ describe('AuthService', () => {
 
     service
       .register({
-        email: 'anna@test.it', password: 'password123', nome: 'Anna', cognome: 'Bianchi',
-        dataNascita: '1990-01-01', consensoGdpr: true, consensoGdprVersion: 'v1.0',
+        email: 'anna@test.it', password: 'password123', firstName: 'Anna', lastName: 'Bianchi',
+        birthDate: '1990-01-01', gdprConsent: true, gdprConsentVersion: 'v1.0',
       })
       .subscribe();
     const req = http.expectOne('/api/v1/auth/register');
