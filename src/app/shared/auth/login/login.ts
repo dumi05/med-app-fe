@@ -5,10 +5,11 @@ import { AuthService } from '../auth.service';
 import { homeForRole } from '../role-home';
 import { ApiError } from '../../http/api-error';
 import { userMessage } from '../../http/error-messages';
+import { AuthLayout } from '../auth-layout/auth-layout';
 
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, AuthLayout],
   templateUrl: './login.html',
   styleUrl: './login.scss',
 })

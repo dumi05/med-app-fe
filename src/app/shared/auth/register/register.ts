@@ -6,10 +6,11 @@ import { GDPR_CONSENT_VERSION } from '../gdpr-consent';
 import { homeForRole } from '../role-home';
 import { userMessage } from '../../http/error-messages';
 import { ApiError } from '../../http/api-error';
+import { AuthLayout } from '../auth-layout/auth-layout';
 
 @Component({
   selector: 'app-register',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, AuthLayout],
   templateUrl: './register.html',
   styleUrl: './register.scss',
 })
