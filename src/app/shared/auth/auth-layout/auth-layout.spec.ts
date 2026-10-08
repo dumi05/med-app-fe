@@ -14,10 +14,15 @@ describe('AuthLayout', () => {
 
     fixture = TestBed.createComponent(AuthLayout);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('title','Accedi');
     fixture.detectChanges();
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+  it('shows the title', () => {
+    const heading = (fixture.nativeElement as HTMLElement).querySelector('h1');
+    expect(heading?.textContent).toContain('Accedi');
   });
 });
