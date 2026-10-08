@@ -50,7 +50,7 @@ describe('AuthService', () => {
       })
       .subscribe();
     const req = http.expectOne('/api/v1/auth/register');
-    expect(req.request.body.consensoGdprVersion).toBe('v1.0');
+    expect(req.request.body.gdprConsentVersion).toBe('v1.0');
     req.flush({ token: fakeToken(FUTURO), email: 'anna@test.it', role: 'PATIENT' });
 
     expect(service.isLoggedIn()).toBeTrue();

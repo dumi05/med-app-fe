@@ -35,7 +35,7 @@ export class Login {
     this.authService.login(this.form.getRawValue()).subscribe({
       next: (resp) => this.router.navigateByUrl(homeForRole(resp.role)),
       error: (e: ApiError) => {
-        this.error.set(userMessage(e)),
+        this.error.set(userMessage(e));
         this.loading.set(false);
       }
 
