@@ -32,10 +32,10 @@ describe('AuthService', () => {
     service.login({ email: 'mario@test.it', password: 'password123' }).subscribe();
     const req = http.expectOne('/api/v1/auth/login');
     expect(req.request.method).toBe('POST');
-    req.flush({ token, email: 'mario@test.it', role: 'PAZIENTE' });
+    req.flush({ token, email: 'mario@test.it', role: 'PATIENT' });
 
     expect(service.isLoggedIn()).toBeTrue();
-    expect(service.role()).toBe('PAZIENTE');
+    expect(service.role()).toBe('PATIENT');
     expect(service.token()).toBe(token);
     expect(localStorage.getItem('medapp.session')).toContain('mario@test.it');
   });
@@ -51,7 +51,7 @@ describe('AuthService', () => {
       .subscribe();
     const req = http.expectOne('/api/v1/auth/register');
     expect(req.request.body.consensoGdprVersion).toBe('v1.0');
-    req.flush({ token: fakeToken(FUTURO), email: 'anna@test.it', role: 'PAZIENTE' });
+    req.flush({ token: fakeToken(FUTURO), email: 'anna@test.it', role: 'PATIENT' });
 
     expect(service.isLoggedIn()).toBeTrue();
   });
@@ -69,17 +69,17 @@ describe('AuthService', () => {
 
   it('ripristina una sessione valida salvata', () => {
     localStorage.setItem('medapp.session',
-      JSON.stringify({ token: fakeToken(FUTURO), email: 'a@b.it', role: 'MEDICO' }));
+      JSON.stringify({ token: fakeToken(FUTURO), email: 'a@b.it', role: 'DOCTOR' }));
 
     const service = TestBed.inject(AuthService);
 
     expect(service.isLoggedIn()).toBeTrue();
-    expect(service.role()).toBe('MEDICO');
+    expect(service.role()).toBe('DOCTOR');
   });
 
   it('scarta una sessione salvata con token scaduto', () => {
     localStorage.setItem('medapp.session',
-      JSON.stringify({ token: fakeToken(PASSATO), email: 'a@b.it', role: 'MEDICO' }));
+      JSON.stringify({ token: fakeToken(PASSATO), email: 'a@b.it', role: 'DOCTOR' }));
 
     const service = TestBed.inject(AuthService);
 

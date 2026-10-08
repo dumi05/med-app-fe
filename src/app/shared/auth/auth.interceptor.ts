@@ -8,7 +8,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     const token = inject(AuthService).token();
     const isPublic = PUBLIC_PATHS.some((path) => req.url.includes(path));
 
-    if(token === null || !req.url.startsWith('/api') || isPublic) {
+    if(token === null || !req.url.startsWith('/api/') || isPublic) {
         return next(req);
     }
     return next(req.clone({ setHeaders: { Authorization: `Bearer ${token}`}}));
