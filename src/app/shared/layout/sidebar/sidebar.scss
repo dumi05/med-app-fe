@@ -1,0 +1,13 @@
+:host {
+  display: block;
+}
+
+@media (min-width: 992px) {
+  :host {
+    flex: 0 0 16rem;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+}

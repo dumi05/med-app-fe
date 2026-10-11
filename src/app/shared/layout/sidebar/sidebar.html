@@ -1,0 +1,29 @@
+<nav class="navbar navbar-expand-lg flex-lg-column align-items-lg-stretch h-100 bg-body-tertiary border-end p-3">
+  <div class="d-flex justify-content-between align-items-center w-100">
+    <a class="navbar-brand" [routerLink]="home()">Studio Medico</a>
+    <button type="button" class="navbar-toggler" aria-label="Apri o chiudi il menu"
+            [attr.aria-expanded]="menuOpen()" (click)="toggleMenu()">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+  </div>
+
+  <div class="collapse navbar-collapse flex-lg-column align-items-lg-stretch flex-grow-1 w-100 mt-3"
+       [class.show]="menuOpen()">
+    <ul class="navbar-nav flex-column w-100">
+      @for (item of items(); track item.path) {
+        <li class="nav-item">
+          <a class="nav-link" [routerLink]="item.path" routerLinkActive="active"
+             [routerLinkActiveOptions]="{ exact: true }" (click)="closeMenu()">{{ item.label }}</a>
+        </li>
+      }
+    </ul>
+
+    @if (authService.session(); as session) {
+      <div class="mt-auto pt-3 border-top small">
+        <div class="text-muted text-break">{{ session.email }} · {{ roleLabel(session.role) }}</div>
+        <button type="button" class="btn btn-outline-secondary btn-sm w-100 mt-2 logout-button"
+                (click)="logout()">Esci</button>
+      </div>
+    }
+  </div>
+</nav>
