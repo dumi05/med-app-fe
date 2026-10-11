@@ -62,8 +62,8 @@ describe('Login', () => {
     submit();
 
     http.expectOne('/api/v1/auth/login').flush(
-      { code: 'INVALID_ARGUMENT', message: 'Invalid credentials', timestamp: 'x' },
-      { status: 400, statusText: 'Bad Request' },
+      { code: 'INVALID_CREDENTIALS', message: 'Credenziali non valide', timestamp: 'x' },
+      { status: 401, statusText: 'Unauthorized' },
     );
     fixture.detectChanges();
 

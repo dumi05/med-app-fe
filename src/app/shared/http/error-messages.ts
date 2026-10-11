@@ -8,7 +8,8 @@ const MESSAGES: Record<string,string> = {
     INVALID_STATE_TRANSITION: "Operazione non consentita nello stato attuale",
     UNAUTHORIZED_ACCESS: "Non hai i permessi per eseguire questa operazione.",
     INVALID_ARGUMENT: "I dati inseriti non sono validi.",
-    VALIDATION_FAILED: "Controlla i campi evidenziati e riprova."
+    VALIDATION_FAILED: "Controlla i campi evidenziati e riprova.",
+    INVALID_CREDENTIALS: "Email o password non corrette."
 };
 
 export function userMessage(error: ApiError): string {
