@@ -1,0 +1,50 @@
+<div class="container-fluid py-4">
+  <h1 class="h3 mb-4">Medici</h1>
+
+  <div class="table-responsive mb-5">
+    <table class="table table-striped align-middle">
+      <thead>
+        <tr><th>Nome</th><th>Cognome</th><th>Specializzazione</th></tr>
+      </thead>
+      <tbody>
+        @for (doctor of doctors(); track doctor.id) {
+          <tr>
+            <td>{{ doctor.firstName }}</td>
+            <td>{{ doctor.lastName }}</td>
+            <td>{{ doctor.specialization }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <h2 class="h5 mb-3">Nuovo medico</h2>
+  <div class="row">
+    <div class="col-12 col-md-8 col-xl-5">
+      <app-alert-message [message]="error()" />
+
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        <app-form-field inputId="email" label="Email" type="email"
+                        [control]="form.controls.email" errorText="Inserisci un'email valida" />
+        <app-form-field inputId="password" label="Password" type="password"
+                        [control]="form.controls.password" errorText="Almeno 8 caratteri" />
+        <app-form-field inputId="firstName" label="Nome"
+                        [control]="form.controls.firstName" errorText="Inserisci il nome" />
+        <app-form-field inputId="lastName" label="Cognome"
+                        [control]="form.controls.lastName" errorText="Inserisci il cognome" />
+        <app-select-field inputId="specializationId" label="Specializzazione"
+                          [control]="form.controls.specializationId" [options]="specializationOptions()"
+                          errorText="Seleziona una specializzazione" />
+
+        <div class="form-check mb-3">
+          <input id="delegationConsent" type="checkbox" class="form-check-input" formControlName="delegationConsent" />
+          <label for="delegationConsent" class="form-check-label">
+            Il medico accetta di essere sostituito da un collega durante le assenze
+          </label>
+        </div>
+
+        <app-submit-button label="Crea medico" [loading]="loading()" />
+      </form>
+    </div>
+  </div>
+</div>
