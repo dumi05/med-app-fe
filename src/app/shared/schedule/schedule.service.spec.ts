@@ -31,4 +31,18 @@ describe('ScheduleService', () => {
 
     expect((result as { id: number }[])[0].id).toBe(10);
   });
+
+  it('creates a slot without a doctorId', () => {
+    let result: unknown;
+
+    service.createSlot({ startTime: '2026-10-20T09:30:00', durationMinutes: 30, }).subscribe((value) => (result = value));
+
+    const request = http.expectOne('/api/v1/schedule/slot');
+    expect(request.request.method).toBe('POST');
+    expect(request.request.body).toEqual({ startTime: '2026-10-20T09:30:00', durationMinutes: 30 });
+
+    request.flush({ id: 11, doctorId: 1, doctorFirstName: 'Luca', doctorLastName: 'Neri', startTime: '2026-10-20T09:30:00', durationMinutes: 30, booked: false });
+
+    expect((result as { id: number }).id).toBe(11);
+  });
 });

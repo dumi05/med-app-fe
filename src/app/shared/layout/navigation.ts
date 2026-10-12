@@ -7,7 +7,7 @@ export interface NavItem {
 
 const NAV_ITEMS: Record<Role, NavItem[]> = {
     PATIENT: [{ label: 'Home', path: '/patient'}, { label: 'Disponibilità', path: '/patient/availability'}],
-    DOCTOR: [{ label: 'Home', path: '/doctor'}],
+    DOCTOR: [{ label: 'Home', path: '/doctor'}, { label: 'Agenda', path: '/doctor/schedule'}],
     ADMIN: [{ label: 'Home', path: '/admin'}, { label: 'Medici', path: '/admin/doctors' }]
 };
 

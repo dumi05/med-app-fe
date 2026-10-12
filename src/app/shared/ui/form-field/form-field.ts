@@ -10,6 +10,6 @@ export class FormField {
   readonly inputId = input.required<string>();
   readonly label = input.required<string>();
   readonly control = input.required<FormControl<string>>();
-  readonly type = input<'text' | 'email' | 'password' | 'date'>('text');
+  readonly type = input<'text' | 'email' | 'password' | 'date' | 'datetime-local' | 'number'>('text');
   readonly errorText = input('Valore non valido.');
 }

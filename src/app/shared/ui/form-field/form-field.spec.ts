@@ -43,4 +43,10 @@ describe('FormField', () => {
     expect(input().classList.contains('is-invalid')).toBeTrue();
     expect(element().querySelector('.invalid-feedback')?.textContent).toContain('Campo obbligatorio.');
   });
+
+  it('uses the requested input types', () => {
+    fixture.componentRef.setInput('type', 'datetime-local');
+    fixture.detectChanges();
+    expect(input().type).toBe('datetime-local');
+  });
 });

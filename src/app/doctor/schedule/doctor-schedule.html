@@ -1,0 +1,20 @@
+<div class="container-fluid py-4">
+  <h1 class="h3 mb-4">Agenda</h1>
+
+  <div class="row">
+    <div class="col-12 col-md-8 col-xl-5">
+      <h2 class="h5 mb-3">Nuovo slot di disponibilità</h2>
+
+      <app-alert-message [message]="error()" />
+      <app-alert-message [message]="success()" type="success" />
+
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        <app-form-field inputId="startTime" label="Data e ora" type="datetime-local"
+                        [control]="form.controls.startTime" errorText="Seleziona data e ora" />
+        <app-form-field inputId="durationMinutes" label="Durata (minuti)" type="number"
+                        [control]="form.controls.durationMinutes" errorText="Inserisci una durata maggiore di zero" />
+        <app-submit-button label="Crea slot" [loading]="loading()" />
+      </form>
+    </div>
+  </div>
+</div>

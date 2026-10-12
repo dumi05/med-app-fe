@@ -7,3 +7,9 @@ export interface Slot {
     durationMinutes: number;
     booked: boolean
 }
+
+export interface CreateSlotRequest {
+    doctorId?: number;
+    startTime: string;
+    durationMinutes: number;
+}

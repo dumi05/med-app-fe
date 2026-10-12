@@ -5,5 +5,10 @@ export const DOCTOR_ROUTES: Routes = [
         path: '',
         loadComponent: () => import('./doctor-home/doctor-home')
                                 .then((m => m.DoctorHome)),
+    },
+    {
+        path: 'schedule',
+        loadComponent: () => import('./schedule/doctor-schedule')
+                                .then((m) => m.DoctorSchedule),
     }
 ];
