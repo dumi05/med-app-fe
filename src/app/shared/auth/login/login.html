@@ -1,22 +1,11 @@
 <app-auth-layout title="Accedi">
-
-    @if (error(); as message){
-        <div class="alert alert-danger" role="alert">{{ message }}</div>
-    }
+    <app-alert-message [message]="error()"></app-alert-message>
 
     <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
-        <div class="mb-3">
-            <label for="email" class="form-label">Email</label>
-            <input id="email" type="email" class="form-control" formControlName="email" [class.is-invalid]="form.controls.email.touched && form.controls.email.invalid"/>
-            <div class="invalid-feedback">Inserisci un'email valida.</div>
-        </div>
-        <div class="mb-3">
-            <label for="password" class="form-label">Password</label>
-            <input id="password" type="password" class="form-control" formControlName="password" [class.is-invalid]="form.controls.password.touched && form.controls.password.invalid"/>
-            <div class="invalid-feedback">Inserisci la password.</div>
-        </div>
+        <app-form-field inputId="email" label="Email" type="email" [control]="form.controls.email" errorText="Inserisci un'email valida"/>
+        <app-form-field inputId="password" label="Password" type="password" [control]="form.controls.password" errorText="Inserisci la password"/>
 
-        <button type="submit" class="btn btn-primary w-100" [disabled]="loading()">Accedi</button>
+        <app-submit-button label="Accedi" [loading]="loading()"/>
     </form>
 
     <p class="mt-3 text-center">Non hai un account?

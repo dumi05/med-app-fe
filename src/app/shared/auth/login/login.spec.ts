@@ -44,7 +44,11 @@ describe('Login', () => {
 
   it('does not send the form when the fields are empty', () => {
     submit();
+    fixture.detectChanges();
+
     http.expectNone('/api/v1/auth/login');
+    const invalid = (fixture.nativeElement as HTMLElement).querySelectorAll('.is-invalid');
+    expect(invalid.length).toBe(2);
   });
 
   it('logs in with valid credentials and goes to the home of the role', () => {
@@ -67,6 +71,6 @@ describe('Login', () => {
     );
     fixture.detectChanges();
 
-    expect((fixture.nativeElement as HTMLElement).textContent).toContain('non sono validi');
+    expect((fixture.nativeElement as HTMLElement).textContent).toContain('Email o password non corrette.');
   });
 });

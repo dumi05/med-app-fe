@@ -49,7 +49,11 @@ describe('Register', () => {
   it('does not send the registration without the GDPR consent', () => {
     fillInEverything();
     submit();
+    fixture.detectChanges();
+
     http.expectNone('/api/v1/auth/register');
+    const consent = (fixture.nativeElement as HTMLElement).querySelector('#consent') as HTMLInputElement;
+    expect(consent.classList.contains('is-invalid')).toBeTrue();
   });
 
   it('sends the registration with the privacy notice version when the consent is given', () => {
@@ -70,6 +74,10 @@ describe('Register', () => {
     setValue('password', 'short');
     ((fixture.nativeElement as HTMLElement).querySelector('#consent') as HTMLInputElement).click();
     submit();
+    fixture.detectChanges();
+
     http.expectNone('/api/v1/auth/register');
+    const password = (fixture.nativeElement as HTMLElement).querySelector('#password') as HTMLInputElement;
+    expect(password.classList.contains('is-invalid')).toBeTrue();
   });
 });

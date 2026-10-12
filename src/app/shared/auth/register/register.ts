@@ -7,10 +7,13 @@ import { homeForRole } from '../role-home';
 import { userMessage } from '../../http/error-messages';
 import { ApiError } from '../../http/api-error';
 import { AuthLayout } from '../auth-layout/auth-layout';
+import { FormField } from '../../ui/form-field/form-field';
+import { AlertMessage } from '../../ui/alert-message/alert-message';
+import { SubmitButton } from '../../ui/submit-button/submit-button';
 
 @Component({
   selector: 'app-register',
-  imports: [ReactiveFormsModule, RouterLink, AuthLayout],
+  imports: [ReactiveFormsModule, RouterLink, AuthLayout, FormField, AlertMessage, SubmitButton],
   templateUrl: './register.html',
   styleUrl: './register.scss',
 })

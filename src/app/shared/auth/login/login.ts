@@ -6,10 +6,13 @@ import { homeForRole } from '../role-home';
 import { ApiError } from '../../http/api-error';
 import { userMessage } from '../../http/error-messages';
 import { AuthLayout } from '../auth-layout/auth-layout';
+import { AlertMessage } from '../../ui/alert-message/alert-message';
+import { FormField } from '../../ui/form-field/form-field';
+import { SubmitButton } from '../../ui/submit-button/submit-button';
 
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule, RouterLink, AuthLayout],
+  imports: [ReactiveFormsModule, RouterLink, AuthLayout, AlertMessage, FormField, SubmitButton],
   templateUrl: './login.html',
   styleUrl: './login.scss',
 })

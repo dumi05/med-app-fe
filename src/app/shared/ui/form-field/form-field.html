@@ -1,0 +1,5 @@
+<div class="mb-3">
+    <label [for]="inputId()" class="form-label">{{ label() }}</label>
+    <input [id]="inputId()" [type]="type()" class="form-control" [formControl]="control()" [class.is-invalid]="control().touched && control().invalid"/>
+    <div class="invalid-feedback">{{ errorText() }}</div>
+</div>
