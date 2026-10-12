@@ -9,6 +9,7 @@ import { SpecializationService } from '../../shared/specialization/specializatio
 import { Doctor } from '../../shared/doctor/doctor.model';
 import { ApiError } from '../../shared/http/api-error';
 import { userMessage } from '../../shared/http/error-messages';
+import { toSelectOptions } from '../../shared/specialization/specialization-options';
 
 @Component({
   selector: 'app-doctors',
@@ -40,9 +41,7 @@ export class Doctors implements OnInit {
   ngOnInit(): void {
     this.doctorService.getAllDoctors().subscribe((doctors) => this.doctors.set(doctors));
     this.specializationService.getAllSpecializations().subscribe((specializations) => 
-      this.specializationOptions.set(
-        specializations.map((spec) => ({ value: String(spec.id), label: spec.name})),
-      ),
+      this.specializationOptions.set(toSelectOptions(specializations)),
     );
   }
 

@@ -1,0 +1,41 @@
+<div class="container-fluid py-4">
+  <h1 class="h3 mb-4">Cerca disponibilità</h1>
+
+  <div class="row mb-4">
+    <div class="col-12 col-md-8 col-xl-5">
+      <app-alert-message [message]="error()" />
+
+      <form [formGroup]="form" (ngSubmit)="search()" novalidate>
+        <app-select-field inputId="specializationId" label="Specializzazione"
+                          [control]="form.controls.specializationId" [options]="specializationOptions()"
+                          errorText="Seleziona una specializzazione" />
+        <app-form-field inputId="date" label="Data" type="date"
+                        [control]="form.controls.date" errorText="Seleziona una data" />
+        <app-submit-button label="Cerca" [loading]="loading()" />
+      </form>
+    </div>
+  </div>
+
+  @if (slots(); as list) {
+    @if (list.length === 0) {
+      <p class="text-muted">Nessuna disponibilità per la data e la specializzazione scelte.</p>
+    } @else {
+      <div class="table-responsive">
+        <table class="table table-striped align-middle">
+          <thead>
+            <tr><th>Data e ora</th><th>Medico</th><th>Durata</th></tr>
+          </thead>
+          <tbody>
+            @for (slot of list; track slot.id) {
+              <tr>
+                <td>{{ slot.startTime | date: 'dd/MM/yyyy HH:mm' }}</td>
+                <td>{{ slot.doctorFirstName }} {{ slot.doctorLastName }}</td>
+                <td>{{ slot.durationMinutes }} min</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  }
+</div>
