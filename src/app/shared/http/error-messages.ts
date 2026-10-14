@@ -9,7 +9,8 @@ const MESSAGES: Record<string,string> = {
     UNAUTHORIZED_ACCESS: "Non hai i permessi per eseguire questa operazione.",
     INVALID_ARGUMENT: "I dati inseriti non sono validi.",
     VALIDATION_FAILED: "Controlla i campi evidenziati e riprova.",
-    INVALID_CREDENTIALS: "Email o password non corrette."
+    INVALID_CREDENTIALS: "Email o password non corrette.",
+    CONCURRENT_MODIFICATION: "La risorsa e' stata modificata da un altro utente. Riprova."
 };
 
 export function userMessage(error: ApiError): string {

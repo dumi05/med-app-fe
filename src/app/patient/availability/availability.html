@@ -4,6 +4,7 @@
   <div class="row mb-4">
     <div class="col-12 col-md-8 col-xl-5">
       <app-alert-message [message]="error()" />
+      <app-alert-message [message]="success()" type="success" />
 
       <form [formGroup]="form" (ngSubmit)="search()" novalidate>
         <app-select-field inputId="specializationId" label="Specializzazione"
@@ -23,7 +24,7 @@
       <div class="table-responsive">
         <table class="table table-striped align-middle">
           <thead>
-            <tr><th>Data e ora</th><th>Medico</th><th>Durata</th></tr>
+            <tr><th>Data e ora</th><th>Medico</th><th>Durata</th><th></th></tr>
           </thead>
           <tbody>
             @for (slot of list; track slot.id) {
@@ -31,6 +32,9 @@
                 <td>{{ slot.startTime | date: 'dd/MM/yyyy HH:mm' }}</td>
                 <td>{{ slot.doctorFirstName }} {{ slot.doctorLastName }}</td>
                 <td>{{ slot.durationMinutes }} min</td>
+                <td class="text-end">
+                  <button type="button" class="btn btn-sm btn-primary" [disabled]="bookingSlotId() !== null" (click)="book(slot)">Prenota</button>
+                </td>
               </tr>
             }
           </tbody>

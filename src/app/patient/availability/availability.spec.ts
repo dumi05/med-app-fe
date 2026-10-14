@@ -95,4 +95,44 @@ describe('Availability', () => {
 
     expect(element().querySelector('.alert')?.textContent).toContain('errore imprevisto');
   });
+
+  const FREE_SLOT = { id: 10, doctorId: 1, doctorFirstName: 'Luca', doctorLastName: 'Verdi',
+                    startTime: '2026-10-20T09:30:00', durationMinutes: 30, booked: false };
+
+const bookFirstSlot = () => {
+  search();
+  http.expectOne(isAvailabilityRequest('1', '2026-10-20')).flush([FREE_SLOT]);
+  fixture.detectChanges();
+  (element().querySelector('tbody button') as HTMLButtonElement).click();
+};
+
+it('books the slot, confirms and reloads the list', () => {
+  bookFirstSlot();
+
+  const req = http.expectOne('/api/v1/appointments');
+  expect(req.request.method).toBe('POST');
+  expect(req.request.body).toEqual({ slotId: 10 });
+  req.flush({ id: 5, status: 'BOOKED', slot: { ...FREE_SLOT, booked: true }, patientId: 1,
+              patientFirstName: 'Anna', patientLastName: 'Bianchi', noShowRisk: null });
+
+  http.expectOne(isAvailabilityRequest('1', '2026-10-20')).flush([]);
+  fixture.detectChanges();
+
+  expect(element().querySelector('.alert-success')?.textContent).toContain('Prenotazione confermata');
+  expect(element().textContent).toContain('Nessuna disponibilità');
+});
+
+it('shows the message and reloads the list when the slot was taken by someone else', () => {
+  bookFirstSlot();
+
+  http.expectOne('/api/v1/appointments').flush(
+    { code: 'SLOT_NOT_AVAILABLE', message: 'taken', timestamp: 'x' },
+    { status: 409, statusText: 'Conflict' },
+  );
+  http.expectOne(isAvailabilityRequest('1', '2026-10-20')).flush([]);
+  fixture.detectChanges();
+
+  expect(element().querySelector('.alert-danger')?.textContent).toContain('fascia oraria');
+  expect(element().querySelector('.alert-success')).toBeNull();
+});
 });

@@ -1,0 +1,35 @@
+<div class="container-fluid py-4">
+  <h1 class="h3 mb-4">Le mie prenotazioni</h1>
+
+  <app-alert-message [message]="error()" />
+
+  @if (appointments(); as list) {
+    @if (list.length === 0) {
+      <p class="text-muted">Non hai ancora prenotazioni. Cerca una disponibilità per prenotare una visita.</p>
+    } @else {
+      <div class="table-responsive">
+        <table class="table table-striped align-middle">
+          <thead>
+            <tr><th>Data e ora</th><th>Medico</th><th>Durata</th><th>Stato</th><th></th></tr>
+          </thead>
+          <tbody>
+            @for (appointment of list; track appointment.id) {
+              <tr>
+                <td>{{ appointment.slot.startTime | date: 'dd/MM/yyyy HH:mm' }}</td>
+                <td>{{ appointment.slot.doctorFirstName }} {{ appointment.slot.doctorLastName }}</td>
+                <td>{{ appointment.slot.durationMinutes }} min</td>
+                <td><app-status-badge [status]="appointment.status" /></td>
+                <td class="text-end">
+                  @if (appointment.status === 'BOOKED') {
+                    <button type="button" class="btn btn-sm btn-outline-danger"
+                            [disabled]="cancellingId() !== null" (click)="cancel(appointment)">Cancella</button>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  }
+</div>

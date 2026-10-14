@@ -12,4 +12,7 @@ describe('userMessage', () => {
     it('returns Invalid credentials if password or email are wrong', () => {
         expect(userMessage({status: 401, code: "INVALID_CREDENTIALS", message: "Email o password non corrette"})).toContain('password');
     });
+    it('returns a specific message when the resource was modified by someone else', () => {
+        expect(userMessage({ status: 409, code: 'CONCURRENT_MODIFICATION', message: 'test'})).toContain('modificata');
+    })
 })
