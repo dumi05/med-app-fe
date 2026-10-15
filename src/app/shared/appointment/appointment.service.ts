@@ -20,4 +20,8 @@ export class AppointmentService {
     getMyAppointments(): Observable<Appointment[]> {
         return this.http.get<Appointment[]>(`${API_BASE}/appointments/me`);
     }
+
+    completeVisit(id: number): Observable<Appointment> {
+        return this.http.post<Appointment>(`${API_BASE}/appointments/${id}/complete`, {});
+    }
 }

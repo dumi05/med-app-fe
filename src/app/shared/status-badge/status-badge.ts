@@ -5,7 +5,7 @@ const STATUS_VIEW: Record<AppointmentStatus, {label: string; style: string}> = {
     BOOKED: {label: 'Prenotata', style: 'text-bg-primary'},
     CANCELLED: {label: 'Cancellata', style: 'text-bg-secondary'},
     COMPLETED: {label: 'Visita effettuata', style: 'text-bg-info'},
-    INVOICED: {label: 'Fatturata', style: 'text-bg-dark'},
+    INVOICED: {label: 'Referto disponibile', style: 'text-bg-success'},
     REPORTED: {label: 'Referto disponibile', style: 'text-bg-success'}
 };
 

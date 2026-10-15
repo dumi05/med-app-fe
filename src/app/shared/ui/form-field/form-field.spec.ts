@@ -49,4 +49,17 @@ describe('FormField', () => {
     fixture.detectChanges();
     expect(input().type).toBe('datetime-local');
   });
+
+  it('shows a textarea then type is textarea', () => {
+    fixture.componentRef.setInput('type', 'textarea');
+    fixture.detectChanges();
+
+    const textarea = element().querySelector('textarea') as HTMLTextAreaElement;
+    expect(textarea).not.toBeNull();
+    expect(element().querySelector('input')).toBeNull();
+
+    textarea.value = 'Testo lungo';
+    textarea.dispatchEvent(new Event('input'));
+    expect(control.value).toBe('Testo lungo');
+  })
 });

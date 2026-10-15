@@ -23,6 +23,8 @@
                   @if (appointment.status === 'BOOKED') {
                     <button type="button" class="btn btn-sm btn-outline-danger"
                             [disabled]="cancellingId() !== null" (click)="cancel(appointment)">Cancella</button>
+                  } @else if (hasReport(appointment.status)) {
+                    <a class="btn btn-sm btn-outline-primary" [routerLink]="['/patient/appointments', appointment.id, 'report']">Vedi referto</a>
                   }
                 </td>
               </tr>

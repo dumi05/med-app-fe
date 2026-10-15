@@ -10,7 +10,8 @@ const MESSAGES: Record<string,string> = {
     INVALID_ARGUMENT: "I dati inseriti non sono validi.",
     VALIDATION_FAILED: "Controlla i campi evidenziati e riprova.",
     INVALID_CREDENTIALS: "Email o password non corrette.",
-    CONCURRENT_MODIFICATION: "La risorsa e' stata modificata da un altro utente. Riprova."
+    CONCURRENT_MODIFICATION: "La risorsa e' stata modificata da un altro utente. Riprova.",
+    UNAUTHENTICATED: "Autenticazione non riuscita."
 };
 
 export function userMessage(error: ApiError): string {

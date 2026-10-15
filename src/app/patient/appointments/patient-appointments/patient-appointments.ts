@@ -3,13 +3,14 @@ import { StatusBadge } from '../../../shared/status-badge/status-badge';
 import { AlertMessage } from '../../../shared/ui/alert-message/alert-message';
 import { DatePipe } from '@angular/common';
 import { AppointmentService } from '../../../shared/appointment/appointment.service';
-import { Appointment } from '../../../shared/appointment/appointment.model';
+import { Appointment, hasReport } from '../../../shared/appointment/appointment.model';
 import { ApiError } from '../../../shared/http/api-error';
 import { userMessage } from '../../../shared/http/error-messages';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-patient-appointments',
-  imports: [DatePipe, StatusBadge, AlertMessage],
+  imports: [DatePipe, StatusBadge, AlertMessage, RouterLink],
   templateUrl: './patient-appointments.html'
 })
 export class PatientAppointments implements OnInit {
@@ -19,6 +20,7 @@ export class PatientAppointments implements OnInit {
   protected readonly appointments = signal<Appointment[] | null>(null);
   protected readonly error = signal<string | null>(null);
   protected readonly cancellingId = signal<number | null>(null);
+  protected readonly hasReport = hasReport;
 
   ngOnInit(): void {
     this.appointmentService.getMyAppointments().subscribe({

@@ -15,3 +15,7 @@ export interface Appointment {
 export interface CreateAppointmentRequest {
     slotId: number;
 }
+
+export function hasReport(status: AppointmentStatus): boolean {
+    return status === 'REPORTED' || status === 'INVOICED';
+}

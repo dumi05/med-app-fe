@@ -3,6 +3,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { errorInterceptor } from '../../../shared/http/error.interceptor';
 import { PatientAppointments } from './patient-appointments';
+import { provideRouter } from '@angular/router';
 
 const appointment = (id: number, status: string) => ({
   id, status, patientId: 1, patientFirstName: 'Anna', patientLastName: 'Bianchi', noShowRisk: null,
@@ -19,7 +20,7 @@ describe('PatientAppointments', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [PatientAppointments],
-      providers: [provideHttpClient(withInterceptors([errorInterceptor])), provideHttpClientTesting()],
+      providers: [provideHttpClient(withInterceptors([errorInterceptor])), provideHttpClientTesting(), provideRouter([])],
     }).compileComponents();
     http = TestBed.inject(HttpTestingController);
   });
@@ -82,4 +83,12 @@ describe('PatientAppointments', () => {
 
     expect(element().querySelector('.alert-danger')?.textContent).toContain('Operazione non consentita');
   });
+  it('offers the report link when the report is available', () => {
+    open([appointment(1, 'INVOICED'), appointment(2, 'BOOKED')]);
+
+    const rows = element().querySelectorAll('tbody tr');
+    expect(rows[0].textContent).toContain('Referto disponibile');
+    expect(rows[0].querySelector('a')!.textContent).toContain('Vedi referto');
+    expect(rows[1].querySelector('a')).toBeNull();
+  })
 });

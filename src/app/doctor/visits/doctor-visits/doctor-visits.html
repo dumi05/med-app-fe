@@ -1,0 +1,45 @@
+<div class="container-fluid py-4">
+  <h1 class="h3 mb-4">Le mie visite</h1>
+
+  <app-alert-message [message]="error()" />
+
+  @if (appointments(); as list) {
+    @if (list.length === 0) {
+      <p class="text-muted">Non hai ancora visite prenotate.</p>
+    } @else {
+      <div class="table-responsive">
+        <table class="table table-striped align-middle">
+          <thead>
+            <tr><th>Data e ora</th><th>Paziente</th><th>Stato</th><th></th><th></th></tr>
+          </thead>
+          <tbody>
+            @for (appointment of list; track appointment.id) {
+              <tr>
+                <td>{{ appointment.slot.startTime | date: 'dd/MM/yyyy HH:mm' }}</td>
+                <td>{{ appointment.patientFirstName }} {{ appointment.patientLastName }}</td>
+                <td><app-status-badge [status]="appointment.status" /></td>
+                <td>
+                  @if (appointment.noShowRisk) {
+                    <span class="badge text-bg-warning">Rischio no-show</span>
+                  }
+                </td>
+                <td class="text-end">
+                  @if (appointment.status === 'BOOKED') {
+                    <button type="button" class="btn btn-sm btn-primary"
+                            [disabled]="completingId() !== null" (click)="complete(appointment)">Completa visita</button>
+                  } @else if (appointment.status === 'COMPLETED') {
+                    <a class="btn btn-sm btn-outline-primary"
+                       [routerLink]="['/doctor/visits', appointment.id, 'report']">Scrivi referto</a>
+                  } @else if (hasReport(appointment.status)) {
+                    <a class="btn btn-sm btn-outline-secondary"
+                       [routerLink]="['/doctor/visits', appointment.id, 'report']">Vedi referto</a>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  }
+</div>

@@ -29,4 +29,11 @@ describe('StatusBadge', () => {
     show('CANCELLED');
     expect(badge().classList.contains('text-bg-secondary')).toBeTrue();
   });
+  it('Shows "Referto disponibile" both when reported and invoiced', () => {
+    show('REPORTED');
+    expect(badge().textContent).toContain('Referto disponibile');
+    show('INVOICED');
+    expect(badge().textContent).toContain('Referto disponibile');
+    expect(badge().classList.contains('text-bg-success')).toBeTrue();
+  })
 });

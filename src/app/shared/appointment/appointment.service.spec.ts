@@ -54,4 +54,15 @@ describe('AppointmentService', () => {
 
     expect((result as unknown[]).length).toBe(1);
   });
+
+  it('completes a visit', () => {
+    let result: unknown;
+    service.completeVisit(5).subscribe((val) => (result = val));
+
+    const req = http.expectOne('/api/v1/appointments/5/complete');
+    expect(req.request.method).toBe('POST');
+    req.flush({...APPOINTMENT, status: 'COMPLETED', noShowRisk: false});
+
+    expect((result as {status: string}).status).toBe('COMPLETED');
+  })
 });
