@@ -9,5 +9,13 @@ export const ADMIN_ROUTES: Routes = [
     {
         path: 'doctors',
         loadComponent: () => import('./doctors/doctors').then((m) => m.Doctors)
+    },
+    {
+        path: 'dashboard',
+        loadComponent: () => import('./dashboard/dashboard').then((m) => m.Dashboard)
+    },
+    {
+        path: 'price-lsit',
+        loadComponent: () => import('./price-list/price-list').then((m) => m.PriceList)
     }
 ];
