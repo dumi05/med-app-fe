@@ -15,7 +15,7 @@ export const ADMIN_ROUTES: Routes = [
         loadComponent: () => import('./dashboard/dashboard').then((m) => m.Dashboard)
     },
     {
-        path: 'price-lsit',
+        path: 'price-list',
         loadComponent: () => import('./price-list/price-list').then((m) => m.PriceList)
     }
 ];
