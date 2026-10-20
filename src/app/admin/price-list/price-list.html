@@ -4,41 +4,41 @@
   <app-alert-message [message]="error()" />
   <app-alert-message [message]="success()" type="success" />
 
-  <div class="table-responsive">
-    <table class="table table-striped align-middle">
-      <thead>
-        <tr><th>Specializzazione</th><th>Tipo di visita</th><th>Prezzo</th><th></th></tr>
-      </thead>
-      <tbody>
-        @for (entry of entries(); track entry.id) {
+  
+  @if (entries(); as list){
+    @if(list.length === 0) {
+      <p class="text-muted">Non c'è ancora alcun valore nel listino.</p>
+    } @else {
+      <app-data-table [columns]="columns" [rows]="list" [rowKey]="rowKey">
+        <ng-template [appDataTableRow]="list" let-entry>
           <tr>
-            <td>{{ entry.specializationName }}</td>
-            <td>{{ entry.visitType }}</td>
-            @if (editingId() === entry.id) {
-              <td>
-                <input type="text" inputmode="decimal" class="form-control form-control-sm price-input"
-                       [formControl]="priceControl"
-                       [class.is-invalid]="priceControl.touched && priceControl.invalid" />
-                <div class="invalid-feedback">Inserisci un importo maggiore di zero, con al massimo due decimali.</div>
-              </td>
-              <td class="text-end">
-                <button type="button" class="btn btn-primary btn-sm save-button me-2"
-                        [disabled]="saving()" (click)="save(entry)">Salva</button>
-                <button type="button" class="btn btn-outline-secondary btn-sm cancel-button"
-                        (click)="cancel()">Annulla</button>
-              </td>
-            } @else {
-              <td>{{ euro(entry.price) }}</td>
-              <td class="text-end">
-                <button type="button" class="btn btn-outline-primary btn-sm edit-button"
-                        (click)="edit(entry)">Modifica</button>
-              </td>
-            }
+              <td>{{ entry.specializationName }}</td>
+              <td>{{ entry.visitType }}</td>
+              @if (editingId() === entry.id) {
+                <td>
+                  <input type="text" inputmode="decimal" class="form-control form-control-sm price-input"
+                        [formControl]="priceControl"
+                        [class.is-invalid]="priceControl.touched && priceControl.invalid" />
+                  <div class="invalid-feedback">Inserisci un importo maggiore di zero, con al massimo due decimali.</div>
+                </td>
+                <td class="text-end">
+                  <button type="button" class="btn btn-primary btn-sm save-button me-2"
+                          [disabled]="saving()" (click)="save(entry)">Salva</button>
+                  <button type="button" class="btn btn-outline-secondary btn-sm cancel-button"
+                          (click)="cancel()">Annulla</button>
+                </td>
+              } @else {
+                <td>{{ euro(entry.price) }}</td>
+                <td class="text-end">
+                  <button type="button" class="btn btn-outline-primary btn-sm edit-button"
+                          (click)="edit(entry)">Modifica</button>
+                </td>
+              }
           </tr>
-        }
-      </tbody>
-    </table>
-  </div>
+        </ng-template>
+      </app-data-table>
+    }
+  }
 
   <p class="text-muted small">Un nuovo prezzo vale per le fatture emesse da ora in poi: quelle già emesse non cambiano.</p>
 </div>

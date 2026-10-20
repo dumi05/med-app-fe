@@ -1,0 +1,32 @@
+@if(filterable()) {
+    <div class="mb-3 col-12 col-md-6 col-xl-4 px-0">
+        <input type="search" class="form-control form-control-sm data-table-filter" placeholder="Cerca..."
+                aria-label="Cerca nella tabella" [value]="filter()" (input)="onFilter($event)"/>
+    </div>
+}
+
+<div class="table-responsive">
+    <table class="table table-striped align-middle">
+        <thead>
+            <tr>
+                @for (column of columns(); track $index) {
+                    <th [attr.aria-sort]="column.value ? ariaSort($index) : null">
+                        @if (column.value) {
+                            <button type="button" class="btn btn-link p-0 fw-semibold text-body text-decoration-none sort-button"
+                                    (click)="toggleSort($index)">{{ column.header }}<span aria-hidden="true">{{ indicator($index) }}</span></button>
+                        } @else {
+                            {{ column.header}}
+                        }
+                    </th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @for (row of visibleRows(); track rowKey()(row)) {
+                <ng-container [ngTemplateOutlet]="rowTemplate()" [ngTemplateOutletContext]="{ $implicit: row }"/>
+            } @empty {
+                <tr><td [attr.colspan]="columns().length" class="text-muted no-results">Nessun risultato.</td></tr>
+            }
+        </tbody>
+    </table>
+</div>

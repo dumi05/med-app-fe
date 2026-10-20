@@ -12,10 +12,12 @@ import { toSelectOptions } from '../../shared/specialization/specialization-opti
 import { ApiError } from '../../shared/http/api-error';
 import { userMessage } from '../../shared/http/error-messages';
 import { AppointmentService } from '../../shared/appointment/appointment.service';
+import { DataTable, DataTableColumn, DataTableRow } from '../../shared/ui/data-table/data-table';
+import { formatDateTime } from '../../shared/format/format';
 
 @Component({
   selector: 'app-availability',
-  imports: [ReactiveFormsModule, DatePipe, FormField, SelectField, AlertMessage, SubmitButton],
+  imports: [ReactiveFormsModule, DatePipe, FormField, SelectField, AlertMessage, SubmitButton, DataTable, DataTableRow],
   templateUrl: './availability.html',
 })
 export class Availability implements OnInit {
@@ -31,6 +33,14 @@ export class Availability implements OnInit {
   protected readonly success = signal<string | null>(null);
   protected readonly loading = signal(false);
   protected readonly bookingSlotId = signal<number | null>(null); 
+
+  protected readonly columns: DataTableColumn<Slot>[] = [
+    { header: 'Data e ora', value: (slot) => slot.startTime, text: (slot) => formatDateTime(slot.startTime) },
+    { header: 'Medico', value: (slot) => `${slot.doctorLastName} ${slot.doctorFirstName}`, text: (slot) => `${slot.doctorFirstName} ${slot.doctorLastName}` },
+    { header: 'Durata', value: (slot) => slot.durationMinutes },
+    { header: ''}
+  ];
+  protected readonly rowKey = (slot: Slot) => slot.id;
 
   protected readonly form = this.formBuilder.group({
     specializationId: ['', [Validators.required]],

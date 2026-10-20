@@ -1,7 +1,7 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { CreateDoctorRequest } from './doctor.model';
+import { CreateDoctorRequest, UpdateDoctorRequest } from './doctor.model';
 import { DoctorService } from './doctor.service';
 
 describe('DoctorService', () => {
@@ -42,5 +42,39 @@ describe('DoctorService', () => {
                 specialization: 'Cardiologia', delegationConsent: true });
 
     expect((result as { id: number }).id).toBe(7);
+  });
+
+    it('loads every doctor with the administrative details', () => {
+    let result: unknown;
+    service.getAllDoctorsForAdmin().subscribe((value) => (result = value));
+
+    const req = http.expectOne('/api/v1/doctors/admin');
+    expect(req.request.method).toBe('GET');
+    req.flush([{ id: 1, firstName: 'Luca', lastName: 'Verdi', email: 'luca@studio-medico.it',
+                 specialization: 'Cardiologia', delegationConsent: true, active: false }]);
+
+    expect((result as { active: boolean }[])[0].active).toBeFalse();
+  });
+
+  it('updates a doctor sending the new data', () => {
+    const request: UpdateDoctorRequest = { firstName: 'Luigi', lastName: 'Verdi', specializationId: 2, delegationConsent: true };
+    service.updateDoctor(7, request).subscribe();
+
+    const req = http.expectOne('/api/v1/doctors/7');
+    expect(req.request.method).toBe('PUT');
+    expect(req.request.body).toEqual(request);
+    req.flush({});
+  });
+
+  it('deactivates and reactivates a doctor with a POST on the action', () => {
+    service.deactivateDoctor(7).subscribe();
+    const deactivate = http.expectOne('/api/v1/doctors/7/deactivate');
+    expect(deactivate.request.method).toBe('POST');
+    deactivate.flush({});
+
+    service.activateDoctor(7).subscribe();
+    const activate = http.expectOne('/api/v1/doctors/7/activate');
+    expect(activate.request.method).toBe('POST');
+    activate.flush({});
   });
 });

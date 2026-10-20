@@ -17,3 +17,6 @@ export class StatusBadge {
     readonly status = input.required<AppointmentStatus>();
     protected readonly view = computed(() => STATUS_VIEW[this.status()]);
 }
+export function statusLabel(status: AppointmentStatus): string {
+    return STATUS_VIEW[status].label;
+}

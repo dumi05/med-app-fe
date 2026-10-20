@@ -6,6 +6,7 @@ import { formatEuro } from "../../shared/format/format";
 import { ApiError } from "../../shared/http/api-error";
 import { userMessage } from "../../shared/http/error-messages";
 import { PriceListEntry } from "../../shared/price-list/price-list.model";
+import { DataTable, DataTableColumn, DataTableRow } from "../../shared/ui/data-table/data-table";
 
 // up to 8 integer digits and 2 decimals, with a dot or a comma: the same limits as the backend (precision: 10, scale: 2).
 const PRICE_PATTERN = /^\d{1,8}([.,]\d{1,2})?$/;
@@ -13,7 +14,7 @@ const PRICE_PATTERN = /^\d{1,8}([.,]\d{1,2})?$/;
 
 @Component({
     selector: 'app-price-list',
-    imports: [ReactiveFormsModule, AlertMessage],
+    imports: [ReactiveFormsModule, AlertMessage, DataTable, DataTableRow],
     templateUrl: './price-list.html'
 })
 export class PriceList implements OnInit {
@@ -25,6 +26,14 @@ export class PriceList implements OnInit {
     protected readonly saving = signal(false);
     protected readonly error = signal<string | null>(null);
     protected readonly success = signal<string | null>(null);
+
+    protected readonly columns: DataTableColumn<PriceListEntry>[] = [
+        { header: 'Specializzazione', value: (entry) => entry.specializationName },
+        { header: 'Tipo di visita', value: (entry) => entry.visitType },
+        { header: 'Prezzo', value: (entry) => entry.price },
+        { header: '' },
+    ];
+    protected readonly rowKey = (entry: PriceListEntry) => entry.id;
 
     protected readonly priceControl = new FormControl('', {
         nonNullable: true,

@@ -1,16 +1,18 @@
 import { DatePipe } from '@angular/common';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { StatusBadge } from '../../../shared/status-badge/status-badge';
+import { StatusBadge, statusLabel } from '../../../shared/status-badge/status-badge';
 import { AlertMessage } from '../../../shared/ui/alert-message/alert-message';
 import { AppointmentService } from '../../../shared/appointment/appointment.service';
 import { Appointment, hasReport } from '../../../shared/appointment/appointment.model';
 import { ApiError } from '../../../shared/http/api-error';
 import { userMessage } from '../../../shared/http/error-messages';
+import { DataTable, DataTableColumn, DataTableRow } from '../../../shared/ui/data-table/data-table';
+import { formatDateTime } from '../../../shared/format/format';
 
 @Component({
   selector: 'app-doctor-visits',
-  imports: [DatePipe,RouterLink, StatusBadge, AlertMessage],
+  imports: [DatePipe,RouterLink, StatusBadge, AlertMessage, DataTable, DataTableRow],
   templateUrl: './doctor-visits.html',
 })
 export class DoctorVisits implements OnInit{
@@ -21,6 +23,15 @@ export class DoctorVisits implements OnInit{
   protected readonly error = signal<string | null>(null);
   protected readonly completingId = signal<number | null>(null);
   protected readonly hasReport = hasReport;
+
+  protected readonly columns: DataTableColumn<Appointment>[] = [
+    { header: 'Data e ora', value: (app) => app.slot.startTime, text: (app) => formatDateTime(app.slot.startTime) },
+    { header: 'Paziente', value: (app) => `${app.patientLastName} ${app.patientFirstName}`, text: (app) => `${app.patientFirstName} ${app.patientLastName}` },
+    { header: 'Stato', value: (app) => statusLabel(app.status) },
+    { header: 'Rischio', value: (app) => (app.noShowRisk ? 1 : 0), text: (app) => (app.noShowRisk ? 'rischio no-show' : '') },
+    { header: '' },
+  ];
+  protected readonly rowKey = (app: Appointment) => app.id;
 
   ngOnInit(): void {
     this.appointmentService.getMyAppointments().subscribe({
