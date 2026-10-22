@@ -77,4 +77,14 @@ describe('DoctorService', () => {
     expect(activate.request.method).toBe('POST');
     activate.flush({});
   });
+  it('loads the profile of the loaded doctor', () => {
+    let result: unknown;
+    service.getMe().subscribe((v) => (result = v));
+
+    const req = http.expectOne('/api/v1/doctors/me');
+    expect(req.request.method).toBe('GET');
+    req.flush({ id: 1, firstName: 'MArio', lastName: 'Rossi', specialization: 'Cardiologia'});
+
+    expect((result as { id: number }).id).toBe(1);
+  });
 });

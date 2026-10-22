@@ -20,5 +20,10 @@ export const DOCTOR_ROUTES: Routes = [
         path: 'visits/:appointmentId/report',
         loadComponent: () => import('../shared/report/appointment-report/appointment-report')
                                 .then((m) => m.AppointmentReport),
+    },
+    {
+        path: 'delegations',
+        loadComponent: () => import('./delegations/doctor-delegations')
+                                .then((m) => m.DoctorDelegations),
     }
 ];

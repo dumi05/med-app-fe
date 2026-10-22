@@ -31,4 +31,8 @@ export class DoctorService {
     activateDoctor(id: number): Observable<DoctorAdmin> {
         return this.http.post<DoctorAdmin>(`${API_BASE}/doctors/${id}/activate`, null);
     }
+
+    getMe(): Observable<Doctor> {
+        return this.http.get<Doctor>(`${API_BASE}/doctors/me`);
+    }
 }

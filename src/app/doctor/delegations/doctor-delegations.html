@@ -1,0 +1,55 @@
+<div class="container-fluid py-4">
+  <h1 class="h3 mb-4">Deleghe</h1>
+
+  <app-alert-message [message]="error()" />
+  <app-alert-message [message]="success()" type="success" />
+
+  <h2 class="h5 mb-3">Nuova delega</h2>
+  <div class="row mb-5">
+    <div class="col-12 col-md-8 col-xl-5">
+      <p class="text-muted small">
+        Un collega può sostituirti nelle visite e nei referti per il periodo scelto, se accetta.
+        Il collega deve aver dato il consenso alla delega (lo imposta l'amministratore).
+      </p>
+      <form [formGroup]="form" (ngSubmit)="propose()" novalidate>
+        <app-select-field inputId="delegateDoctorId" label="Collega"
+                          [control]="form.controls.delegateDoctorId" [options]="colleagueOptions()"
+                          errorText="Seleziona un collega" />
+        <app-form-field inputId="startDate" label="Dal" type="date"
+                        [control]="form.controls.startDate" errorText="Seleziona la data di inizio" />
+        <app-form-field inputId="endDate" label="Al" type="date"
+                        [control]="form.controls.endDate" errorText="Seleziona la data di fine" />
+        <app-submit-button label="Proponi delega" [loading]="loading()" />
+      </form>
+    </div>
+  </div>
+
+  <h2 class="h5 mb-3">Le mie deleghe</h2>
+  @if (delegations(); as list) {
+    @if (list.length === 0) {
+      <p class="text-muted">Non hai ancora deleghe.</p>
+    } @else {
+      <app-data-table [columns]="columns" [rows]="list" [rowKey]="rowKey">
+        <ng-template [appDataTableRow]="list" let-delegation>
+          <tr>
+            <td>{{ direction(delegation) }}</td>
+            <td>{{ colleague(delegation) }}</td>
+            <td>{{ delegation.startDate | date: 'dd/MM/yyyy' }}</td>
+            <td>{{ delegation.endDate | date: 'dd/MM/yyyy' }}</td>
+            <td>
+              <span class="badge" [class]="statusView(delegation).style">{{ statusView(delegation).label }}</span>
+            </td>
+            <td class="text-end text-nowrap">
+              @if (canAnswer(delegation)) {
+                <button type="button" class="btn btn-sm btn-primary me-1"
+                        [disabled]="answeringId() !== null" (click)="accept(delegation)">Accetta</button>
+                <button type="button" class="btn btn-sm btn-outline-danger"
+                        [disabled]="answeringId() !== null" (click)="reject(delegation)">Rifiuta</button>
+              }
+            </td>
+          </tr>
+        </ng-template>
+      </app-data-table>
+    }
+  }
+</div>
