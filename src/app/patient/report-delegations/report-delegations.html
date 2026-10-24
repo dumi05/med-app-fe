@@ -1,0 +1,72 @@
+<div class="container-fluid py-4">
+  <h1 class="h3 mb-3">Deleghe dei referti</h1>
+  <p class="text-muted">
+    Puoi permettere a una persona di tua fiducia (per esempio un familiare) di leggere i tuoi referti senza
+    creare un account. Ricevi un link da consegnarle: chi lo apre vede <strong>tutti</strong> i tuoi referti e
+    non può fare altro. Il link non viene spedito dal sistema, lo condividi tu. Puoi revocarlo in qualsiasi momento.
+  </p>
+
+  <app-alert-message [message]="error()" />
+  <app-alert-message [message]="success()" type="success" />
+
+  @if (sharedLink(); as link) {
+    <div class="card border-primary mb-4">
+      <div class="card-body">
+        <h2 class="h6">Link da condividere</h2>
+        <div class="input-group">
+          <input id="sharedLink" type="text" class="form-control" readonly [value]="link"
+                 aria-label="Link da condividere" (focus)="$any($event.target).select()" />
+          <button type="button" class="btn btn-outline-primary copy-button" (click)="copyLink()">Copia</button>
+        </div>
+        <p class="text-muted small mb-0 mt-2">Chiunque abbia questo link legge i tuoi referti finché non lo revochi.</p>
+      </div>
+    </div>
+  }
+
+  <h2 class="h5 mb-3">Nuova delega</h2>
+  <div class="row mb-5">
+    <div class="col-12 col-md-8 col-xl-5">
+      <form [formGroup]="form" (ngSubmit)="create()" novalidate>
+        <app-form-field inputId="delegateName" label="Nome della persona"
+                        [control]="form.controls.delegateName" errorText="Inserisci il nome" />
+        <app-form-field inputId="delegateEmail" label="Email della persona" type="email"
+                        [control]="form.controls.delegateEmail" errorText="Inserisci un'email valida" />
+        <app-form-field inputId="expiresAt" label="Valida fino al (facoltativo)" type="date"
+                        [control]="form.controls.expiresAt" errorText="Scegli una data da oggi in poi" />
+        <app-submit-button label="Crea delega" [loading]="loading()" />
+      </form>
+    </div>
+  </div>
+
+  <h2 class="h5 mb-3">Le mie deleghe</h2>
+  @if (delegations(); as list) {
+    @if (list.length === 0) {
+      <p class="text-muted">Non hai ancora creato deleghe.</p>
+    } @else {
+      <app-data-table [columns]="columns" [rows]="list" [rowKey]="rowKey">
+        <ng-template [appDataTableRow]="list" let-delegation>
+          <tr>
+            <td>{{ delegation.delegateName }}<br /><span class="text-muted small">{{ delegation.delegateEmail }}</span></td>
+            <td>{{ expiry(delegation) }}</td>
+            <td><span class="badge" [class]="statusView(delegation).style">{{ statusView(delegation).label }}</span></td>
+            <td class="text-end text-nowrap">
+              @if (delegation.active) {
+                <button type="button" class="btn btn-sm btn-outline-primary show-link-button me-2"
+                        (click)="showLink(delegation)">Mostra link</button>
+                @if (confirmingId() === delegation.id) {
+                  <button type="button" class="btn btn-sm btn-danger confirm-button me-2"
+                          [disabled]="busyId() !== null" (click)="revoke(delegation)">Conferma</button>
+                  <button type="button" class="btn btn-sm btn-outline-secondary cancel-confirm-button"
+                          (click)="cancelRevoke()">Annulla</button>
+                } @else {
+                  <button type="button" class="btn btn-sm btn-outline-danger revoke-button"
+                          (click)="askRevoke(delegation)">Revoca</button>
+                }
+              }
+            </td>
+          </tr>
+        </ng-template>
+      </app-data-table>
+    }
+  }
+</div>

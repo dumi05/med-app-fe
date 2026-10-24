@@ -29,7 +29,7 @@ describe('Sidebar', () => {
 
   it('shows only the links of the role of the user', () => {
     const links = Array.from(element().querySelectorAll('a.nav-link'));
-    expect(links.map((link) => link.getAttribute('href'))).toEqual(['/patient', '/patient/availability', '/patient/appointments']);
+    expect(links.map((link) => link.getAttribute('href'))).toEqual(['/patient', '/patient/availability', '/patient/appointments', '/patient/report-delegations']);
   });
 
   it('shows e-mail and role label', () => {

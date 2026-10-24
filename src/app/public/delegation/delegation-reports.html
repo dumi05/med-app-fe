@@ -1,0 +1,35 @@
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-12 col-lg-8">
+      <h1 class="h3 mb-2">Referti condivisi con te</h1>
+      <p class="text-muted">
+        Una persona ti ha permesso di leggere i suoi referti. Questa pagina è riservata: non condividerne l'indirizzo.
+      </p>
+
+      <app-alert-message [message]="error()" />
+
+      @if (reports(); as list) {
+        @if (list.length === 0) {
+          <p class="text-muted">Non ci sono ancora referti disponibili.</p>
+        } @else {
+          @for (report of list; track $index) {
+            <div class="card mb-3">
+              <div class="card-body">
+                <h2 class="h5 card-title">{{ report.specialization }}</h2>
+                <p class="text-muted small mb-3">
+                  Visita del {{ report.visitDate | date: 'dd/MM/yyyy HH:mm' }} con
+                  {{ report.doctorFirstName }} {{ report.doctorLastName }}.
+                  Referto redatto il {{ report.completedAt | date: 'dd/MM/yyyy HH:mm' }}.
+                </p>
+                <p class="pre-wrap mb-0">{{ report.diagnosisText }}</p>
+                @if (report.attachmentUrl; as url) {
+                  <a class="d-inline-block mt-3" [href]="url" target="_blank" rel="noopener noreferrer">Apri allegato</a>
+                }
+              </div>
+            </div>
+          }
+        }
+      }
+    </div>
+  </div>
+</div>

@@ -20,5 +20,9 @@ export const PATIENT_ROUTES: Routes = [
         path: 'appointments/:appointmentId/report',
         loadComponent: () => import('../shared/report/appointment-report/appointment-report')
                                 .then((m) => m.AppointmentReport)
+    },
+    {
+        path: 'report-delegations',
+        loadComponent: () => import('./report-delegations/report-delegations').then((m) => m.ReportDelegations),
     }
 ];

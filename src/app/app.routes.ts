@@ -15,6 +15,10 @@ export const routes: Routes = [
     loadComponent: () => import('./shared/auth/privacy-notice/privacy-notice').then((m) => m.PrivacyNotice),
   },
   { path: '', pathMatch: 'full', redirectTo: 'login' },
+  { 
+    path: 'delegation/:token',
+    loadComponent: () => import('./public/delegation/delegation-reports').then((m) => m.DelegationReports),
+  },
   {
     path: '',
     loadComponent: () => import('./shared/layout/shell/shell').then((m) => m.Shell),
