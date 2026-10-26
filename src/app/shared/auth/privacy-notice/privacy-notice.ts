@@ -1,4 +1,11 @@
 import { Component } from '@angular/core';
+import { GDPR_CONSENT_VERSION } from '../gdpr-consent';
+
+export const PRIVACY_CONTROLLER = {
+  name: 'Studio Medico Associato (demo)',
+  address: 'Via Esempio 1, 00100 Roma',
+  email: 'privacy@studio-medico.example'
+};
 
 @Component({
   selector: 'app-privacy-notice',
@@ -7,5 +14,7 @@ import { Component } from '@angular/core';
   styleUrl: './privacy-notice.scss',
 })
 export class PrivacyNotice {
-
+  protected readonly controller = PRIVACY_CONTROLLER;
+  protected readonly version = GDPR_CONSENT_VERSION;
+  protected readonly effectiveFrom = '30 settembre 2026';
 }

@@ -1,6 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../auth.service';
 import { homeForRole } from '../role-home';
 import { ApiError } from '../../http/api-error';
@@ -20,12 +20,16 @@ export class Login {
   private readonly fb = inject(NonNullableFormBuilder);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
 
   protected readonly form = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required]]
   });
   protected readonly error = signal<string | null>(null);
+  protected readonly notice = signal<string | null> (
+    this.route.snapshot.queryParamMap.has('deleted') ? 'Il tuo account è stato eliminato.' : null
+  );
   protected readonly loading = signal(false);
 
   protected submit(): void {

@@ -1,0 +1,59 @@
+<div class="container-fluid py-4">
+  <h1 class="h3 mb-3">I miei dati</h1>
+  <p class="text-muted">
+    Qui puoi esercitare i tuoi diritti sui dati personali. Per sapere come li trattiamo leggi
+    l'<a routerLink="/privacy-notice" target="_blank">informativa privacy</a>.
+  </p>
+
+  <app-alert-message [message]="error()" />
+  <app-alert-message [message]="success()" type="success" />
+
+  <div class="card mb-4">
+    <div class="card-body">
+      <h2 class="h5">Scarica i miei dati</h2>
+      <p class="mb-3">
+        Ottieni in un unico file (formato JSON) il tuo profilo, le tue visite e i tuoi referti.
+        Il file viene salvato sul tuo dispositivo: conservalo con cura, contiene dati sanitari.
+      </p>
+      <button type="button" class="btn btn-primary export-button" [disabled]="exporting()" (click)="exportData()">
+        {{ exporting() ? 'Preparazione...' : 'Scarica i miei dati' }}
+      </button>
+    </div>
+  </div>
+
+  <div class="card border-danger">
+    <div class="card-body">
+      <h2 class="h5 text-danger">Elimina il mio account</h2>
+      <p>Cosa succede quando elimini l'account:</p>
+      <ul>
+        <li>nome, cognome, data di nascita ed email vengono rimossi e non si possono recuperare;</li>
+        <li>non puoi più accedere, e la stessa email potrà essere usata per una nuova registrazione;</li>
+        <li>le visite prenotate e non ancora effettuate vengono annullate;</li>
+        <li>i link di delega dei referti che hai creato smettono di funzionare.</li>
+      </ul>
+      <p>
+        Cosa resta, perché lo studio deve conservarli per legge: i referti e le fatture delle visite già
+        effettuate, <strong>senza più il collegamento ai tuoi dati identificativi</strong>. Il registro degli
+        accessi conserva l'email che usavi fino ad ora.
+      </p>
+
+      @if (!confirmingDelete()) {
+        <button type="button" class="btn btn-outline-danger delete-button" (click)="askDelete()">Elimina il mio account</button>
+      } @else {
+        <div class="alert alert-danger" role="alert">
+          <p class="mb-2"><strong>Questa operazione non si può annullare.</strong></p>
+          <div class="form-check mb-3">
+            <input id="understood" type="checkbox" class="form-check-input" [checked]="understood()" (change)="setUnderstood($event)" />
+            <label for="understood" class="form-check-label">Ho capito e voglio eliminare il mio account</label>
+          </div>
+          <button type="button" class="btn btn-danger confirm-delete-button me-2"
+                  [disabled]="!understood() || deleting()" (click)="deleteAccount()">
+            {{ deleting() ? 'Eliminazione...' : 'Elimina definitivamente' }}
+          </button>
+          <button type="button" class="btn btn-outline-secondary cancel-delete-button"
+                  [disabled]="deleting()" (click)="cancelDelete()">Annulla</button>
+        </div>
+      }
+    </div>
+  </div>
+</div>

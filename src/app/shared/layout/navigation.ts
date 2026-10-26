@@ -10,7 +10,8 @@ const NAV_ITEMS: Record<Role, NavItem[]> = {
         { label: 'Home', path: '/patient'}, 
         { label: 'Disponibilità', path: '/patient/availability'}, 
         { label: 'Le mie prenotazioni', path: '/patient/appointments'},
-        { label: 'Deleghe referti', path: '/patient/report-delegations'}
+        { label: 'Deleghe referti', path: '/patient/report-delegations'},
+        { label: 'I miei dati', path: '/patient/privacy'}
     ],
     DOCTOR: [
         { label: 'Home', path: '/doctor'}, 

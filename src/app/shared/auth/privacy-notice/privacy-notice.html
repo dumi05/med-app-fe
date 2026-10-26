@@ -1,1 +1,149 @@
-<p>privacy-notice works!</p>
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-12 col-lg-9 col-xl-8">
+      <h1 class="h3 mb-1">Informativa sul trattamento dei dati personali</h1>
+      <p class="text-muted">
+        Artt. 13 e 14 del Regolamento UE 2016/679 (GDPR). Versione {{ version }}, in vigore dal {{ effectiveFrom }}.
+      </p>
+
+      <section class="mb-4">
+        <h2 class="h5">1. Chi tratta i tuoi dati</h2>
+        <p class="mb-0">
+          Il titolare del trattamento è <strong>{{ controller.name }}</strong>, {{ controller.address }}.
+          Per qualsiasi richiesta sui tuoi dati scrivi a <a [href]="'mailto:' + controller.email">{{ controller.email }}</a>.
+        </p>
+      </section>
+
+      <section class="mb-4">
+        <h2 class="h5">2. Quali dati trattiamo</h2>
+        <ul class="mb-0">
+          <li><strong>Dati anagrafici e di contatto</strong>: nome, cognome, data di nascita, email.</li>
+          <li>
+            <strong>Credenziali</strong>: la password è conservata solo in forma cifrata (non riconvertibile)
+            e non la può leggere nessuno, nemmeno l'amministratore.
+          </li>
+          <li><strong>Dati relativi alla salute</strong>: le visite prenotate, i referti e le diagnosi.</li>
+          <li><strong>Dati di fatturazione</strong>: l'importo di ogni visita effettuata.</li>
+          <li>
+            <strong>Registro degli accessi</strong>: chi ha prenotato, completato, refertato o letto un referto
+            (anche quando l'accesso è stato negato), quando e con quale esito.
+          </li>
+          <li>
+            <strong>Indicatore di rischio di mancata presentazione</strong>: un'informazione calcolata sulla
+            storia delle tue prenotazioni passate, rimaste senza visita.
+          </li>
+        </ul>
+      </section>
+
+      <section class="mb-4">
+        <h2 class="h5">3. Perché li trattiamo e su quale base</h2>
+        <ul class="mb-2">
+          <li>
+            <strong>Gestire prenotazioni, visite e referti</strong>: esecuzione del servizio che chiedi (art. 6.1.b).
+            Per i dati sulla salute: il tuo consenso esplicito (art. 9.2.a) e le finalità di cura (art. 9.2.h).
+          </li>
+          <li>
+            <strong>Emettere e conservare la documentazione contabile</strong>: obbligo di legge (art. 6.1.c).
+          </li>
+          <li>
+            <strong>Proteggere i dati e poter dimostrare chi ha fatto cosa</strong> (registro degli accessi):
+            legittimo interesse alla sicurezza (art. 6.1.f) e obbligo di responsabilizzazione (artt. 5.2 e 32).
+          </li>
+          <li>
+            <strong>Organizzare l'agenda</strong>: l'indicatore di rischio di mancata presentazione è visibile solo
+            ai medici e all'amministrazione, per organizzare il lavoro.
+          </li>
+        </ul>
+        <p class="mb-0">
+          Nessuna decisione che ti riguarda è presa in modo automatico: l'indicatore non impedisce né modifica una
+          prenotazione.
+        </p>
+      </section>
+
+      <section class="mb-4">
+        <h2 class="h5">4. Chi può vedere i tuoi dati</h2>
+        <ul class="mb-2">
+          <li>
+            <strong>I medici dello studio</strong>: il medico della tua visita vede i tuoi referti. Quando è assente
+            può essere sostituito da un collega che ha dato il consenso e ha accettato una delega per un periodo
+            determinato: in quel periodo il collega può completare le visite e scrivere e leggere i referti.
+          </li>
+          <li>
+            <strong>L'amministrazione</strong>: vede dati aggregati (numero di visite, ricavi) e il registro degli
+            accessi. Non legge il contenuto dei referti.
+          </li>
+          <li>
+            <strong>Le persone che scegli tu</strong>: se crei un link di delega, chi lo possiede legge tutti i tuoi
+            referti finché non lo revochi o non scade.
+          </li>
+        </ul>
+        <p class="mb-0">
+          Nessun altro. I dati non sono comunicati a terzi per scopi commerciali e non sono trasferiti fuori
+          dall'Unione europea. Gli eventuali fornitori di servizi informatici agiscono per conto dello studio,
+          come responsabili del trattamento.
+        </p>
+      </section>
+
+      <section class="mb-4">
+        <h2 class="h5">5. Per quanto tempo li conserviamo</h2>
+        <ul class="mb-0">
+          <li><strong>Referti e dati delle visite</strong>: per il tempo previsto dalla normativa sanitaria applicabile.</li>
+          <li><strong>Documentazione contabile</strong>: dieci anni (art. 2220 del codice civile).</li>
+          <li>
+            <strong>Registro degli accessi</strong>: nella versione attuale non è prevista una cancellazione
+            automatica; il periodo di conservazione è definito dal titolare.
+          </li>
+          <li><strong>Consenso</strong>: la data e la versione di questa informativa che hai accettato restano registrate come prova.</li>
+        </ul>
+      </section>
+
+      <section class="mb-4">
+        <h2 class="h5">6. I tuoi diritti</h2>
+        <ul class="mb-2">
+          <li>
+            <strong>Accesso e portabilità</strong> (artt. 15 e 20): nella pagina «I miei dati» scarichi in un file il
+            tuo profilo, le tue visite e i tuoi referti.
+          </li>
+          <li>
+            <strong>Cancellazione</strong> (art. 17): dalla stessa pagina elimini l'account. Nome, cognome, data di
+            nascita ed email sono rimossi in modo irreversibile, l'accesso è disattivato, le visite future sono
+            annullate e i link di delega smettono di funzionare. I referti e le fatture delle visite già effettuate
+            restano, senza più il collegamento ai tuoi dati identificativi, perché lo studio deve conservarli per
+            legge (art. 17.3). Il registro degli accessi conserva l'email che usavi fino a quel momento.
+          </li>
+          <li><strong>Rettifica</strong> (art. 16), <strong>limitazione</strong> (art. 18) e <strong>opposizione</strong> (art. 21): scrivi al titolare.</li>
+          <li>
+            <strong>Revoca del consenso</strong> (art. 7): equivale a eliminare l'account, perché senza il consenso il
+            servizio non si può usare. Non pregiudica ciò che è stato trattato fino a quel momento.
+          </li>
+        </ul>
+        <p class="mb-0">
+          Se ritieni che i tuoi dati non siano trattati correttamente puoi presentare reclamo al Garante per la
+          protezione dei dati personali (<a href="https://www.garanteprivacy.it" target="_blank" rel="noopener noreferrer">garanteprivacy.it</a>).
+        </p>
+      </section>
+
+      <section class="mb-4">
+        <h2 class="h5">7. Come proteggiamo i dati</h2>
+        <ul class="mb-0">
+          <li>Si accede solo con le proprie credenziali, e ciascuno vede soltanto ciò che serve al suo ruolo.</li>
+          <li>Ogni accesso a un referto, riuscito o negato, è scritto nel registro degli accessi.</li>
+          <li>I link di delega sono lunghi e casuali, non indovinabili, e si possono revocare in ogni momento.</li>
+        </ul>
+      </section>
+
+      <section class="mb-4">
+        <h2 class="h5">8. Il consenso alla registrazione</h2>
+        <p class="mb-0">
+          Quando ti registri confermi di aver letto questa informativa (versione {{ version }}) e acconsenti al
+          trattamento dei dati sulla salute. Data e versione sono registrate. Senza il consenso non è possibile
+          registrarsi né prenotare visite.
+        </p>
+      </section>
+
+      <p class="text-muted small border-top pt-3">
+        Documento dimostrativo, realizzato per un progetto universitario: i dati del titolare sono fittizi.
+      </p>
+    </div>
+  </div>
+</div>

@@ -1,7 +1,7 @@
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Router, provideRouter } from '@angular/router';
+import { ActivatedRoute, Router, convertToParamMap, provideRouter } from '@angular/router';
 import { errorInterceptor } from '../../http/error.interceptor';
 import { Login } from './login';
 
@@ -72,5 +72,34 @@ describe('Login', () => {
     fixture.detectChanges();
 
     expect((fixture.nativeElement as HTMLElement).textContent).toContain('Email o password non corrette.');
+  });
+});
+
+describe('Login after the account was deleted', () => {
+  const create = (query: Record<string, string>) => {
+    TestBed.configureTestingModule({
+      imports: [Login],
+      providers: [
+        provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: ActivatedRoute, useValue: { snapshot: { queryParamMap: convertToParamMap(query) } } },
+      ],
+    });
+    const fixture = TestBed.createComponent(Login);
+    fixture.detectChanges();
+    return fixture.nativeElement as HTMLElement;
+  };
+
+  it('tells that the account was deleted when the page is opened with the mark', () => {
+    const page = create({ deleted: '1' });
+
+    expect(page.querySelector('.alert-success')?.textContent).toContain('Il tuo account è stato eliminato.');
+  });
+
+  it('shows no message when the mark is not there', () => {
+    const page = create({});
+
+    expect(page.querySelector('.alert-success')).toBeNull();
   });
 });

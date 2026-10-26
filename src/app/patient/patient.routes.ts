@@ -24,5 +24,9 @@ export const PATIENT_ROUTES: Routes = [
     {
         path: 'report-delegations',
         loadComponent: () => import('./report-delegations/report-delegations').then((m) => m.ReportDelegations),
+    },
+    {
+        path: 'privacy',
+        loadComponent: () => import('./privacy/my-data').then((m) => m.MyData),
     }
 ];
