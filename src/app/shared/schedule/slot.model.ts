@@ -20,3 +20,10 @@ export interface BulkSlotRequest {
     endTime: string;
     slotMinutes: number;
 }
+
+export interface AvailabilityQuery {
+    specializationId: number;
+    doctorId?: number;
+    from: string;
+    to: string;
+}

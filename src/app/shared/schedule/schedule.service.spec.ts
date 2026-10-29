@@ -15,24 +15,7 @@ describe('ScheduleService', () => {
 
   afterEach(() => http.verify());
 
-  it('searches the availability sending specialization and date as query parameters', () => {
-    let result: unknown;
-    service.searchAvailability(2, '2026-10-20').subscribe((value) => (result = value));
-
-    const req = http.expectOne(
-      (r) =>
-        r.url === '/api/v1/schedule/availability' &&
-        r.params.get('specializationId') === '2' &&
-        r.params.get('date') === '2026-10-20',
-    );
-    expect(req.request.method).toBe('GET');
-    req.flush([{ id: 10, doctorId: 1, doctorFirstName: 'Luca', doctorLastName: 'Verdi',
-                 startTime: '2026-10-20T09:30:00', durationMinutes: 30, booked: false }]);
-
-    expect((result as { id: number }[])[0].id).toBe(10);
-  });
-
-    it('reads the slots of the doctor in a range', () => {
+  it('reads the slots of the doctor in a range', () => {
     service.getMySlots('2026-11-01', '2026-11-30').subscribe();
 
     const req = http.expectOne((r) => r.url === '/api/v1/schedule/slots/me' && r.params.get('from') === '2026-11-01' && r.params.get('to') === '2026-11-30');
@@ -52,5 +35,31 @@ describe('ScheduleService', () => {
     req.flush([{ id: 1 }, { id: 2 }]);
 
     expect((result as unknown[]).length).toBe(2);
+  });
+
+    it('searches the availability sending specialization and range as query parameters', () => {
+    let result: unknown;
+    service.searchAvailability({ specializationId: 2, from: '2026-11-01', to: '2026-11-30' }).subscribe((value) => (result = value));
+
+    const req = http.expectOne(
+      (r) =>
+        r.url === '/api/v1/schedule/availability' &&
+        r.params.get('specializationId') === '2' &&
+        r.params.get('from') === '2026-11-01' &&
+        r.params.get('to') === '2026-11-30' &&
+        !r.params.has('doctorId'),
+    );
+    expect(req.request.method).toBe('GET');
+    req.flush([{ id: 10, doctorId: 1, doctorFirstName: 'Luca', doctorLastName: 'Verdi',
+                 startTime: '2026-11-02T09:30:00', durationMinutes: 30, booked: false }]);
+
+    expect((result as { id: number }[])[0].id).toBe(10);
+  });
+
+  it('adds the doctor to the search only when there is one', () => {
+    service.searchAvailability({ specializationId: 2, doctorId: 7, from: '2026-11-01', to: '2026-11-30' }).subscribe();
+
+    const req = http.expectOne((r) => r.url === '/api/v1/schedule/availability' && r.params.get('doctorId') === '7');
+    req.flush([]);
   });
 });

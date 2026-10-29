@@ -1,38 +1,104 @@
 <div class="container-fluid py-4">
   <h1 class="h3 mb-4">Cerca disponibilità</h1>
 
-  <div class="row mb-4">
-    <div class="col-12 col-md-8 col-xl-5">
-      <app-alert-message [message]="error()" />
-      <app-alert-message [message]="success()" type="success" />
+  <app-alert-message [message]="error()" />
+  <app-alert-message [message]="success()" type="success" />
 
-      <form [formGroup]="form" (ngSubmit)="search()" novalidate>
-        <app-select-field inputId="specializationId" label="Specializzazione"
-                          [control]="form.controls.specializationId" [options]="specializationOptions()"
-                          errorText="Seleziona una specializzazione" />
-        <app-form-field inputId="date" label="Data" type="date"
-                        [control]="form.controls.date" errorText="Seleziona una data" />
-        <app-submit-button label="Cerca" [loading]="loading()" />
+  <div class="row mb-3">
+    <div class="col-12 col-md-8 col-xl-6">
+      <form [formGroup]="form" novalidate>
+        <div class="row">
+          <div class="col-12 col-sm-6">
+            <app-select-field inputId="specializationId" label="Specializzazione"
+                              [control]="form.controls.specializationId" [options]="specializationOptions()"
+                              errorText="Seleziona una specializzazione" />
+          </div>
+          <div class="col-12 col-sm-6">
+            <app-select-field inputId="doctorId" label="Medico"
+                              [control]="form.controls.doctorId" [options]="doctorOptions()" />
+          </div>
+        </div>
       </form>
     </div>
   </div>
 
-  @if (slots(); as list) {
-    @if (list.length === 0) {
-      <p class="text-muted">Nessuna disponibilità per la data e la specializzazione scelte.</p>
+  @if (!hasSpecialization()) {
+    <p class="text-muted no-specialization">Scegli una specializzazione per vedere le disponibilità.</p>
+  } @else {
+    <div class="btn-group mb-3" role="group" aria-label="Tipo di vista">
+      <button type="button" class="btn btn-sm list-view-button"
+              [class.btn-primary]="view() === 'list'" [class.btn-outline-primary]="view() !== 'list'"
+              (click)="setView('list')">Prossime disponibilità</button>
+      <button type="button" class="btn btn-sm calendar-view-button"
+              [class.btn-primary]="view() === 'calendar'" [class.btn-outline-primary]="view() !== 'calendar'"
+              (click)="setView('calendar')">Calendario</button>
+    </div>
+
+    @if (pendingSlot(); as slot) {
+      <div class="card border-primary mb-3">
+        <div class="card-body">
+          <p class="mb-3 confirm-text">
+            Prenotare la visita con <strong>{{ slot.doctorFirstName }} {{ slot.doctorLastName }}</strong>
+            {{ when(slot) }} ({{ slot.durationMinutes }} min)?
+          </p>
+          <button type="button" class="btn btn-primary me-2 confirm-button" [disabled]="booking()" (click)="confirmBooking()">Conferma</button>
+          <button type="button" class="btn btn-outline-secondary cancel-button" [disabled]="booking()" (click)="cancelBooking()">Annulla</button>
+        </div>
+      </div>
+    }
+
+    @if (view() === 'list') {
+      @if (listSlots().length === 0 && !loading()) {
+        <p class="text-muted no-results">
+          Nessuna disponibilità nei prossimi 30 giorni. Prova il calendario per guardare più avanti.
+        </p>
+      }
+      <ul class="list-group mb-3">
+        @for (slot of listSlots(); track slot.id) {
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <span>
+              <strong>{{ shortDayLabel(dayOf(slot.startTime)) }}, {{ timeOf(slot.startTime) }}</strong>
+              <span class="text-muted ms-2">{{ slot.doctorFirstName }} {{ slot.doctorLastName }} · {{ slot.durationMinutes }} min</span>
+            </span>
+            <button type="button" class="btn btn-sm btn-primary book-button" [disabled]="booking()" (click)="askBooking(slot)">Prenota</button>
+          </li>
+        }
+      </ul>
+      @if (hasMore()) {
+        <button type="button" class="btn btn-outline-primary btn-sm more-button" (click)="showMore()">Mostra altre</button>
+      }
     } @else {
-      <app-data-table [columns]="columns" [rows]="list" [rowKey]="rowKey" [filterable]="false">
-        <ng-template [appDataTableRow]="list" let-slot>
-          <tr>
-            <td>{{ slot.startTime | date: 'dd/MM/yyyy HH:mm' }}</td>
-            <td>{{ slot.doctorFirstName }} {{ slot.doctorLastName }}</td>
-            <td>{{ slot.durationMinutes }} min</td>
-            <td class="text-end">
-              <button type="button" class="btn btn-sm btn-primary" [disabled]="bookingSlotId() !== null" (click)="book(slot)">Prenota</button>
-            </td>
-          </tr>
-        </ng-template>
-      </app-data-table>
+      <div class="row">
+        <div class="col-12 col-lg-7 col-xl-5 mb-3">
+          <app-month-calendar [month]="month()" [summaries]="summaries()" [selectedDay]="selectedDay()"
+                              [minDay]="today" [onlyDaysWithSlots]="true"
+                              (monthChange)="changeMonth($event)" (daySelect)="selectDay($event)" />
+        </div>
+        <div class="col-12 col-lg-5 col-xl-4">
+          @if (selectedDay() === null) {
+            <p class="text-muted">Scegli un giorno per vedere gli orari.</p>
+          } @else {
+            <h2 class="h6 text-capitalize">{{ selectedDayLabel() }}</h2>
+            @for (group of dayGroups(); track group.name) {
+              <p class="mb-1 mt-2 fw-semibold">{{ group.name }}</p>
+              <div class="d-flex flex-wrap gap-2 mb-2">
+                @for (slot of group.slots; track slot.id) {
+                  <button type="button" class="btn btn-outline-primary btn-sm hour-button" [disabled]="booking()" (click)="askBooking(slot)">
+                    {{ timeOf(slot.startTime) }}
+                  </button>
+                }
+              </div>
+            }
+          }
+        </div>
+      </div>
+    }
+
+    @if (hiddenCount() > 0) {
+      <p class="text-muted small hidden-note">
+        {{ hiddenCount() === 1 ? '1 orario non è mostrato' : hiddenCount() + ' orari non sono mostrati' }}
+        perché hai già una visita.
+      </p>
     }
   }
 </div>
