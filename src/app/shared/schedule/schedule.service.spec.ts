@@ -32,17 +32,25 @@ describe('ScheduleService', () => {
     expect((result as { id: number }[])[0].id).toBe(10);
   });
 
-  it('creates a slot without a doctorId', () => {
+    it('reads the slots of the doctor in a range', () => {
+    service.getMySlots('2026-11-01', '2026-11-30').subscribe();
+
+    const req = http.expectOne((r) => r.url === '/api/v1/schedule/slots/me' && r.params.get('from') === '2026-11-01' && r.params.get('to') === '2026-11-30');
+    expect(req.request.method).toBe('GET');
+    req.flush([]);
+  });
+
+  it('creates many slots with a POST that carries the plan', () => {
     let result: unknown;
+    const request = { date: '2026-11-02', startTime: '09:00', endTime: '11:00', slotMinutes: 30 };
 
-    service.createSlot({ startTime: '2026-10-20T09:30:00', durationMinutes: 30, }).subscribe((value) => (result = value));
+    service.createSlots(request).subscribe((value) => (result = value));
 
-    const request = http.expectOne('/api/v1/schedule/slot');
-    expect(request.request.method).toBe('POST');
-    expect(request.request.body).toEqual({ startTime: '2026-10-20T09:30:00', durationMinutes: 30 });
+    const req = http.expectOne('/api/v1/schedule/slots/bulk');
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual(request);
+    req.flush([{ id: 1 }, { id: 2 }]);
 
-    request.flush({ id: 11, doctorId: 1, doctorFirstName: 'Luca', doctorLastName: 'Neri', startTime: '2026-10-20T09:30:00', durationMinutes: 30, booked: false });
-
-    expect((result as { id: number }).id).toBe(11);
+    expect((result as unknown[]).length).toBe(2);
   });
 });

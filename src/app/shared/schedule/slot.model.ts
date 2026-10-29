@@ -13,3 +13,10 @@ export interface CreateSlotRequest {
     startTime: string;
     durationMinutes: number;
 }
+
+export interface BulkSlotRequest {
+    date: string;
+    startTime: string;
+    endTime: string;
+    slotMinutes: number;
+}

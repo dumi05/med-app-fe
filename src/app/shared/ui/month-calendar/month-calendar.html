@@ -1,0 +1,49 @@
+<div class="month-calendar">
+  <div class="d-flex justify-content-between align-items-center mb-2">
+    <button type="button" class="btn btn-sm btn-outline-secondary prev-month" aria-label="Mese precedente"
+            [disabled]="!canGoBack()" (click)="monthChange.emit(-1)">&lsaquo;</button>
+    <strong class="text-capitalize month-title">{{ title() }}</strong>
+    <button type="button" class="btn btn-sm btn-outline-secondary next-month" aria-label="Mese successivo"
+            (click)="monthChange.emit(1)">&rsaquo;</button>
+  </div>
+
+  <table class="table table-bordered text-center align-middle mb-0">
+    <thead>
+      <tr>
+        @for (weekday of weekDays; track weekday) {
+          <th class="small text-muted text-uppercase fw-normal">{{ weekday }}</th>
+        }
+      </tr>
+    </thead>
+    <tbody>
+      @for (week of weeks(); track $index) {
+        <tr>
+          @for (day of week; track $index) {
+            <td class="p-1">
+              @if (day !== null) {
+                <button type="button" class="btn btn-sm w-100 day-button"
+                        [class.btn-primary]="day === selectedDay()"
+                        [class.btn-outline-secondary]="day !== selectedDay()"
+                        [attr.data-day]="day"
+                        [attr.aria-label]="ariaLabel(day)"
+                        [attr.aria-pressed]="day === selectedDay()"
+                        [disabled]="isDisabled(day)"
+                        (click)="daySelect.emit(day)">
+                  <span class="d-block">{{ dayNumber(day) }}</span>
+                  <span class="d-block markers">
+                    @if (summary(day).free > 0) {
+                      <span class="badge text-bg-success free-badge">{{ summary(day).free }}</span>
+                    }
+                    @if (summary(day).booked > 0) {
+                      <span class="badge text-bg-info booked-badge">{{ summary(day).booked }}</span>
+                    }
+                  </span>
+                </button>
+              }
+            </td>
+          }
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

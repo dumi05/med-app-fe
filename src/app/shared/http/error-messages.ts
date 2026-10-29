@@ -11,7 +11,9 @@ const MESSAGES: Record<string,string> = {
     VALIDATION_FAILED: "Controlla i campi evidenziati e riprova.",
     INVALID_CREDENTIALS: "Email o password non corrette.",
     CONCURRENT_MODIFICATION: "La risorsa e' stata modificata da un altro utente. Riprova.",
-    UNAUTHENTICATED: "Autenticazione non riuscita."
+    UNAUTHENTICATED: "Autenticazione non riuscita.",
+    SLOT_OVERLAP: "Esistono gia' slot in quella fascia oraria.",
+    APPOINTMENT_OVERLAP: "Hai gia' una prenotazione in quella fascia oraria."
 };
 
 export function userMessage(error: ApiError): string {

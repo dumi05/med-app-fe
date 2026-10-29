@@ -1,18 +1,69 @@
 <div class="container-fluid py-4">
   <h1 class="h3 mb-4">Agenda</h1>
 
-  <div class="row">
-    <div class="col-12 col-md-8 col-xl-5">
-      <h2 class="h5 mb-3">Nuovo slot di disponibilità</h2>
+  <app-alert-message [message]="error()" />
+  <app-alert-message [message]="success()" type="success" />
 
-      <app-alert-message [message]="error()" />
-      <app-alert-message [message]="success()" type="success" />
+  <div class="row g-4">
+    <div class="col-12 col-lg-7">
+      <app-month-calendar [month]="month()" [summaries]="summaries()" [selectedDay]="selectedDay()"
+                          (monthChange)="changeMonth($event)" (daySelect)="selectDay($event)" />
+      <p class="small text-muted mt-2 mb-4">
+        <span class="badge text-bg-success">n</span> posti liberi
+        <span class="badge text-bg-info ms-2">n</span> prenotati
+      </p>
+
+      @if (selectedDay() !== null) {
+        <h2 class="h5 text-capitalize">{{ selectedDayLabel() }}</h2>
+        @if (daySlots().length === 0) {
+          <p class="text-muted no-slots">Nessuno slot in questo giorno.</p>
+        } @else {
+          <ul class="list-group mb-3">
+            @for (slot of daySlots(); track slot.id) {
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span>{{ timeRange(slot) }}</span>
+                @if (slot.booked) {
+                  <span><span class="badge text-bg-info me-2">Prenotato</span><a routerLink="/doctor/visits">Le mie visite</a></span>
+                } @else {
+                  <span class="badge text-bg-success">Libero</span>
+                }
+              </li>
+            }
+          </ul>
+        }
+      }
+    </div>
+
+    <div class="col-12 col-lg-5">
+      <h2 class="h5 mb-3">Crea slot</h2>
+      <p class="text-muted small">
+        Scegli un giorno e una fascia oraria: gli slot vengono creati uno dopo l'altro, della durata indicata.
+      </p>
 
       <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
-        <app-form-field inputId="startTime" label="Data e ora" type="datetime-local"
-                        [control]="form.controls.startTime" errorText="Seleziona data e ora" />
-        <app-form-field inputId="durationMinutes" label="Durata (minuti)" type="number"
-                        [control]="form.controls.durationMinutes" errorText="Inserisci una durata maggiore di zero" />
+        <app-form-field inputId="date" label="Data" type="date"
+                        [control]="form.controls.date" errorText="Seleziona la data" />
+        <div class="row">
+          <div class="col-6">
+            <app-form-field inputId="startTime" label="Dalle" type="time"
+                            [control]="form.controls.startTime" errorText="Indica l'ora di inizio" />
+          </div>
+          <div class="col-6">
+            <app-form-field inputId="endTime" label="Alle" type="time"
+                            [control]="form.controls.endTime" errorText="Indica l'ora di fine" />
+          </div>
+        </div>
+        <app-form-field inputId="slotMinutes" label="Durata di ogni visita (minuti)" type="number"
+                        [control]="form.controls.slotMinutes" errorText="Indica la durata" />
+
+        @if (blocker(); as text) {
+          <p class="text-danger small problem">{{ text }}</p>
+        } @else if (preview().length > 0) {
+          <p class="small preview">
+            Verranno creati <strong>{{ preview().length }}</strong> slot: {{ previewText() }}
+          </p>
+        }
+
         <app-submit-button label="Crea slot" [loading]="loading()" />
       </form>
     </div>

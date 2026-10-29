@@ -14,5 +14,11 @@ describe('userMessage', () => {
     });
     it('returns a specific message when the resource was modified by someone else', () => {
         expect(userMessage({ status: 409, code: 'CONCURRENT_MODIFICATION', message: 'test'})).toContain('modificata');
-    })
+    });
+        it('explains that the slots of the doctor overlap', () => {
+        expect(userMessage({ status: 409, code: 'SLOT_OVERLAP', message: 'x'})).toContain('Esistono gia');
+    });
+    it('explains that the patient already has a visit at that time', () => {
+        expect(userMessage({ status: 409, code: 'APPOINTMENT_OVERLAP', message: 'x'})).toContain('Hai gia');
+    });
 })
