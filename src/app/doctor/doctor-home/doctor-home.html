@@ -1,3 +1,59 @@
-<div class="container py-4">
-    <h1 class="h3">Area Dottore</h1>
+<div class="container-fluid py-4">
+  <h1 class="h3 mb-4">La tua giornata</h1>
+
+  @for (message of errors(); track $index) {
+    <div class="alert alert-danger" role="alert">{{ message }}</div>
+  }
+
+  @if (pendingDelegations(); as pending) {
+    <div class="alert alert-info d-flex justify-content-between align-items-center pending-delegations" role="alert">
+      <span>{{ pending === 1 ? 'Hai 1 delega da accettare.' : 'Hai ' + pending + ' deleghe da accettare.' }}</span>
+      <a routerLink="/doctor/delegations">Vai a «Deleghe»</a>
+    </div>
+  }
+  @if (freeSlots() === 0 && slots() !== null) {
+    <div class="alert alert-warning d-flex justify-content-between align-items-center no-free-slots" role="alert">
+      <span>Non hai posti liberi nei prossimi 7 giorni.</span>
+      <a routerLink="/doctor/schedule">Apri l'agenda</a>
+    </div>
+  }
+
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-lg-3">
+      <app-stat-card label="Visite di oggi" [value]="todayVisits().length" link="/doctor/visits" linkLabel="Le mie visite" />
+    </div>
+    <div class="col-6 col-lg-3">
+      <app-stat-card label="Da completare" [value]="toComplete()" hint="visite già iniziate" link="/doctor/visits" linkLabel="Le mie visite" />
+    </div>
+    <div class="col-6 col-lg-3">
+      <app-stat-card label="Da refertare" [value]="toReport()" hint="visite completate" link="/doctor/visits" linkLabel="Le mie visite" />
+    </div>
+    <div class="col-6 col-lg-3">
+      <app-stat-card label="Posti liberi" [value]="freeSlots()" hint="nei prossimi 7 giorni" link="/doctor/schedule" linkLabel="Agenda" />
+    </div>
+  </div>
+
+  <h2 class="h5 mb-3">Visite di oggi</h2>
+  @if (appointments() !== null) {
+    @if (todayVisits().length === 0) {
+      <p class="text-muted no-visits-today">Nessuna visita oggi.</p>
+    } @else {
+      <ul class="list-group mb-4">
+        @for (appointment of todayVisits(); track appointment.id) {
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <span>
+              <strong>{{ timeOf(appointment.slot.startTime) }}</strong>
+              <span class="ms-2">{{ appointment.patientFirstName }} {{ appointment.patientLastName }}</span>
+            </span>
+            @if (appointment.noShowRisk) {
+              <span class="badge text-bg-warning">Rischio no-show</span>
+            }
+          </li>
+        }
+      </ul>
+    }
+  }
+
+  <h2 class="h5 mb-3">Scorciatoie</h2>
+  <app-shortcuts role="DOCTOR" />
 </div>

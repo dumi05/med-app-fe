@@ -1,3 +1,72 @@
-<div class="container py-4">
-    <h1 class="h3">Area Admin</h1>
+<div class="container-fluid py-4">
+  <h1 class="h3 mb-4">Panoramica dello studio</h1>
+
+  @if (kpiError(); as message) {
+    <div class="alert alert-danger kpi-error" role="alert">{{ message }}</div>
+  }
+  @if (kpi(); as data) {
+    <div class="row g-3 mb-4">
+      <div class="col-6 col-lg-3">
+        <app-stat-card label="Visite totali" [value]="data.totalAppointments" link="/admin/dashboard" linkLabel="Dashboard" />
+      </div>
+      <div class="col-6 col-lg-3">
+        <app-stat-card label="Ricavi" [value]="formatEuro(data.totalRevenue)" link="/admin/dashboard" linkLabel="Dashboard" />
+      </div>
+      <div class="col-6 col-lg-3">
+        <app-stat-card label="Presenze" [value]="formatPercent(data.attendanceRate)" hint="visite effettuate su quelle passate" link="/admin/dashboard" linkLabel="Dashboard" />
+      </div>
+      <div class="col-6 col-lg-3">
+        <app-stat-card label="A rischio no-show" [value]="data.upcomingAtRisk" hint="visite future" link="/admin/dashboard" linkLabel="Dashboard" />
+      </div>
+    </div>
+  }
+
+  <div class="row g-3 mb-4">
+    <div class="col-12 col-lg-6">
+      @if (doctorsError(); as message) {
+        <div class="alert alert-danger doctors-error" role="alert">{{ message }}</div>
+      } @else if (doctors() !== null) {
+        <app-stat-card label="Medici" [value]="activeDoctors() + ' attivi'"
+                       [hint]="inactiveDoctors() === 1 ? '1 disattivato' : inactiveDoctors() + ' disattivati'"
+                       link="/admin/doctors" linkLabel="Gestisci i medici" />
+      }
+    </div>
+  </div>
+
+  <h2 class="h5 mb-3">Ultime attività</h2>
+  @if (activityError(); as message) {
+    <div class="alert alert-danger activity-error" role="alert">{{ message }}</div>
+  } @else if (activity() !== null) {
+    @if (activity()!.length === 0) {
+      <p class="text-muted no-activity">Nessuna attività registrata.</p>
+    } @else {
+      <div class="table-responsive mb-4">
+        <table class="table table-sm align-middle activity-table">
+          <thead>
+            <tr><th>Quando</th><th>Utente</th><th>Azione</th><th>Su</th><th>Esito</th></tr>
+          </thead>
+          <tbody>
+            @for (entry of activity(); track entry.id) {
+              <tr>
+                <td class="text-nowrap">{{ entry.occurredAt | date: 'dd/MM/yyyy HH:mm' }}</td>
+                <td>{{ entry.userEmail }}</td>
+                <td>{{ actionLabel(entry.action) }}</td>
+                <td class="text-muted">{{ record(entry) }}</td>
+                <td>
+                  @if (entry.outcome === 'SUCCESS') {
+                    <span class="badge text-bg-success">Riuscito</span>
+                  } @else {
+                    <span class="badge text-bg-danger" [title]="entry.failureReason ?? ''">Negato</span>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  }
+
+  <h2 class="h5 mb-3">Scorciatoie</h2>
+  <app-shortcuts role="ADMIN" />
 </div>

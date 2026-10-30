@@ -1,4 +1,4 @@
-import { formatEuro, formatPercent, formatDateTime, formatDate, todayIso } from './format';
+import { formatEuro, formatPercent, formatDateTime, formatDate, todayIso, nowIso } from './format';
 
 describe('format', () => {
     const plain = (text: string) => text.replace(/\s/g, ' ');
@@ -23,5 +23,11 @@ describe('format', () => {
         jasmine.clock().mockDate(new Date(2026, 9, 5, 23, 30));
         expect(todayIso()).toBe('2026-10-05');
         jasmine.clock().uninstall();
-    })
+    });
+    it('returns now as yyyy-MM-ddTHH:mm:ss in the local time zone', () => {
+        jasmine.clock().install();
+        jasmine.clock().mockDate(new Date(2026, 9, 5, 9, 7, 3));
+        expect(nowIso()).toBe('2026-10-05T09:07:03');
+        jasmine.clock().uninstall();
+    });
 });

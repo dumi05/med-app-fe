@@ -1,3 +1,57 @@
-<div class="container py-4">
-    <h1 class="h3">Area Paziente</h1>
+<div class="container-fluid py-4">
+  <h1 class="h3 mb-4">Il tuo spazio</h1>
+
+  <app-alert-message [message]="error()" />
+
+  <div class="row g-4 mb-4">
+    <div class="col-12 col-lg-6">
+      <div class="card h-100">
+        <div class="card-body">
+          <h2 class="h5">Prossima visita</h2>
+          @if (appointments() === null) {
+            <p class="text-muted mb-0">&nbsp;</p>
+          } @else if (nextVisit(); as visit) {
+            <p class="mb-1 next-visit">
+              <strong class="text-capitalize">{{ when(visit) }}</strong>
+            </p>
+            <p class="text-muted">
+              con {{ visit.slot.doctorFirstName }} {{ visit.slot.doctorLastName }} · {{ visit.slot.durationMinutes }} min
+            </p>
+            <a class="btn btn-outline-primary btn-sm" routerLink="/patient/appointments">Le mie prenotazioni</a>
+          } @else {
+            <p class="text-muted no-next-visit">Non hai visite prenotate.</p>
+            <a class="btn btn-primary btn-sm" routerLink="/patient/availability">Cerca disponibilità</a>
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-lg-6">
+      <div class="card h-100">
+        <div class="card-body">
+          <h2 class="h5">Ultimi referti</h2>
+          @if (appointments() === null) {
+            <p class="text-muted mb-0">&nbsp;</p>
+          } @else if (latestReports().length === 0) {
+            <p class="text-muted mb-0 no-reports">Non hai ancora referti.</p>
+          } @else {
+            <ul class="list-group list-group-flush">
+              @for (appointment of latestReports(); track appointment.id) {
+                <li class="list-group-item px-0 d-flex justify-content-between align-items-center">
+                  <span>
+                    {{ formatDate(appointment.slot.startTime) }}
+                    <span class="text-muted">· {{ appointment.slot.doctorFirstName }} {{ appointment.slot.doctorLastName }}</span>
+                  </span>
+                  <a class="btn btn-sm btn-outline-primary" [routerLink]="['/patient/appointments', appointment.id, 'report']">Vedi referto</a>
+                </li>
+              }
+            </ul>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="h5 mb-3">Scorciatoie</h2>
+  <app-shortcuts role="PATIENT" />
 </div>
