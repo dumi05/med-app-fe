@@ -116,14 +116,14 @@ describe('ReportDelegations', () => {
     req.flush(delegation(9, { includeAttachments: true }));
     fixture.detectChanges();
 
-    expect(rows()[0].textContent).toContain('Sì');
+    expect(rows()[0].textContent).toContain('Si');
     expect(box.checked).toBeFalse();
   });
 
   it('says in the table which delegations include the attachments', () => {
     open([delegation(1, { includeAttachments: true }), delegation(2)]);
 
-    expect(rows()[0].querySelectorAll('td')[2].textContent).toBe('Sì');
+    expect(rows()[0].querySelectorAll('td')[2].textContent).toBe('Si');
     expect(rows()[1].querySelectorAll('td')[2].textContent).toBe('No');
   });
 
@@ -172,7 +172,7 @@ describe('ReportDelegations', () => {
 
     const req = http.expectOne('/api/v1/report-delegations');
     expect(req.request.method).toBe('POST');
-    expect(req.request.body).toEqual({ delegateName: 'Anna Neri', delegateEmail: 'anna@example.com', expiresAt: '2099-06-30' });
+    expect(req.request.body).toEqual({ delegateName: 'Anna Neri', delegateEmail: 'anna@example.com', expiresAt: '2099-06-30', includeAttachments: false });
     req.flush(delegation(9, { delegateName: 'Anna Neri', token: 'new-token' }));
     fixture.detectChanges();
 

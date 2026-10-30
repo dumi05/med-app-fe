@@ -41,7 +41,7 @@ export class Doctors implements OnInit {
     { header: 'Nome', value: (doctor) => doctor.firstName },
     { header: 'Email', value: (doctor) => doctor.email },
     { header: 'Specializzazione', value: (doctor) => doctor.specialization },
-    { header: 'Delega', value: (doctor) => (doctor.delegationConsent ? 'Sì' : 'No') },
+    { header: 'Delega', value: (doctor) => (doctor.delegationConsent ? 'Si' : 'No') },
     { header: 'Stato', value: (doctor) => (doctor.active ? 'Attivo' : 'Disattivato') },
     { header: '' },
   ];

@@ -8,19 +8,19 @@ export const ATTACHMENT_ACCEPT = '.pdf,image/jpeg,image/png';
 
 const TYPE_NAMES: Record<string, string> = {
     'application/pdf': 'PDF',
-    'image/jpeg': 'JPG',
+    'image/jpeg': 'JPEG',
     'image/png': 'PNG'
 };
 
 export function attachmentProblem(file: File): string | null {
     if(!Object.hasOwn(TYPE_NAMES, file.type)) {
-        return 'Sono ammessi solo file PDF, JPG, PNG.';
+        return 'Sono ammessi solo file PDF, JPEG e PNG.';
     }
     if(file.size === 0){
         return 'Il file è vuoto.';
     }
     if(file.size > MAX_ATTACHMENT_BYTES){
-        return 'Il file super la dimensione massima di 10 MB.';
+        return 'Il file supera la dimensione massima di 10 MB.';
     }
     return null;
 }

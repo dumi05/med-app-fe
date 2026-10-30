@@ -10,7 +10,6 @@ import { ReportDelegation } from "../../shared/delegation/report-delegation.mode
 import { userMessage } from "../../shared/http/error-messages";
 import { ApiError } from "../../shared/http/api-error";
 import { delegationLink } from "../../shared/delegation/delegation-link";
-import { AdminHome } from "../../admin/admin-home/admin-home";
 
 function notInThePast(control: AbstractControl<string>): ValidationErrors | null {
     return control.value !== '' && control.value < todayIso() ? { past: true } : null;
@@ -18,7 +17,7 @@ function notInThePast(control: AbstractControl<string>): ValidationErrors | null
 
 @Component({
     selector: 'app-report-delegations',
-    imports: [ReactiveFormsModule, DataTable, DataTableRow, AlertMessage, FormField, SubmitButton, AdminHome],
+    imports: [ReactiveFormsModule, DataTable, DataTableRow, AlertMessage, FormField, SubmitButton],
     templateUrl: './report-delegations.html'
 })
 export class ReportDelegations implements OnInit {
