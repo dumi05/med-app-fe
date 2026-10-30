@@ -8,7 +8,7 @@ import { AuthService } from '../../auth/auth.service';
 import { errorInterceptor } from '../../http/error.interceptor';
 import { AppointmentReport } from './appointment-report';
 
-const REPORT = { id: 3, appointmentId: 5, diagnosisText: 'Nessun rilievo.', attachmentUrl: null,
+const REPORT = { id: 3, appointmentId: 5, diagnosisText: 'Nessun rilievo.', attachment: null,
                  completedAt: '2026-10-20T09:45:00' };
 const LOOKUP = (r: { url: string; params: { get(k: string): string | null } }) =>
   r.url === '/api/v1/medical-reports' && r.params.get('appointmentId') === '5';
@@ -45,6 +45,15 @@ describe('AppointmentReport', () => {
     const field = element().querySelector('#diagnosisText') as HTMLTextAreaElement;
     field.value = value;
     field.dispatchEvent(new Event('input'));
+  };
+
+  const chooseFile = (file: File) => {
+    const input = element().querySelector('#attachment') as HTMLInputElement;
+    const transfer = new DataTransfer();
+    transfer.items.add(file);
+    input.files = transfer.files;
+    input.dispatchEvent(new Event('change'));
+    fixture.detectChanges();
   };
 
   const submit = () => {
@@ -92,7 +101,7 @@ describe('AppointmentReport', () => {
     expect(element().querySelector('#diagnosisText')!.classList.contains('is-invalid')).toBeTrue();
   });
 
-  it('sends the report, then shows it with a confirmation', () => {
+  it('sends the report, then shows it with a confirmation', async () => {
     open('DOCTOR');
     notFound();
     fixture.detectChanges();
@@ -102,7 +111,9 @@ describe('AppointmentReport', () => {
 
     const req = http.expectOne('/api/v1/medical-reports');
     expect(req.request.method).toBe('POST');
-    expect(req.request.body).toEqual({ appointmentId: 5, diagnosisText: 'Nessun rilievo.' });
+    const body = req.request.body as FormData;
+    expect(JSON.parse(await (body.get('report') as Blob).text())).toEqual({ appointmentId: 5, diagnosisText: 'Nessun rilievo.' });
+    expect(body.has('file')).toBeFalse();
     req.flush(REPORT);
     fixture.detectChanges();
 
@@ -125,6 +136,91 @@ describe('AppointmentReport', () => {
     fixture.detectChanges();
 
     expect(element().querySelector('.alert-danger')?.textContent).toContain('Operazione non consentita');
+    expect(element().querySelector('form')).not.toBeNull();
+  });
+
+  // ---- the attachment -------------------------------------------------------------------------
+
+  it('offers a file chooser that is limited to PDF, JPEG and PNG', () => {
+    open('DOCTOR');
+    notFound();
+    fixture.detectChanges();
+
+    const input = element().querySelector('#attachment') as HTMLInputElement;
+    expect(input.type).toBe('file');
+    expect(input.accept).toBe('.pdf,image/jpeg,image/png');
+  });
+
+  it('sends the chosen file together with the report', () => {
+    open('DOCTOR');
+    notFound();
+    fixture.detectChanges();
+
+    setDiagnosis('Nessun rilievo.');
+    chooseFile(new File(['%PDF-1.4'], 'esame.pdf', { type: 'application/pdf' }));
+    submit();
+
+    const req = http.expectOne('/api/v1/medical-reports');
+    const sent = (req.request.body as FormData).get('file') as File;
+    expect(sent.name).toBe('esame.pdf');
+    req.flush({ ...REPORT, attachment: { contentType: 'application/pdf', sizeBytes: 8 } });
+    fixture.detectChanges();
+
+    expect(element().textContent).toContain('Scarica allegato');
+  });
+
+  it('refuses a file of another type at once, with the reason, and does not send it', () => {
+    open('DOCTOR');
+    notFound();
+    fixture.detectChanges();
+
+    setDiagnosis('Nessun rilievo.');
+    chooseFile(new File(['MZ'], 'virus.exe', { type: 'application/x-msdownload' }));
+
+    expect(element().querySelector('#attachment + .invalid-feedback')?.textContent).toContain('Sono ammessi solo file PDF, JPEG e PNG.');
+    expect((element().querySelector('#attachment') as HTMLInputElement).value).toBe('');
+
+    submit();
+    const req = http.expectOne('/api/v1/medical-reports');
+    expect((req.request.body as FormData).has('file')).toBeFalse();
+    req.flush(REPORT);
+  });
+
+  it('refuses a file over 10 MB at once', () => {
+    open('DOCTOR');
+    notFound();
+    fixture.detectChanges();
+
+    chooseFile(new File([new Uint8Array(10 * 1024 * 1024 + 1)], 'grande.pdf', { type: 'application/pdf' }));
+
+    expect(element().querySelector('#attachment + .invalid-feedback')?.textContent).toContain('10 MB');
+  });
+
+  it('forgets the problem when a good file is chosen afterwards', () => {
+    open('DOCTOR');
+    notFound();
+    fixture.detectChanges();
+
+    chooseFile(new File(['MZ'], 'virus.exe', { type: 'application/x-msdownload' }));
+    chooseFile(new File(['%PDF-1.4'], 'esame.pdf', { type: 'application/pdf' }));
+
+    expect(element().querySelector('#attachment + .invalid-feedback')).toBeNull();
+    expect(element().querySelector('#attachment')!.classList).not.toContain('is-invalid');
+  });
+
+  it('shows the Italian message when the backend says that the file is too large', () => {
+    open('DOCTOR');
+    notFound();
+    fixture.detectChanges();
+
+    setDiagnosis('Nessun rilievo.');
+    chooseFile(new File(['%PDF-1.4'], 'esame.pdf', { type: 'application/pdf' }));
+    submit();
+    http.expectOne('/api/v1/medical-reports').flush(
+      { code: 'FILE_TOO_LARGE', message: 'x', timestamp: 'x' }, { status: 413, statusText: 'Payload Too Large' });
+    fixture.detectChanges();
+
+    expect(element().querySelector('.alert-danger')?.textContent).toContain('10 MB');
     expect(element().querySelector('form')).not.toBeNull();
   });
 

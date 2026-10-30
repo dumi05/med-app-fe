@@ -13,7 +13,8 @@ const MESSAGES: Record<string,string> = {
     CONCURRENT_MODIFICATION: "La risorsa e' stata modificata da un altro utente. Riprova.",
     UNAUTHENTICATED: "Autenticazione non riuscita.",
     SLOT_OVERLAP: "Esistono gia' slot in quella fascia oraria.",
-    APPOINTMENT_OVERLAP: "Hai gia' una prenotazione in quella fascia oraria."
+    APPOINTMENT_OVERLAP: "Hai gia' una prenotazione in quella fascia oraria.",
+    FILE_TOO_LARGE: "Il file supera la dimensione massima di 10 MB."
 };
 
 export function userMessage(error: ApiError): string {

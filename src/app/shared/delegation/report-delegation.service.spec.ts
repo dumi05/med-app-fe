@@ -16,7 +16,7 @@ describe('ReportDelegationService', () => {
     afterEach(() => http.verify());
 
     it('creates a delegation with a POST that carries the body', () => {
-        const request = { delegateName: 'Luigi Neri', delegateEmail: 'luigi@example.com', expiresAt: null };
+        const request = { delegateName: 'Luigi Neri', delegateEmail: 'luigi@example.com', expiresAt: null, includeAttachments: true };
         service.create(request).subscribe();
 
         const req = http.expectOne('/api/v1/report-delegations');
@@ -54,5 +54,20 @@ describe('ReportDelegationService', () => {
     it('encodes the token, so that it can never change the path', () => {
         service.getSharedReports('a/b?c').subscribe();
         http.expectOne('/api/v1/report-delegations/a%2Fb%3Fc/medical-reports').flush([]);
+    });
+    it('downloads a shared attachment with the token and the report in the path', () => {
+        let type = '';
+        service.downloadSharedAttachment('abcd-123', 7).subscribe((response) => (type = response.body!.type));
+
+        const req = http.expectOne('/api/v1/report-delegations/abcd-123/medical-reports/7/attachment');
+        expect(req.request.method).toBe('GET');
+        expect(req.request.responseType).toBe('blob');
+        req.flush(new Blob(['%PDF-1.4'], { type: 'application/pdf' }));
+
+        expect(type).toBe('application/pdf');
+    });
+    it('encodes the token of a download, too', () => {
+        service.downloadSharedAttachment('a/b?c', 7).subscribe();
+        http.expectOne('/api/v1/report-delegations/a%2Fb%3Fc/medical-reports/7/attachment').flush(new Blob(['x']));
     });
 });

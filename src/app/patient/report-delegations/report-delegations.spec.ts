@@ -96,6 +96,37 @@ describe('ReportDelegations', () => {
     expect(rows()[2].querySelector('button')).toBeNull();
   });
 
+    it('does not include the attachments unless the patient chooses to', () => {
+    open([]);
+
+    const box = element().querySelector('#includeAttachments') as HTMLInputElement;
+    expect(box.type).toBe('checkbox');
+    expect(box.checked).toBeFalse();
+  });
+
+  it('sends the choice of including the attachments', () => {
+    open([]);
+    fillInTheForm();
+    const box = element().querySelector('#includeAttachments') as HTMLInputElement;
+    box.click();
+    submit();
+
+    const req = http.expectOne('/api/v1/report-delegations');
+    expect(req.request.body.includeAttachments).toBeTrue();
+    req.flush(delegation(9, { includeAttachments: true }));
+    fixture.detectChanges();
+
+    expect(rows()[0].textContent).toContain('Sì');
+    expect(box.checked).toBeFalse();
+  });
+
+  it('says in the table which delegations include the attachments', () => {
+    open([delegation(1, { includeAttachments: true }), delegation(2)]);
+
+    expect(rows()[0].querySelectorAll('td')[2].textContent).toBe('Sì');
+    expect(rows()[1].querySelectorAll('td')[2].textContent).toBe('No');
+  });
+
   it('shows the Italian message when the list cannot be loaded', () => {
     fixture = TestBed.createComponent(ReportDelegations);
     fixture.detectChanges();

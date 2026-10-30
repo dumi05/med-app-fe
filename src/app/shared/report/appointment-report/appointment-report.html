@@ -17,9 +17,16 @@
                     <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
                         <app-form-field inputId="diagnosisText" label="Diagnosi e indicazioni" type="textarea"
                             [control]="form.controls.diagnosisText" errorText="Inserisci il testo del referto (massimo 5000 caratteri)"/>
-                        <app-form-field inputId="attachmentUrl" label="Link all'allegato (facoltativo)" type="textarea"
-                            [control]="form.controls.attachmentUrl" errorText="Massimo 255 caratteri"/>
-                        <app-submit-button label="Salva referto" [loading]="loading()"/> 
+                        <div class="mb-3">
+                            <label for="attachment" class="form-label">Allegato (facoltativo)</label>
+                            <input id="attachment" type="file" class="form-control" [accept]="accept"
+                                [class.is-invalid]="fileError() !== null" (change)="chooseFile($event)"/>
+                            @if (fileError(); as problem) {
+                                <div class="invalid-feedback">{{ problem }}</div>
+                            }
+                            <div class="form-text">PDF, JPEG o PNG, al massimo 10 MB. Dopo il salvataggio il referto e il suo allegato non si possono più modificare.</div>
+                        </div>
+                        <app-submit-button label="Salva referto" [loading]="loading()"/>
                     </form>
                 }
                 @case('missing') {

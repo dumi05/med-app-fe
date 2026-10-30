@@ -7,8 +7,8 @@ import { errorInterceptor } from '../../shared/http/error.interceptor';
 import { DelegationReports } from './delegation-reports';
 
 const REPORT = {
-  visitDate: '2026-10-20T09:30:00', doctorFirstName: 'Giulia', doctorLastName: 'Verdi', specialization: 'Cardiologia',
-  diagnosisText: 'Nessuna criticità riscontrata.', attachmentUrl: null, completedAt: '2026-10-20T10:15:00Z',
+  id: 7, visitDate: '2026-10-20T09:30:00', doctorFirstName: 'Giulia', doctorLastName: 'Verdi', specialization: 'Cardiologia',
+  diagnosisText: 'Nessuna criticità riscontrata.', attachmentAvailable: false, completedAt: '2026-10-20T10:15:00Z',
 };
 
 describe('DelegationReports', () => {
@@ -55,13 +55,43 @@ describe('DelegationReports', () => {
     expect(text).toContain('Nessuna criticità riscontrata.');
   });
 
-  it('shows the attachment link only when there is an attachment, safe for the token in the address', () => {
-    answer([REPORT, { ...REPORT, completedAt: '2026-10-21T10:15:00Z', attachmentUrl: 'https://files.example/referto.pdf' }]);
+  it('shows the download button only for the reports whose attachment is available', () => {
+    answer([REPORT, { ...REPORT, id: 8, attachmentAvailable: true }]);
 
-    const links = element().querySelectorAll('a');
-    expect(links.length).toBe(1);
-    expect(links[0].getAttribute('href')).toBe('https://files.example/referto.pdf');
-    expect(links[0].getAttribute('rel')).toContain('noreferrer');
+    const buttons = element().querySelectorAll('.download-button');
+    expect(buttons.length).toBe(1);
+    expect(element().querySelectorAll('.card')[1].contains(buttons[0])).toBeTrue();
+  });
+
+  it('downloads the attachment of the report with the token in the address', () => {
+    const clicked: HTMLAnchorElement[] = [];
+    spyOn(URL, 'createObjectURL').and.returnValue('blob:test');
+    spyOn(URL, 'revokeObjectURL');
+    spyOn(HTMLAnchorElement.prototype, 'click').and.callFake(function (this: HTMLAnchorElement) {
+      clicked.push(this);
+    });
+    answer([{ ...REPORT, id: 8, attachmentAvailable: true }]);
+
+    (element().querySelector('.download-button') as HTMLButtonElement).click();
+    http.expectOne('/api/v1/report-delegations/abc-123/medical-reports/8/attachment').flush(
+      new Blob(['%PDF-1.4']), { headers: { 'Content-Disposition': 'attachment; filename="referto-8.pdf"' } });
+    fixture.detectChanges();
+
+    expect(clicked.length).toBe(1);
+    expect(clicked[0].download).toBe('referto-8.pdf');
+    expect(element().querySelector('.alert-danger')).toBeNull();
+  });
+
+  it('says that the attachment is not available when the server answers 404, and keeps the reports on screen', () => {
+    answer([{ ...REPORT, id: 8, attachmentAvailable: true }]);
+
+    (element().querySelector('.download-button') as HTMLButtonElement).click();
+    http.expectOne('/api/v1/report-delegations/abc-123/medical-reports/8/attachment').flush(
+      new Blob(['{}']), { status: 404, statusText: 'Not Found' });
+    fixture.detectChanges();
+
+    expect(element().querySelector('.alert-danger')?.textContent).toContain('non è disponibile');
+    expect(element().querySelector('.card')).not.toBeNull();
   });
 
   it('says so when there are no reports yet', () => {

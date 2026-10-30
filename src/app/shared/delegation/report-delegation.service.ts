@@ -1,4 +1,4 @@
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpResponse } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { CreateReportDelegationRequest, ReportDelegation, SharedMedicalReport } from "./report-delegation.model";
 import { Observable } from "rxjs";
@@ -22,5 +22,10 @@ export class ReportDelegationService {
 
     getSharedReports(token: string): Observable<SharedMedicalReport[]> {
         return this.http.get<SharedMedicalReport[]>(`${API_BASE}/report-delegations/${encodeURIComponent(token)}/medical-reports`);
+    }
+
+    downloadSharedAttachment(token: string, reportId: number): Observable<HttpResponse<Blob>> {
+        return this.http.get(`${API_BASE}/report-delegations/${encodeURIComponent(token)}/medical-reports/${reportId}/attachment`,
+                    { responseType: 'blob', observe: 'response'});
     }
 }

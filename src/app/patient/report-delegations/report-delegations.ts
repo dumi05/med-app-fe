@@ -10,6 +10,7 @@ import { ReportDelegation } from "../../shared/delegation/report-delegation.mode
 import { userMessage } from "../../shared/http/error-messages";
 import { ApiError } from "../../shared/http/api-error";
 import { delegationLink } from "../../shared/delegation/delegation-link";
+import { AdminHome } from "../../admin/admin-home/admin-home";
 
 function notInThePast(control: AbstractControl<string>): ValidationErrors | null {
     return control.value !== '' && control.value < todayIso() ? { past: true } : null;
@@ -17,7 +18,7 @@ function notInThePast(control: AbstractControl<string>): ValidationErrors | null
 
 @Component({
     selector: 'app-report-delegations',
-    imports: [ReactiveFormsModule, DataTable, DataTableRow, AlertMessage, FormField, SubmitButton],
+    imports: [ReactiveFormsModule, DataTable, DataTableRow, AlertMessage, FormField, SubmitButton, AdminHome],
     templateUrl: './report-delegations.html'
 })
 export class ReportDelegations implements OnInit {
@@ -37,12 +38,14 @@ export class ReportDelegations implements OnInit {
     protected readonly form = this.formBuilder.group({
         delegateName: ['', Validators.required],
         delegateEmail: ['', [Validators.required, Validators.email]],
-        expiresAt: ['', notInThePast]
+        expiresAt: ['', notInThePast],
+        includeAttachments: [false]
     });
 
     protected readonly columns: DataTableColumn<ReportDelegation>[] = [
         { header: 'Persona', value:(d) => d.delegateName, text: (d) => `${d.delegateName} ${d.delegateEmail}`},
         { header: 'Scadenza', value:(d) => d.expiresAt ?? '9999-12-31', text: (d) => this.expiry(d) },
+        { header: 'Allegati', value: (d) => d.includeAttachments ? 'Si' : 'No'},
         { header: 'Stato', value:(d) => this.statusView(d).label },
         { header: ''}
     ];
@@ -72,11 +75,11 @@ export class ReportDelegations implements OnInit {
             return;
         }
 
-        const { delegateName, delegateEmail, expiresAt } = this.form.getRawValue();
+        const { delegateName, delegateEmail, expiresAt, includeAttachments } = this.form.getRawValue();
         this.loading.set(true);
         this.error.set(null);
         this.success.set(null);
-        this.delegationService.create({ delegateName: delegateName.trim(), delegateEmail: delegateEmail.trim(), expiresAt: expiresAt === '' ? null : expiresAt})
+        this.delegationService.create({ delegateName: delegateName.trim(), delegateEmail: delegateEmail.trim(), expiresAt: expiresAt === '' ? null : expiresAt, includeAttachments })
         .subscribe({
             next: (created) => {
                 this.delegations.update((l) => [created, ...(l ?? [])]);

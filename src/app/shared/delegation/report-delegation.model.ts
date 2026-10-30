@@ -3,6 +3,7 @@ export interface ReportDelegation {
     delegateName: string;
     delegateEmail: string;
     token: string;
+    includeAttachments: boolean;
     expiresAt: string | null;
     revoked: boolean;
     active: boolean;
@@ -13,14 +14,16 @@ export interface CreateReportDelegationRequest {
     delegateName: string;
     delegateEmail: string;
     expiresAt: string | null;
+    includeAttachments: boolean;
 }
 
 export interface SharedMedicalReport {
+    id: number;
     visitDate: string;
     doctorFirstName: string;
     doctorLastName: string;
     specialization: string;
     diagnosisText: string;
-    attachmentUrl: string | null;
+    attachmentAvailable: string | null;
     completedAt: string;
 }
