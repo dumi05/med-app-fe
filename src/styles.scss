@@ -1,12 +1,66 @@
-/* You can add global styles to this file, and also import other style files */
+/*
+ * Identity of "Studio medico La Mole": the blue of the logo is the primary colour of Bootstrap.
+ * Bootstrap is loaded as compiled CSS, so the colours are changed with its CSS variables (no Sass, no component to
+ * touch). #1a4e78 on white has a contrast of about 8.7:1; the minimum for the text is 4.5:1.
+ */
 :root {
-    --app-page-bg: var(--bs-tertiary-bg)
+    --app-primary: #1a4e78;
+    --app-primary-hover: #143f61;
+    --app-primary-active: #123a59;
+    /* the light blue of the cross of the logo, for the accents */
+    --app-primary-soft: #6b93ab;
+
+    --bs-primary: #1a4e78;
+    --bs-primary-rgb: 26, 78, 120;
+    --bs-primary-bg-subtle: #d6e1ea;
+    --bs-primary-border-subtle: #aebfcc;
+    --bs-primary-text-emphasis: #0a1f30;
+    --bs-link-color: #1a4e78;
+    --bs-link-color-rgb: 26, 78, 120;
+    --bs-link-hover-color: #143f61;
+    --bs-link-hover-color-rgb: 20, 63, 97;
+    --bs-focus-ring-color: rgba(26, 78, 120, 0.25);
 }
 
-body {
-    background-color: var(--app-page-bg);
+/* The buttons, the focus of the fields and the checkboxes have their own variables in Bootstrap */
+.btn-primary {
+    --bs-btn-bg: var(--app-primary);
+    --bs-btn-border-color: var(--app-primary);
+    --bs-btn-hover-bg: var(--app-primary-hover);
+    --bs-btn-hover-border-color: var(--app-primary-active);
+    --bs-btn-active-bg: var(--app-primary-active);
+    --bs-btn-active-border-color: var(--app-primary-active);
+    --bs-btn-disabled-bg: var(--app-primary);
+    --bs-btn-disabled-border-color: var(--app-primary);
+    --bs-btn-focus-shadow-rgb: 59, 100, 135;
 }
 
-.pre-wrap {
-    white-space: pre-wrap;
+.btn-outline-primary {
+    --bs-btn-color: var(--app-primary);
+    --bs-btn-border-color: var(--app-primary);
+    --bs-btn-hover-bg: var(--app-primary);
+    --bs-btn-hover-border-color: var(--app-primary);
+    --bs-btn-active-bg: var(--app-primary);
+    --bs-btn-active-border-color: var(--app-primary);
+    --bs-btn-disabled-color: var(--app-primary);
+    --bs-btn-disabled-border-color: var(--app-primary);
+    --bs-btn-focus-shadow-rgb: 26, 78, 120;
+}
+
+.form-control:focus,
+.form-select:focus,
+.form-check-input:focus {
+    border-color: var(--app-primary-soft);
+    box-shadow: 0 0 0 0.25rem rgba(26, 78, 120, 0.25);
+}
+
+.form-check-input:checked {
+    background-color: var(--app-primary);
+    border-color: var(--app-primary);
+}
+
+.navbar {
+    --bs-navbar-brand-color: var(--app-primary);
+    --bs-navbar-brand-hover-color: var(--app-primary-hover);
+    --bs-navbar-active-color: var(--app-primary);
 }

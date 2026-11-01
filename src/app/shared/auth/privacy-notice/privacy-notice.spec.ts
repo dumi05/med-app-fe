@@ -31,6 +31,11 @@ describe('PrivacyNotice', () => {
     expect(headings[7]).toMatch(/^8\. Il consenso/);
   });
 
+  it('names the studio with its official name, and shows its logo', () => {
+    expect(PRIVACY_CONTROLLER.name).toContain('Studio medico La Mole');
+    expect((element().querySelector('img.page-logo') as HTMLImageElement).getAttribute('alt')).toContain('La Mole');
+  });
+
   it('says who the controller is and how to reach them', () => {
     expect(element().textContent).toContain(PRIVACY_CONTROLLER.name);
     expect(element().textContent).toContain(PRIVACY_CONTROLLER.address);

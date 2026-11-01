@@ -41,7 +41,7 @@
         <h2 class="h5">Fatturato per specializzazione</h2>
         @if (data.revenueBySpecialization.length > 0) {
           <app-chart-canvas type="bar" [labels]="revenueLabels()" [values]="revenueValues()"
-                            datasetLabel="Fatturato (€)" [colors]="['#0d6efd']"
+                            datasetLabel="Fatturato (€)" [colors]="['#1a4e78']"
                             description="Fatturato per specializzazione" />
         } @else {
           <p class="text-muted">Nessuna fattura emessa.</p>

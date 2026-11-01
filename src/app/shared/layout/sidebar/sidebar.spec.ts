@@ -33,6 +33,16 @@ describe('Sidebar', () => {
     expect(links.map((link) => link.getAttribute('href'))).toEqual(['/patient', '/patient/availability', '/patient/appointments', '/patient/report-delegations', '/patient/privacy']);
   });
 
+  it('shows the logo and the name of the studio, and the name leads to the home', () => {
+    const brand = element().querySelector('a.navbar-brand') as HTMLAnchorElement;
+    const logo = brand.querySelector('img') as HTMLImageElement;
+
+    expect(brand.textContent).toContain('Studio medico La Mole');
+    expect(brand.getAttribute('href')).toBe('/patient');
+    expect(logo.getAttribute('src')).toBe('brand/logo-mark.png');
+    expect(logo.getAttribute('alt')).toBe('');
+  });
+
   it('shows e-mail and role label', () => {
     expect(element().textContent).toContain('anna@test.it');
     expect(element().textContent).toContain('Paziente');

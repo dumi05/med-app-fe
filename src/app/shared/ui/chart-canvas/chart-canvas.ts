@@ -3,7 +3,7 @@ import { ArcElement, BarController, BarElement, CategoryScale, Chart, DoughnutCo
 
 Chart.register(BarController, BarElement, DoughnutController, ArcElement, CategoryScale, LinearScale, Tooltip, Legend);
 
-const DEFAULT_COLORS = [ '#0d6efd', '#198754', '#ffc107', '#0dcaf0', '#6c757d'];
+const DEFAULT_COLORS = [ '#1a4e78', '#6b93ab', '#198754', '#ffc107', '#6c757d'];
 
 @Component({
     selector: 'app-chart-canvas',

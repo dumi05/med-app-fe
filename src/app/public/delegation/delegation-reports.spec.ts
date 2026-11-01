@@ -38,6 +38,14 @@ describe('DelegationReports', () => {
     fixture.detectChanges();
   };
 
+  it('shows the logo of the studio on top of the page', () => {
+    answer([]);
+
+    const logo = element().querySelector('img.page-logo') as HTMLImageElement;
+    expect(logo.getAttribute('src')).toBe('brand/logo-full.png');
+    expect(logo.getAttribute('alt')).toContain('La Mole');
+  });
+
   it('asks for the reports of the token in the address', () => {
     const req = http.expectOne('/api/v1/report-delegations/abc-123/medical-reports');
 

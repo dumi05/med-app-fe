@@ -21,6 +21,14 @@ describe('AuthLayout', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+  it('shows the logo of the studio, with a text alternative and the size (no jump while it loads)', () => {
+    const logo = (fixture.nativeElement as HTMLElement).querySelector('img.auth-logo') as HTMLImageElement;
+
+    expect(logo.getAttribute('src')).toBe('brand/logo-full.png');
+    expect(logo.getAttribute('alt')).toBe('Studio medico La Mole, Torino');
+    expect(logo.getAttribute('width')).toBe('150');
+    expect(logo.getAttribute('height')).toBe('174');
+  });
   it('shows the title', () => {
     const heading = (fixture.nativeElement as HTMLElement).querySelector('h1');
     expect(heading?.textContent).toContain('Accedi');
