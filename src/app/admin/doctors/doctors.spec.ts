@@ -4,6 +4,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { errorInterceptor } from '../../shared/http/error.interceptor';
 import { Doctors } from './doctors';
 
+const STRONG = 'Tavolo-Viola-Nuvola-42';
+
 describe('Doctors', () => {
   let fixture: ComponentFixture<Doctors>;
   let http: HttpTestingController;
@@ -100,7 +102,7 @@ describe('Doctors', () => {
   it('creates the doctor with the specialization id as a number, adds it to the table and closes the form', () => {
     click('.add-button');
     setValue('email', 'paolo@studio-medico.it');
-    setValue('password', 'password123');
+    setValue('password', STRONG);
     setValue('firstName', 'Paolo');
     setValue('lastName', 'Bianchi');
     setValue('specializationId', '2');
@@ -109,7 +111,7 @@ describe('Doctors', () => {
     const req = http.expectOne('/api/v1/doctors');
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual({
-      email: 'paolo@studio-medico.it', password: 'password123', firstName: 'Paolo', lastName: 'Bianchi',
+      email: 'paolo@studio-medico.it', password: STRONG, firstName: 'Paolo', lastName: 'Bianchi',
       specializationId: 2, delegationConsent: false,
     });
     req.flush({ id: 3, firstName: 'Paolo', lastName: 'Bianchi', email: 'paolo@studio-medico.it',
@@ -121,10 +123,67 @@ describe('Doctors', () => {
     expect(element().querySelector('.alert-success')?.textContent).toContain('Medico creato');
   });
 
+  it('lists the rules of the password under the field and ticks them as the admin types', () => {
+    click('.add-button');
+    setValue('password', STRONG);
+    fixture.detectChanges();
+
+    const rules = (fixture.nativeElement as HTMLElement).querySelectorAll('app-password-rules li');
+    expect(rules.length).toBe(4);
+    expect(Array.from(rules).every((li) => li.classList.contains('text-success'))).toBeTrue();
+  });
+
+  it('does not send the creation form when the password is too short', () => {
+    click('.add-button');
+    setValue('email', 'paolo@studio-medico.it');
+    setValue('password', 'corta');
+    setValue('firstName', 'Paolo');
+    setValue('lastName', 'Bianchi');
+    setValue('specializationId', '2');
+    submit();
+
+    http.expectNone('/api/v1/doctors');
+    expect((fixture.nativeElement as HTMLElement).querySelectorAll('app-password-rules .text-danger').length).toBeGreaterThan(0);
+  });
+
+  it('does not send the creation form when the password is built on the name of the doctor', () => {
+    click('.add-button');
+    setValue('email', 'paolo@studio-medico.it');
+    setValue('password', 'dottor-paolo-bianchi-26');
+    setValue('firstName', 'Paolo');
+    setValue('lastName', 'Bianchi');
+    setValue('specializationId', '2');
+    submit();
+    fixture.detectChanges();
+
+    http.expectNone('/api/v1/doctors');
+    expect((fixture.nativeElement as HTMLElement).textContent).toContain('Non contiene la tua email');
+  });
+
+  it('does not send the creation form when the e-mail has no dot in the domain', () => {
+    click('.add-button');
+    setValue('email', 'paolo@localhost');
+    setValue('password', STRONG);
+    setValue('firstName', 'Paolo');
+    setValue('lastName', 'Bianchi');
+    setValue('specializationId', '2');
+    submit();
+
+    http.expectNone('/api/v1/doctors');
+  });
+
+  it('tells that the password is the initial one and a new one for the password managers', () => {
+    click('.add-button');
+
+    const field = (fixture.nativeElement as HTMLElement).querySelector('#password') as HTMLInputElement;
+    expect(field.getAttribute('autocomplete')).toBe('new-password');
+    expect((fixture.nativeElement as HTMLElement).textContent).toContain('Password iniziale');
+  });
+
   it('shows the Italian message when the backend refuses the creation', () => {
     click('.add-button');
     setValue('email', 'paolo@studio-medico.it');
-    setValue('password', 'password123');
+    setValue('password', STRONG);
     setValue('firstName', 'Paolo');
     setValue('lastName', 'Bianchi');
     setValue('specializationId', '2');

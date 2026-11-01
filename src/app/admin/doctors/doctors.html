@@ -16,10 +16,11 @@
         <div class="row">
           <div class="col-12 col-md-8 col-xl-5">
             <form [formGroup]="createForm" (ngSubmit)="create()" novalidate>
-              <app-form-field inputId="email" label="Email" type="email"
-                              [control]="createForm.controls.email" errorText="Inserisci un'email valida" />
-              <app-form-field inputId="password" label="Password" type="password"
-                              [control]="createForm.controls.password" errorText="Almeno 8 caratteri" />
+              <app-form-field inputId="email" label="Email" type="email" autocomplete="off"
+                              [control]="createForm.controls.email" errorText="Inserisci un'email valida (per esempio nome@dominio.it)" />
+              <app-form-field inputId="password" label="Password iniziale" type="password" autocomplete="new-password"
+                              [control]="createForm.controls.password" errorText="Inserisci la password" />
+              <app-password-rules [checks]="passwordChecks()" [started]="passwordStarted()" />
               <app-form-field inputId="firstName" label="Nome"
                               [control]="createForm.controls.firstName" errorText="Inserisci il nome" />
               <app-form-field inputId="lastName" label="Cognome"

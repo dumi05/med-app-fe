@@ -12,11 +12,20 @@ const MESSAGES: Record<string,string> = {
     INVALID_CREDENTIALS: "Email o password non corrette.",
     CONCURRENT_MODIFICATION: "La risorsa e' stata modificata da un altro utente. Riprova.",
     UNAUTHENTICATED: "Autenticazione non riuscita.",
+    WEAK_PASSWORD: "La password non è abbastanza sicura: scegline una più lunga e meno prevedibile.",
+    INVALID_CURRENT_PASSWORD: "La password attuale non è corretta.",
+    ACCOUNT_LOCKED: "Troppi tentativi di accesso falliti. Riprova tra qualche minuto.",
+    PASSWORD_CHANGE_REQUIRED: "Devi cambiare la password prima di continuare.",
     SLOT_OVERLAP: "Esistono gia' slot in quella fascia oraria.",
     APPOINTMENT_OVERLAP: "Hai gia' una prenotazione in quella fascia oraria.",
     FILE_TOO_LARGE: "Il file supera la dimensione massima di 10 MB."
 };
 
+const SERVER_TEXT = new Set(["WEAK_PASSWORD", "ACCOUNT_LOCKED"]);
+
 export function userMessage(error: ApiError): string {
+    if(SERVER_TEXT.has(error.code) && error.message){
+        return error.message;
+    }
     return MESSAGES[error.code] ?? MESSAGES['SERVER_ERROR'];
 }

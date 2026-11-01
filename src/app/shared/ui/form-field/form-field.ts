@@ -12,4 +12,5 @@ export class FormField {
   readonly control = input.required<FormControl<string>>();
   readonly type = input<'text' | 'email' | 'password' | 'date' | 'time' | 'datetime-local' | 'number' | 'textarea'>('text');
   readonly errorText = input('Valore non valido.');
+  readonly autocomplete = input<string | null>(null);
 }

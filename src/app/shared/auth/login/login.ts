@@ -23,7 +23,7 @@ export class Login {
   private readonly route = inject(ActivatedRoute);
 
   protected readonly form = this.fb.group({
-    email: ['', [Validators.required, Validators.email]],
+    email: ['', [Validators.required]],
     password: ['', [Validators.required]]
   });
   protected readonly error = signal<string | null>(null);

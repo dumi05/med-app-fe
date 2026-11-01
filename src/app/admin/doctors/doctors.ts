@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormField } from '../../shared/ui/form-field/form-field';
 import { SelectField, SelectOption } from '../../shared/ui/select-field/select-field';
@@ -11,10 +11,14 @@ import { ApiError } from '../../shared/http/api-error';
 import { userMessage } from '../../shared/http/error-messages';
 import { toSelectOptions } from '../../shared/specialization/specialization-options';
 import { DataTable, DataTableColumn, DataTableRow } from '../../shared/ui/data-table/data-table';
+import { emailFormat } from '../../shared/validation/email-format';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { passwordChecks } from '../../shared/validation/password-checks';
+import { PasswordRules } from '../../shared/ui/password-rules/password-rules';
 
 @Component({
   selector: 'app-doctors',
-  imports: [ReactiveFormsModule, FormField, SelectField, AlertMessage, SubmitButton, DataTable, DataTableRow],
+  imports: [ReactiveFormsModule, FormField, SelectField, AlertMessage, SubmitButton, DataTable, DataTableRow, PasswordRules],
   templateUrl: './doctors.html'
 })
 export class Doctors implements OnInit {
@@ -49,13 +53,23 @@ export class Doctors implements OnInit {
   protected readonly rowKey = (doctor: DoctorAdmin) => doctor.id;
 
   protected readonly createForm = this.formBuilder.group({
-    email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(8)]],
+    email: ['', [Validators.required, emailFormat]],
+    password: ['', [Validators.required]],
     firstName: ['', [Validators.required]],
     lastName: ['', [Validators.required]],
     specializationId: ['', [Validators.required]],
     delegationConsent: [false]
   });
+
+  private readonly createValues = toSignal(this.createForm.valueChanges, { initialValue: this.createForm.getRawValue() });
+  protected readonly passwordChecks = computed(() => {
+    const values = this.createValues();
+    return passwordChecks(values.password ?? '', {
+      email: values.email ?? '', firstName: values.firstName ?? '', lastName: values.lastName ?? ''
+    });
+  });
+
+  protected readonly passwordStarted = computed(() => (this.createValues().password ?? '') !== '');
 
   protected readonly editForm = this.formBuilder.group({
     firstName: ['', [Validators.required]],
@@ -78,7 +92,7 @@ export class Doctors implements OnInit {
   }
 
   protected create(): void {
-    if(this.createForm.invalid){
+    if(this.createForm.invalid || !this.passwordChecks().every((check) => check.ok)){
       this.createForm.markAllAsTouched();
       return;
     }

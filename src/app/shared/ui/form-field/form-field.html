@@ -1,9 +1,9 @@
 <div class="mb-3">
     <label [for]="inputId()" class="form-label">{{ label() }}</label>
     @if ( type() === 'textarea' ) {
-        <textarea [id]="inputId()" rows="6" class="form-control" [formControl]="control()" [class.is-invalid]="control().touched && control().invalid"></textarea>
+        <textarea [id]="inputId()" [attr.autocomplete]="autocomplete()" rows="6" class="form-control" [formControl]="control()" [class.is-invalid]="control().touched && control().invalid"></textarea>
     } @else {
-        <input [id]="inputId()" [type]="type()" class="form-control" [formControl]="control()" [class.is-invalid]="control().touched && control().invalid"/>
+        <input [id]="inputId()" [type]="type()" [attr.autocomplete]="autocomplete()" class="form-control" [formControl]="control()" [class.is-invalid]="control().touched && control().invalid"/>
     }
     <div class="invalid-feedback">{{ errorText() }}</div>
 </div>

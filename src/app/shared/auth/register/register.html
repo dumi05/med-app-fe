@@ -3,11 +3,12 @@
     <app-alert-message [message]="error()"></app-alert-message>
 
     <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
-        <app-form-field inputId="email" label="Email" type="email" [control]="form.controls.email" errorText="Inserisci un'email valida"/>
-        <app-form-field inputId="password" label="Password" type="password" [control]="form.controls.password" errorText="Inserisci la password"/>
-        <app-form-field inputId="firstName" label="Nome" type="text" [control]="form.controls.firstName" errorText="Inserisci il nome"/>
-        <app-form-field inputId="lastName" label="Cognome" type="text" [control]="form.controls.lastName" errorText="Inserisci il cognome"/>
-        <app-form-field inputId="birthDate" label="Data di nascita" type="date" [control]="form.controls.birthDate" errorText="Inserisci la data di nascita"/>
+        <app-form-field inputId="email" label="Email" type="email" autocomplete="email" [control]="form.controls.email" errorText="Inserisci un'email valida (per esempio nome@dominio.it)"/>
+        <app-form-field inputId="password" label="Password" type="password" autocomplete="new-password" [control]="form.controls.password" errorText="Inserisci la password"/>
+        <app-password-rules [checks]="passwordChecks()" [started]="passwordStarted()"/>
+        <app-form-field inputId="firstName" label="Nome" type="text" autocomplete="given-name" [control]="form.controls.firstName" errorText="Inserisci il nome"/>
+        <app-form-field inputId="lastName" label="Cognome" type="text" autocomplete="family-name" [control]="form.controls.lastName" errorText="Inserisci il cognome"/>
+        <app-form-field inputId="birthDate" label="Data di nascita" type="date" autocomplete="bday" [control]="form.controls.birthDate" errorText="Inserisci la data di nascita"/>
 
         <div class="form-check mb-3">
             <input id="consent" type="checkbox" class="form-check-input" formControlName="gdprConsent"

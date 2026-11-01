@@ -21,4 +21,18 @@ describe('userMessage', () => {
     it('explains that the patient already has a visit at that time', () => {
         expect(userMessage({ status: 409, code: 'APPOINTMENT_OVERLAP', message: 'x'})).toContain('Hai gia');
     });
+    it('shows the message of the server when it lists the rules that the password breaks', () => {
+        expect(userMessage({ status: 400, code: 'WEAK_PASSWORD', message: 'Questa password è troppo comune.' })).toBe('Questa password è troppo comune.');
+    });
+    it('has a text of its own for a weak password when the server sends none', () => {
+        expect(userMessage({ status: 400, code: 'WEAK_PASSWORD', message: '' })).toContain('non è abbastanza sicura');
+    });
+    it('shows the message of the server for a locked account, because it says how long to wait', () => {
+        expect(userMessage({ status: 429, code: 'ACCOUNT_LOCKED', message: 'Riprova tra 15 minuti.' })).toBe('Riprova tra 15 minuti.');
+        expect(userMessage({ status: 429, code: 'ACCOUNT_LOCKED', message: '' })).toContain('Troppi tentativi');
+    });
+    it('explains that the current password is wrong and that the change of the password is required', () => {
+        expect(userMessage({ status: 400, code: 'INVALID_CURRENT_PASSWORD', message: 'x' })).toContain('password attuale');
+        expect(userMessage({ status: 403, code: 'PASSWORD_CHANGE_REQUIRED', message: 'x' })).toContain('cambiare la password');
+    });
 })

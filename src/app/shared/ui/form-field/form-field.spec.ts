@@ -50,6 +50,17 @@ describe('FormField', () => {
     expect(input().type).toBe('datetime-local');
   });
 
+  it('has no autocomplete attribute unless one is given', () => {
+    expect(input().hasAttribute('autocomplete')).toBeFalse();
+  });
+
+  it('passes the autocomplete hint to the input', () => {
+    fixture.componentRef.setInput('autocomplete', 'new-password');
+    fixture.detectChanges();
+
+    expect(input().getAttribute('autocomplete')).toBe('new-password');
+  });
+
   it('shows a textarea then type is textarea', () => {
     fixture.componentRef.setInput('type', 'textarea');
     fixture.detectChanges();

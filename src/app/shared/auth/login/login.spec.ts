@@ -61,6 +61,33 @@ describe('Login', () => {
     expect(router.navigateByUrl).toHaveBeenCalledWith('/admin');
   });
 
+    it('tells the password managers which field is the user name and which the current password', () => {
+    const el = fixture.nativeElement as HTMLElement;
+
+    expect(el.querySelector('#email')!.getAttribute('autocomplete')).toBe('username');
+    expect(el.querySelector('#password')!.getAttribute('autocomplete')).toBe('current-password');
+  });
+
+  it('does not apply the rules of the new passwords: an old, weaker password must still be sent', () => {
+    fillIn('anna@test.it', 'abc');
+    submit();
+
+    http.expectOne('/api/v1/auth/login').flush({ token: 'h.eyJleHAiOjk5OTk5OTk5OTl9.s', email: 'anna@test.it', role: 'PATIENT' });
+  });
+
+  it('shows the message of the server, with the minutes to wait, when the account is locked', () => {
+    fillIn('anna@test.it', 'una-password-sbagliata');
+    submit();
+
+    http.expectOne('/api/v1/auth/login').flush(
+      { code: 'ACCOUNT_LOCKED', message: 'Troppi tentativi di accesso falliti. Riprova tra 15 minuti.', timestamp: 'x' },
+      { status: 429, statusText: 'Too Many Requests' },
+    );
+    fixture.detectChanges();
+
+    expect((fixture.nativeElement as HTMLElement).querySelector('.alert-danger')?.textContent).toContain('Riprova tra 15 minuti.');
+  });
+
   it('shows the Italian message of the error code when the login fails', () => {
     fillIn('a@b.it', 'wrong-password');
     submit();

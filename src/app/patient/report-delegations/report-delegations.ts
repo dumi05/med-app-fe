@@ -10,6 +10,7 @@ import { ReportDelegation } from "../../shared/delegation/report-delegation.mode
 import { userMessage } from "../../shared/http/error-messages";
 import { ApiError } from "../../shared/http/api-error";
 import { delegationLink } from "../../shared/delegation/delegation-link";
+import { emailFormat } from "../../shared/validation/email-format";
 
 function notInThePast(control: AbstractControl<string>): ValidationErrors | null {
     return control.value !== '' && control.value < todayIso() ? { past: true } : null;
@@ -36,7 +37,7 @@ export class ReportDelegations implements OnInit {
 
     protected readonly form = this.formBuilder.group({
         delegateName: ['', Validators.required],
-        delegateEmail: ['', [Validators.required, Validators.email]],
+        delegateEmail: ['', [Validators.required, emailFormat]],
         expiresAt: ['', notInThePast],
         includeAttachments: [false]
     });

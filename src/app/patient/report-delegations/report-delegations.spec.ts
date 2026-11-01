@@ -287,4 +287,13 @@ describe('ReportDelegations', () => {
     expect(element().querySelector('.alert-danger')?.textContent).toContain('Non hai i permessi');
     expect(rows()[0].textContent).toContain('Attiva');
   });
+
+  it('does not send the form when the email has no dot in the domain', () => {
+    open([]);
+    fillInTheForm();
+    setValue('delegateEmail', 'luigi@localhost');
+    submit();
+
+    http.expectNone('/api/v1/report-delegations');
+  });
 });
