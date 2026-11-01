@@ -2,9 +2,9 @@ import { Component } from '@angular/core';
 import { GDPR_CONSENT_VERSION } from '../gdpr-consent';
 
 export const PRIVACY_CONTROLLER = {
-  name: 'Studio Medico La Mole (demo)',
+  name: 'Studio medico La Mole (demo)',
   address: 'Via Esempio 1, 10100 Torino',
-  email: 'privacy@lamole.it'
+  email: 'privacy@lamole.example'
 };
 
 @Component({

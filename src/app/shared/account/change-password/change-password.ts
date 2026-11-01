@@ -10,6 +10,7 @@ import { toSignal } from "@angular/core/rxjs-interop";
 import { passwordChecks } from "../../validation/password-checks";
 import { homeForRole } from "../../auth/role-home";
 import { ApiError } from "../../http/api-error";
+import { userMessage } from "../../http/error-messages";
 
 function confirmationMatches(group: AbstractControl): ValidationErrors | null {
     const newPassword = group.get('newPassword')?.value;
@@ -65,7 +66,7 @@ export class ChangePassword {
                 }
             },
             error: (err: ApiError) => {
-                this.error.set(null);
+                this.error.set(userMessage(err));
                 this.loading.set(false);
             }
         });

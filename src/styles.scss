@@ -1,13 +1,8 @@
-/*
- * Identity of "Studio medico La Mole": the blue of the logo is the primary colour of Bootstrap.
- * Bootstrap is loaded as compiled CSS, so the colours are changed with its CSS variables (no Sass, no component to
- * touch). #1a4e78 on white has a contrast of about 8.7:1; the minimum for the text is 4.5:1.
- */
 :root {
+    --app-page-bg: var(--bs-tertiary-bg);
     --app-primary: #1a4e78;
     --app-primary-hover: #143f61;
     --app-primary-active: #123a59;
-    /* the light blue of the cross of the logo, for the accents */
     --app-primary-soft: #6b93ab;
 
     --bs-primary: #1a4e78;
@@ -22,7 +17,14 @@
     --bs-focus-ring-color: rgba(26, 78, 120, 0.25);
 }
 
-/* The buttons, the focus of the fields and the checkboxes have their own variables in Bootstrap */
+body {
+    background-color: var(--app-page-bg);
+}
+
+.pre-wrap {
+    white-space: pre-wrap;
+}
+
 .btn-primary {
     --bs-btn-bg: var(--app-primary);
     --bs-btn-border-color: var(--app-primary);
