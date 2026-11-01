@@ -8,6 +8,7 @@ import { Sidebar } from './sidebar';
 describe('Sidebar', () => {
   const session = signal<Session | null>(null);
   const role = computed(() => session()?.role ?? null);
+  const mustChangePassword = computed(() => session()?.mustChangePassword === true);
   const logout = jasmine.createSpy('logout');
   let fixture: ComponentFixture<Sidebar>;
   let router: Router;
@@ -15,11 +16,11 @@ describe('Sidebar', () => {
   const element = () => fixture.nativeElement as HTMLElement;
 
   beforeEach(async () => {
-    session.set({ token: 't', email: 'anna@test.it', role: 'PATIENT' });
+    session.set({ token: 't', email: 'anna@test.it', role: 'PATIENT', mustChangePassword: false });
     logout.calls.reset();
     await TestBed.configureTestingModule({
       imports: [Sidebar],
-      providers: [provideRouter([]), { provide: AuthService, useValue: { session, role, logout } }],
+      providers: [provideRouter([]), { provide: AuthService, useValue: { session, role, mustChangePassword, logout } }],
     }).compileComponents();
     router = TestBed.inject(Router);
     spyOn(router, 'navigateByUrl');
@@ -55,5 +56,12 @@ describe('Sidebar', () => {
     (element().querySelector('button.navbar-toggler') as HTMLButtonElement).click();
     fixture.detectChanges();
     expect(menu.classList.contains('show')).toBeFalse();
+  });
+  it('shows only the change of the password to an account that must change it', () => {
+    session.set({ token: 't', email: 'doc@test.it', role: 'DOCTOR', mustChangePassword: true });
+    fixture.detectChanges();
+
+    const links = Array.from(element().querySelectorAll('a.nav-link'));
+    expect(links.map((link) => link.getAttribute('href'))).toEqual(['/account/password']);
   });
 });

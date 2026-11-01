@@ -27,6 +27,11 @@ const NAV_ITEMS: Record<Role, NavItem[]> = {
     ]
 };
 
-export function navItemsFor(role: Role | null): NavItem[] {
-    return role == null ? [] : NAV_ITEMS[role];
+export const ACCOUNT_ITEM: NavItem = { label: 'Cambia password', path: '/account/password'};
+
+export function navItemsFor(role: Role | null, mustchangePassword = false): NavItem[] {
+    if(role === null){
+        return [];
+    }
+    return mustchangePassword ? [ACCOUNT_ITEM] : [...NAV_ITEMS[role], ACCOUNT_ITEM];
 }

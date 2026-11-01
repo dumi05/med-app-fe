@@ -25,6 +25,10 @@ export const routes: Routes = [
     canActivate: [authGuard],
     children: [
       {
+        path: 'account/password',
+        loadComponent: () => import('./shared/account/change-password/change-password').then((m) => m.ChangePassword),
+      },
+      {
         path: 'patient',
         canActivate: [roleGuard('PATIENT')],
         loadChildren: () => import('./patient/patient.routes').then((m) => m.PATIENT_ROUTES),

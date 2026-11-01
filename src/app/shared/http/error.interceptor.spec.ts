@@ -11,15 +11,17 @@ describe('errorInterceptor', () => {
   let controller: HttpTestingController;
   let router: Router;
   let sessionValid = true;
+  const requirePasswordChange = jasmine.createSpy('requirePasswordChange');
 
   beforeEach(() => {
     sessionValid = true;
+    requirePasswordChange.calls.reset();
     TestBed.configureTestingModule({
       providers: [
         provideRouter([]),
         provideHttpClient(withInterceptors([errorInterceptor])),
         provideHttpClientTesting(),
-        { provide: AuthService, useValue: { isLoggedIn: () => sessionValid } },
+        { provide: AuthService, useValue: { isLoggedIn: () => sessionValid, requirePasswordChange } },
       ],
     });
     http = TestBed.inject(HttpClient);
@@ -66,5 +68,25 @@ describe('errorInterceptor', () => {
     controller.expectOne('/api/v1/doctors').flush({}, { status: 403, statusText: 'Forbidden' });
 
     expect(router.navigateByUrl).not.toHaveBeenCalled();
+  });
+
+  it('sends the user to the change of the password when the server says that it is required, and remembers it', () => {
+    http.get('/api/v1/doctors').subscribe({ error: () => {} });
+
+    controller.expectOne('/api/v1/doctors').flush(
+      { code: 'PASSWORD_CHANGE_REQUIRED', message: 'x', timestamp: 'x' }, { status: 403, statusText: 'Forbidden' });
+
+    expect(requirePasswordChange).toHaveBeenCalled();
+    expect(router.navigateByUrl).toHaveBeenCalledWith('/account/password');
+    expect(router.navigateByUrl).not.toHaveBeenCalledWith('/login');
+  });
+
+  it('does not touch the password page for the other errors', () => {
+    http.get('/api/v1/doctors').subscribe({ error: () => {} });
+
+    controller.expectOne('/api/v1/doctors').flush(
+      { code: 'UNAUTHORIZED_ACCESS', message: 'x', timestamp: 'x' }, { status: 403, statusText: 'Forbidden' });
+
+    expect(requirePasswordChange).not.toHaveBeenCalled();
   });
 });

@@ -9,6 +9,7 @@ import { AuthLayout } from '../auth-layout/auth-layout';
 import { AlertMessage } from '../../ui/alert-message/alert-message';
 import { FormField } from '../../ui/form-field/form-field';
 import { SubmitButton } from '../../ui/submit-button/submit-button';
+import { PASSWORD_PAGE } from '../auth.guard';
 
 @Component({
   selector: 'app-login',
@@ -41,7 +42,7 @@ export class Login {
     this.loading.set(true);
     this.error.set(null);
     this.authService.login(this.form.getRawValue()).subscribe({
-      next: (resp) => this.router.navigateByUrl(homeForRole(resp.role)),
+      next: (resp) => this.router.navigateByUrl(resp.mustChangePassword ? PASSWORD_PAGE : homeForRole(resp.role)),
       error: (e: ApiError) => {
         this.error.set(userMessage(e));
         this.loading.set(false);

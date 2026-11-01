@@ -85,4 +85,60 @@ describe('AuthService', () => {
 
     expect(service.isLoggedIn()).toBeFalse();
   });
+
+  describe('the change of the password', () => {
+    it('does not need a change when the server does not say so, also for a session saved before the flag existed', () => {
+      localStorage.setItem('medapp.session',
+        JSON.stringify({ token: fakeToken(FUTURO), email: 'a@b.it', role: 'DOCTOR' }));
+
+      expect(TestBed.inject(AuthService).mustChangePassword()).toBeFalse();
+    });
+
+    it('keeps the flag that the login brings, and saves it', () => {
+      const service = TestBed.inject(AuthService);
+      service.login({ email: 'doc@b.it', password: 'Tavolo-Viola-Nuvola-42' }).subscribe();
+
+      http.expectOne('/api/v1/auth/login').flush(
+        { token: fakeToken(FUTURO), email: 'doc@b.it', role: 'DOCTOR', mustChangePassword: true });
+
+      expect(service.mustChangePassword()).toBeTrue();
+      expect(localStorage.getItem('medapp.session')).toContain('"mustChangePassword":true');
+    });
+
+    it('posts the passwords and replaces the session with the new token, without the flag', () => {
+      const service = TestBed.inject(AuthService);
+      service.login({ email: 'doc@b.it', password: 'Tavolo-Viola-Nuvola-42' }).subscribe();
+      http.expectOne('/api/v1/auth/login').flush(
+        { token: fakeToken(FUTURO), email: 'doc@b.it', role: 'DOCTOR', mustChangePassword: true });
+      const newToken = fakeToken(FUTURO + 5);
+
+      service.changePassword({ currentPassword: 'Tavolo-Viola-Nuvola-42', newPassword: 'Nuvola-Viola-Tavolo-77' }).subscribe();
+      const req = http.expectOne('/api/v1/auth/change-password');
+      expect(req.request.method).toBe('POST');
+      expect(req.request.body).toEqual({ currentPassword: 'Tavolo-Viola-Nuvola-42', newPassword: 'Nuvola-Viola-Tavolo-77' });
+      req.flush({ token: newToken, email: 'doc@b.it', role: 'DOCTOR', mustChangePassword: false });
+
+      expect(service.token()).toBe(newToken);
+      expect(service.mustChangePassword()).toBeFalse();
+    });
+
+    it('remembers that the server wants the change, and saves it', () => {
+      const service = TestBed.inject(AuthService);
+      service.login({ email: 'doc@b.it', password: 'Tavolo-Viola-Nuvola-42' }).subscribe();
+      http.expectOne('/api/v1/auth/login').flush({ token: fakeToken(FUTURO), email: 'doc@b.it', role: 'DOCTOR', mustChangePassword: false });
+
+      service.requirePasswordChange();
+
+      expect(service.mustChangePassword()).toBeTrue();
+      expect(localStorage.getItem('medapp.session')).toContain('"mustChangePassword":true');
+    });
+
+    it('has nothing to remember without a session', () => {
+      const service = TestBed.inject(AuthService);
+
+      service.requirePasswordChange();
+
+      expect(service.mustChangePassword()).toBeFalse();
+    });
+  });
 });

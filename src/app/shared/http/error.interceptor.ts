@@ -15,7 +15,12 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
             if ((err.status === 401 || err.status === 403) && !isAuthCall && !auth.isLoggedIn()) {
                 router.navigateByUrl('/login');
             }
-            return throwError(() => toApiError(err));
+            const apiError = toApiError(err);
+            if(apiError.code === 'PASSWORD_CHANGE_REQUIRED'){
+                auth.requirePasswordChange();
+                router.navigateByUrl('/account/password');
+            }
+            return throwError(() => apiError);
         })
     );
 }

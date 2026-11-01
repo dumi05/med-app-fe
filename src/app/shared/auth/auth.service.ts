@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { Observable, tap } from 'rxjs';
 import { API_BASE } from '../api';
-import { AuthResponse, LoginRequest, RegisterRequest, Role, Session } from './auth.model';
+import { AuthResponse, ChangePasswordRequest, LoginRequest, RegisterRequest, Role, Session } from './auth.model';
 import { isJwtExpired } from './jwt';
 
 const STORAGE_KEY = 'medapp.session';
@@ -16,6 +16,7 @@ export class AuthService {
     readonly session = this.sessionState.asReadonly();
     readonly role = computed<Role | null>(() => this.sessionState()?.role ?? null);
     readonly token = computed<string | null>(() => this.sessionState()?.token ?? null); 
+    readonly mustChangePassword = computed(() => this.sessionState()?.mustChangePassword === true);
     
     login (request: LoginRequest): Observable<AuthResponse> {
         return this.http.post<AuthResponse>(`${API_BASE}/auth/login`, request)
@@ -25,6 +26,18 @@ export class AuthService {
     register (request: RegisterRequest): Observable<AuthResponse> {
         return this.http.post<AuthResponse>(`${API_BASE}/auth/register`, request)
                     .pipe(tap((response) => this.startSession(response)));
+    }
+
+    changePassword(request: ChangePasswordRequest): Observable<AuthResponse> {
+        return this.http.post<AuthResponse>(`${API_BASE}/auth/change-password`, request)
+                    .pipe(tap((response) => this.startSession(response)));
+    }
+
+    requirePasswordChange(): void {
+        const session = this.sessionState();
+        if(session !== null && !session.mustChangePassword) {
+            this.saveSession({ ...session, mustChangePassword: true });
+        }
     }
 
     logout(): void {
@@ -54,11 +67,15 @@ export class AuthService {
             return;
         }
 
-        const session: Session = {
+        this.saveSession({
             token: response.token,
             email: response.email,
-            role: response.role
-        };
+            role: response.role,
+            mustChangePassword: response.mustChangePassword === true
+        });
+    }
+
+    private saveSession(session: Session) {
         this.sessionState.set(session);
         try {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
@@ -74,7 +91,7 @@ export class AuthService {
                 return null;
             }
             const session = JSON.parse(raw) as Session;
-            return session.token && !isJwtExpired(session.token) ? session : null;
+            return session.token && !isJwtExpired(session.token) ? { ...session, mustChangePassword: session.mustChangePassword === true} : null;
         } catch {
             return null;
         }

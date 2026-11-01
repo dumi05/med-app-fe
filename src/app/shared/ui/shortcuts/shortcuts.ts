@@ -1,7 +1,7 @@
 import { Component, computed, input } from "@angular/core";
 import { RouterLink } from "@angular/router";
 import { Role } from "../../auth/auth.model";
-import { navItemsFor } from "../../layout/navigation";
+import { ACCOUNT_ITEM, navItemsFor } from "../../layout/navigation";
 import { homeForRole } from "../../auth/role-home";
 
 @Component({
@@ -17,5 +17,6 @@ import { homeForRole } from "../../auth/role-home";
 })
 export class Shortcuts {
     readonly role = input.required<Role>();
-    protected readonly items = computed(() => navItemsFor(this.role()).filter((item) => item.path !== homeForRole(this.role())));
+    protected readonly items = computed(() =>
+        navItemsFor(this.role()).filter((item) => item.path !== homeForRole(this.role()) && item !== ACCOUNT_ITEM));
 }

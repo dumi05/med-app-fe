@@ -61,7 +61,17 @@ describe('Login', () => {
     expect(router.navigateByUrl).toHaveBeenCalledWith('/admin');
   });
 
-    it('tells the password managers which field is the user name and which the current password', () => {
+  it('goes straight to the change of the password when the account must change it', () => {
+    fillIn('doc@studio-medico.it', 'Tavolo-Viola-Nuvola-42');
+    submit();
+
+    http.expectOne('/api/v1/auth/login').flush(
+      { token: 'h.eyJleHAiOjk5OTk5OTk5OTl9.s', email: 'doc@studio-medico.it', role: 'DOCTOR', mustChangePassword: true });
+
+    expect(router.navigateByUrl).toHaveBeenCalledWith('/account/password');
+  });
+
+  it('tells the password managers which field is the user name and which the current password', () => {
     const el = fixture.nativeElement as HTMLElement;
 
     expect(el.querySelector('#email')!.getAttribute('autocomplete')).toBe('username');

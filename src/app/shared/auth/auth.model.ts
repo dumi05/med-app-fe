@@ -15,14 +15,21 @@ export interface RegisterRequest {
     gdprConsentVersion: string;
 }
 
+export interface ChangePasswordRequest {
+    currentPassword: string;
+    newPassword: string;
+}
+
 export interface AuthResponse {
     token: string | null;
     email: string;
     role: Role;
+    mustChangePassword: boolean;
 }
 
 export interface Session {
     token: string;
     email: string;
     role: Role;
+    mustChangePassword: boolean;
 }

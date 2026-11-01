@@ -22,7 +22,7 @@ export class Sidebar {
   private readonly router = inject(Router);
 
   protected readonly menuOpen = signal(false);
-  protected readonly items = computed(() => navItemsFor(this.authService.role()));
+  protected readonly items = computed(() => navItemsFor(this.authService.role(), this.authService.mustChangePassword()));
 
   protected home(): string {
     return homeForRole(this.authService.role());
