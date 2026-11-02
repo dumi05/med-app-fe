@@ -61,6 +61,68 @@ describe('FormField', () => {
     expect(input().getAttribute('autocomplete')).toBe('new-password');
   });
 
+  describe('the eye of the password fields', () => {
+    const eye = () => element().querySelector('button.show-password') as HTMLButtonElement | null;
+
+    beforeEach(() => {
+        fixture.componentRef.setInput('type', 'password');
+        fixture.detectChanges();
+    });
+
+    it('hides the text at first, and the button offers to show it', () => {
+        expect(input().type).toBe('password');
+        expect(eye()!.getAttribute('aria-label')).toBe('Mostra password');
+        expect(eye()!.getAttribute('aria-pressed')).toBe('false');
+    });
+
+    it('shows the text when the button is pressed, and hides it again at the second press', () => {
+        eye()!.click();
+        fixture.detectChanges();
+
+        expect(input().type).toBe('text');
+        expect(eye()!.getAttribute('aria-label')).toBe('Nascondi password');
+        expect(eye()!.getAttribute('aria-pressed')).toBe('true');
+
+        eye()!.click();
+        fixture.detectChanges();
+
+        expect(input().type).toBe('password');
+        expect(eye()!.getAttribute('aria-pressed')).toBe('false');
+    });
+
+    it('keeps what was typed when the text is shown or hidden', () => {
+        input().value = 'Tavolo-Viola-Nuvola-42';
+        input().dispatchEvent(new Event('input'));
+
+        eye()!.click();
+        fixture.detectChanges();
+
+        expect(control.value).toBe('Tavolo-Viola-Nuvola-42');
+        expect(input().value).toBe('Tavolo-Viola-Nuvola-42');
+    });
+
+    it('is a button that does not send the form', () => {
+        expect(eye()!.getAttribute('type')).toBe('button');
+    });
+
+    it('still shows the error of the field under the input', () => {
+        control.markAsTouched();
+        fixture.detectChanges();
+
+        expect(input().classList.contains('is-invalid')).toBeTrue();
+        expect(element().querySelector('.invalid-feedback')?.textContent).toContain('Campo obbligatorio.');
+    });
+
+    it('is only for the password fields', () => {
+        for (const type of ['text', 'email', 'textarea'] as const) {
+          fixture.componentRef.setInput('type', type);
+          fixture.detectChanges();
+
+          expect(eye()).withContext(type).toBeNull();
+        }
+      });
+    });
+
   it('shows a textarea then type is textarea', () => {
     fixture.componentRef.setInput('type', 'textarea');
     fixture.detectChanges();

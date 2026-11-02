@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, input, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
@@ -13,4 +13,10 @@ export class FormField {
   readonly type = input<'text' | 'email' | 'password' | 'date' | 'time' | 'datetime-local' | 'number' | 'textarea'>('text');
   readonly errorText = input('Valore non valido.');
   readonly autocomplete = input<string | null>(null);
+
+  protected readonly passwordShown = signal(false);
+
+  protected togglePassword(): void {
+    this.passwordShown.update((shown) => !shown);
+  }
 }

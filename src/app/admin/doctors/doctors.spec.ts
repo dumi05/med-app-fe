@@ -287,4 +287,32 @@ describe('Doctors', () => {
     expect(rows()[1].textContent).toContain('Attivo');
     expect(element().querySelector('.alert-success')?.textContent).toContain('Medico riattivato');
   });
+
+    it('lets the admin see the initial password that is being typed', () => {
+    click('.add-button');
+    const eye = element().querySelector('button.show-password') as HTMLButtonElement;
+
+    eye.click();
+    fixture.detectChanges();
+
+    expect((element().querySelector('#password') as HTMLInputElement).type).toBe('text');
+  });
+
+  it('says that the e-mail is already registered when the backend refuses the creation for that', () => {
+    click('.add-button');
+    setValue('email', 'paolo@studio-medico.it');
+    setValue('password', STRONG);
+    setValue('firstName', 'Paolo');
+    setValue('lastName', 'Bianchi');
+    setValue('specializationId', '2');
+    submit();
+
+    http.expectOne('/api/v1/doctors').flush(
+      { code: 'EMAIL_ALREADY_IN_USE', message: 'Questa email è già registrata.', timestamp: 'x' },
+      { status: 409, statusText: 'Conflict' },
+    );
+    fixture.detectChanges();
+
+    expect(element().querySelector('.alert-danger')?.textContent).toContain('Questa email è già registrata.');
+  });
 });

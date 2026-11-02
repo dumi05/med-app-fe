@@ -42,6 +42,16 @@ describe('Login', () => {
   const submit = () =>
     (fixture.nativeElement as HTMLElement).querySelector('form')!.dispatchEvent(new Event('submit'));
 
+  it('lets the user see the password that is being typed', () => {
+    const el: HTMLElement = fixture.nativeElement;
+    const eye = el.querySelector('button.show-password') as HTMLButtonElement;
+
+    eye.click();
+    fixture.detectChanges();
+
+    expect((el.querySelector('#password') as HTMLInputElement).type).toBe('text');
+  });
+
   it('does not send the form when the fields are empty', () => {
     submit();
     fixture.detectChanges();
@@ -139,4 +149,5 @@ describe('Login after the account was deleted', () => {
 
     expect(page.querySelector('.alert-success')).toBeNull();
   });
+
 });

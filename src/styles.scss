@@ -66,3 +66,7 @@ body {
     --bs-navbar-brand-hover-color: var(--app-primary-hover);
     --bs-navbar-active-color: var(--app-primary);
 }
+
+input[type="password"]::-ms-reveal {
+    display: none;
+}

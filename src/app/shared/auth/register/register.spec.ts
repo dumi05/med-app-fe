@@ -152,4 +152,27 @@ describe('Register', () => {
 
     expect((fixture.nativeElement as HTMLElement).querySelector('.alert-danger')?.textContent).toContain('troppo comune');
   });
+
+  it('lets the user see the password that is being typed', () => {
+    const eye = (fixture.nativeElement as HTMLElement).querySelector('button.show-password') as HTMLButtonElement;
+
+    eye.click();
+    fixture.detectChanges();
+
+    expect(passwordField().type).toBe('text');
+  });
+
+  it('says that the e-mail is already registered, and not just that the data are not valid', () => {
+    fillInEverything();
+    giveTheConsent();
+    submit();
+
+    http.expectOne('/api/v1/auth/register').flush(
+      { code: 'EMAIL_ALREADY_IN_USE', message: 'Questa email è già registrata.', timestamp: 'x' },
+      { status: 409, statusText: 'Conflict' },
+    );
+    fixture.detectChanges();
+
+    expect((fixture.nativeElement as HTMLElement).querySelector('.alert-danger')?.textContent).toContain('Questa email è già registrata.');
+  });
 });

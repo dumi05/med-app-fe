@@ -53,6 +53,19 @@ describe('ChangePassword', () => {
   beforeEach(() => localStorage.clear());
   afterEach(() => http.verify());
 
+  it('has an eye on each of the three password fields, and each works by itself', () => {
+    open(false);
+    const eyes = element().querySelectorAll('button.show-password') as NodeListOf<HTMLButtonElement>;
+    expect(eyes.length).toBe(3);
+
+    eyes[1].click();
+    fixture.detectChanges();
+
+    expect(field('currentPassword').type).toBe('password');
+    expect(field('newPassword').type).toBe('text');
+    expect(field('confirmation').type).toBe('password');
+  });
+
   it('asks for the current password, the new one and its confirmation', () => {
     open(false);
 

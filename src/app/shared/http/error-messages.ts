@@ -18,6 +18,7 @@ const MESSAGES: Record<string,string> = {
     PASSWORD_CHANGE_REQUIRED: "Devi cambiare la password prima di continuare.",
     SLOT_OVERLAP: "Esistono gia' slot in quella fascia oraria.",
     APPOINTMENT_OVERLAP: "Hai gia' una prenotazione in quella fascia oraria.",
+    EMAIL_ALREADY_IN_USE: "Questa email è già registrata.",
     FILE_TOO_LARGE: "Il file supera la dimensione massima di 10 MB."
 };
 
