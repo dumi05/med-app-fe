@@ -15,6 +15,7 @@ export interface CreateSlotRequest {
 }
 
 export interface BulkSlotRequest {
+    doctorId?: number;
     date: string;
     startTime: string;
     endTime: string;

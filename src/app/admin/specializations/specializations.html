@@ -1,0 +1,35 @@
+<div class="container-fluid py-4">
+  <h1 class="h3 mb-4">Specializzazioni</h1>
+
+  <app-alert-message [message]="error()" />
+  <app-alert-message [message]="success()" type="success" />
+
+  <div class="row g-4">
+    <div class="col-12 col-md-6">
+      <h2 class="h5 mb-3">Quelle che ci sono</h2>
+      @if (specializations().length === 0) {
+        <p class="text-muted no-specializations">Non c'è ancora nessuna specializzazione.</p>
+      } @else {
+        <ul class="list-group specialization-list">
+          @for (specialization of specializations(); track specialization.id) {
+            <li class="list-group-item">{{ specialization.name }}</li>
+          }
+        </ul>
+      }
+    </div>
+
+    <div class="col-12 col-md-6">
+      <h2 class="h5 mb-3">Aggiungine una</h2>
+      <p class="text-muted small">
+        Nasce con il prezzo della visita specialistica: senza non si potrebbe fatturare. Lo cambi poi dal listino.
+      </p>
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        <app-form-field inputId="name" label="Nome" [control]="form.controls.name"
+                        errorText="Indica il nome (da 2 a 80 caratteri)" />
+        <app-form-field inputId="price" label="Prezzo della visita (€)" [control]="form.controls.price"
+                        errorText="Indica un importo maggiore di zero, fino a 9999,99, con al massimo due decimali" />
+        <app-submit-button label="Aggiungi specializzazione" [loading]="loading()" />
+      </form>
+    </div>
+  </div>
+</div>

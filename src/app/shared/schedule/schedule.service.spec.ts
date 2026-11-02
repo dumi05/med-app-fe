@@ -15,6 +15,14 @@ describe('ScheduleService', () => {
 
   afterEach(() => http.verify());
 
+  it('sends the doctor of the slots when the admin creates them', () => {
+    const request = { doctorId: 4, date: '2026-11-02', startTime: '09:00', endTime: '10:00', slotMinutes: 30 };
+
+    service.createSlots(request).subscribe();
+
+    expect(http.expectOne('/api/v1/schedule/slots/bulk').request.body).toEqual(request);
+  });
+
   it('reads the slots of the doctor in a range', () => {
     service.getMySlots('2026-11-01', '2026-11-30').subscribe();
 

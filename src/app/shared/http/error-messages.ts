@@ -19,6 +19,8 @@ const MESSAGES: Record<string,string> = {
     SLOT_OVERLAP: "Esistono gia' slot in quella fascia oraria.",
     APPOINTMENT_OVERLAP: "Hai gia' una prenotazione in quella fascia oraria.",
     EMAIL_ALREADY_IN_USE: "Questa email è già registrata.",
+    SPECIALIZATION_ALREADY_EXISTS: "Esiste già una specializzazione con questo nome.",
+    INVALID_FILE_TYPE: "Il file non è in un formato valido.",
     FILE_TOO_LARGE: "Il file supera la dimensione massima di 10 MB."
 };
 

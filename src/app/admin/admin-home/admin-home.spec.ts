@@ -120,7 +120,7 @@ describe('AdminHome', () => {
     open();
 
     const hrefs = Array.from(element().querySelectorAll('a.shortcut')).map((a) => a.getAttribute('href'));
-    expect(hrefs).toEqual(['/admin/doctors', '/admin/dashboard', '/admin/price-list']);
+    expect(hrefs).toEqual(['/admin/doctors', '/admin/schedule', '/admin/specializations', '/admin/dashboard', '/admin/price-list']);
   });
 
   it('shows an error only in the block that failed, and still shows the others', () => {
@@ -134,7 +134,7 @@ describe('AdminHome', () => {
     expect(element().querySelector('.kpi-error')).toBeNull();
     expect(card('Visite totali')).toBeTruthy();
     expect(card('Medici')).toBeTruthy();
-    expect(element().querySelectorAll('a.shortcut').length).toBe(3);
+    expect(element().querySelectorAll('a.shortcut').length).toBe(5);
   });
 
   it('shows the error of the indicators and keeps the log', () => {

@@ -15,6 +15,18 @@ describe('SpecializationService', () => {
 
   afterEach(() => http.verify());
 
+  it('creates a specialization with its price', () => {
+    let result: unknown;
+    service.create({ name: 'Neurologia', price: 120.5 }).subscribe((value) => (result = value));
+
+    const req = http.expectOne('/api/v1/specializations');
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({ name: 'Neurologia', price: 120.5 });
+    req.flush({ id: 9, name: 'Neurologia' });
+
+    expect(result).toEqual({ id: 9, name: 'Neurologia' });
+  });
+
   it('loads all specializations', () => {
     let result: unknown;
     service.getAllSpecializations().subscribe((value) => (result = value));

@@ -21,7 +21,9 @@ const NAV_ITEMS: Record<Role, NavItem[]> = {
     ],
     ADMIN: [
         { label: 'Home', path: '/admin'}, 
-        { label: 'Medici', path: '/admin/doctors' }, 
+        { label: 'Medici', path: '/admin/doctors' },
+        { label: 'Agenda medici', path: '/admin/schedule' },
+        { label: 'Specializzazioni', path: '/admin/specializations'}, 
         { label: 'Dashboard', path: '/admin/dashboard'},
         { label: 'Listino', path: '/admin/price-list'}
     ]

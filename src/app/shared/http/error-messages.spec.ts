@@ -35,6 +35,9 @@ describe('userMessage', () => {
         expect(userMessage({ status: 400, code: 'INVALID_CURRENT_PASSWORD', message: 'x' })).toContain('password attuale');
         expect(userMessage({ status: 403, code: 'PASSWORD_CHANGE_REQUIRED', message: 'x' })).toContain('cambiare la password');
     });
+    it('says that the specialization exists already', () => {
+        expect(userMessage({ status: 409, code: 'SPECIALIZATION_ALREADY_EXISTS', message: 'x' })).toContain('Esiste già una specializzazione');
+    });
     it('says that the e-mail is already registered, instead of "the data are not valid"', () => {
         expect(userMessage({ status: 409, code: 'EMAIL_ALREADY_IN_USE', message: 'x' })).toBe('Questa email è già registrata.');
     });
