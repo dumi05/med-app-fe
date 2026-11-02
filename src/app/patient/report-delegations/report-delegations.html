@@ -22,6 +22,22 @@
       </div>
     </div>
   }
+    @if (createdCode(); as code) {
+    <div class="card border-warning mb-4 code-card">
+      <div class="card-body">
+        <h2 class="h6">Codice di accesso</h2>
+        <div class="input-group mb-2">
+          <input id="createdCode" type="text" class="form-control form-control-lg font-monospace" readonly [value]="code"
+                 aria-label="Codice di accesso" (focus)="$any($event.target).select()" />
+          <button type="button" class="btn btn-outline-primary copy-code-button" (click)="copyCode()">Copia</button>
+        </div>
+        <p class="small mb-0">
+          <strong>Non lo rivedrai.</strong> Comunicalo alla persona con un canale diverso da quello del link (telefono,
+          un altro messaggio). Se lo perdi, revoca la delega e creane un'altra.
+        </p>
+      </div>
+    </div>
+  }
 
   <h2 class="h5 mb-3">Nuova delega</h2>
   <div class="row mb-5">
@@ -56,7 +72,12 @@
             <td>{{ delegation.delegateName }}<br /><span class="text-muted small">{{ delegation.delegateEmail }}</span></td>
             <td>{{ expiry(delegation) }}</td>
             <td>{{ delegation.includeAttachments ? 'Si' : 'No' }}</td>
-            <td><span class="badge" [class]="statusView(delegation).style">{{ statusView(delegation).label }}</span></td>
+            <td>
+              <span class="badge" [class]="statusView(delegation).style">{{ statusView(delegation).label }}</span>
+                @if (!delegation.hasAccessCode) {
+                <span class="badge text-bg-warning ms-1 no-code-badge" title="Creata prima del codice di accesso: non si può più aprire. Revocala e creane una nuova.">Senza codice</span>
+              }
+            </td>
             <td class="text-end text-nowrap">
               @if (delegation.active) {
                 <button type="button" class="btn btn-sm btn-outline-primary show-link-button me-2"

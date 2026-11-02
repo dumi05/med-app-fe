@@ -21,10 +21,13 @@ const MESSAGES: Record<string,string> = {
     EMAIL_ALREADY_IN_USE: "Questa email è già registrata.",
     SPECIALIZATION_ALREADY_EXISTS: "Esiste già una specializzazione con questo nome.",
     INVALID_FILE_TYPE: "Il file non è in un formato valido.",
-    FILE_TOO_LARGE: "Il file supera la dimensione massima di 10 MB."
+    FILE_TOO_LARGE: "Il file supera la dimensione massima di 10 MB.",
+    ACCESS_CODE_REQUIRED: "Inserisci il codice di accesso per leggere i referti.",
+    INVALID_ACCESS_CODE: "Il codice di accesso non è corretto. Controlla di averlo scritto bene.",
+    ACCESS_CODE_LOCKED: "Troppi codici sbagliati. Riprova tra qualche minuto.",
 };
 
-const SERVER_TEXT = new Set(["WEAK_PASSWORD", "ACCOUNT_LOCKED"]);
+const SERVER_TEXT = new Set(["WEAK_PASSWORD", "ACCOUNT_LOCKED", "ACCESS_CODE_LOCKED"]);
 
 export function userMessage(error: ApiError): string {
     if(SERVER_TEXT.has(error.code) && error.message){

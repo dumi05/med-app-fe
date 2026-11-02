@@ -41,4 +41,13 @@ describe('userMessage', () => {
     it('says that the e-mail is already registered, instead of "the data are not valid"', () => {
         expect(userMessage({ status: 409, code: 'EMAIL_ALREADY_IN_USE', message: 'x' })).toBe('Questa email è già registrata.');
     });
+    it('has a text for each answer about the access code of a delegation', () => {
+        expect(userMessage({ status: 403, code: 'ACCESS_CODE_REQUIRED', message: 'x' })).toContain('codice di accesso');
+        expect(userMessage({ status: 403, code: 'INVALID_ACCESS_CODE', message: 'x' })).toContain('non è corretto');
+    });
+    it('shows the message of the server for a locked delegation, because it says how long to wait', () => {
+        expect(userMessage({ status: 429, code: 'ACCESS_CODE_LOCKED', message: 'Troppi codici sbagliati. Riprova tra 15 minuti.' }))
+            .toBe('Troppi codici sbagliati. Riprova tra 15 minuti.');
+        expect(userMessage({ status: 429, code: 'ACCESS_CODE_LOCKED', message: '' })).toContain('qualche minuto');
+    });
 })

@@ -89,4 +89,35 @@ describe('errorInterceptor', () => {
 
     expect(requirePasswordChange).not.toHaveBeenCalled();
   });
+
+  it('does NOT send a caregiver to the login when the access code is required: he is not logged in, and does not have to be', () => {
+    sessionValid = false;
+    let error: ApiError | undefined;
+    http.get('/api/v1/report-delegations/abc-123/medical-reports').subscribe({ error: (e) => (error = e) });
+
+    controller.expectOne('/api/v1/report-delegations/abc-123/medical-reports')
+      .flush({ code: 'ACCESS_CODE_REQUIRED', message: 'x', timestamp: 'x' }, { status: 403, statusText: 'Forbidden' });
+
+    expect(error?.code).toBe('ACCESS_CODE_REQUIRED');
+    expect(router.navigateByUrl).not.toHaveBeenCalled();
+  });
+
+  it('does NOT send a caregiver to the login for a wrong code, nor for a locked delegation', () => {
+    sessionValid = false;
+    http.post('/api/v1/report-delegations/abc-123/access', { code: 'x' }).subscribe({ error: () => undefined });
+
+    controller.expectOne('/api/v1/report-delegations/abc-123/access')
+      .flush({ code: 'INVALID_ACCESS_CODE', message: 'x', timestamp: 'x' }, { status: 403, statusText: 'Forbidden' });
+
+    expect(router.navigateByUrl).not.toHaveBeenCalled();
+  });
+
+  it('still sends to the login a call of a patient on his own delegations when the session has expired', () => {
+    sessionValid = false;
+    http.get('/api/v1/report-delegations/me').subscribe({ error: () => undefined });
+
+    controller.expectOne('/api/v1/report-delegations/me').flush({}, { status: 403, statusText: 'Forbidden' });
+
+    expect(router.navigateByUrl).toHaveBeenCalledWith('/login');
+  });
 });

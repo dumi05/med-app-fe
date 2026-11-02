@@ -44,30 +44,47 @@ describe('ReportDelegationService', () => {
         expect(req.request.body).toBeNull();
         req.flush({});
     });
-    it('reads the shared reports with the token in the path', () => {
-        service.getSharedReports('abcd-123').subscribe();
+    it('sends the code typed by the caregiver, with the token of the delegation in the path', () => {
+        let result: unknown;
+        service.unlock('abcd-123', 'K7MQ-4XPD').subscribe((value) => (result = value));
+
+        const req = http.expectOne('/api/v1/report-delegations/abcd-123/access');
+        expect(req.request.method).toBe('POST');
+        expect(req.request.body).toEqual({ code: 'K7MQ-4XPD' });
+        req.flush({ accessToken: 'jwt', expiresInSeconds: 900 });
+
+        expect(result).toEqual({ accessToken: 'jwt', expiresInSeconds: 900 });
+    });
+    it('encodes the token of the unlock, too', () => {
+        service.unlock('a/b?c', 'K7MQ-4XPD').subscribe();
+        http.expectOne('/api/v1/report-delegations/a%2Fb%3Fc/access').flush({});
+    });
+    it('reads the shared reports with the token in the path and the access token in the header', () => {
+        service.getSharedReports('abcd-123', 'jwt').subscribe();
 
         const req = http.expectOne('/api/v1/report-delegations/abcd-123/medical-reports');
         expect(req.request.method).toBe('GET');
+        expect(req.request.headers.get('X-Delegation-Access')).toBe('jwt');
         req.flush([]);
     });
     it('encodes the token, so that it can never change the path', () => {
-        service.getSharedReports('a/b?c').subscribe();
+        service.getSharedReports('a/b?c', 'jwt').subscribe();
         http.expectOne('/api/v1/report-delegations/a%2Fb%3Fc/medical-reports').flush([]);
     });
-    it('downloads a shared attachment with the token and the report in the path', () => {
+    it('downloads a shared attachment with the token and the report in the path and the access token in the header', () => {
         let type = '';
-        service.downloadSharedAttachment('abcd-123', 7).subscribe((response) => (type = response.body!.type));
+        service.downloadSharedAttachment('abcd-123', 7, 'jwt').subscribe((response) => (type = response.body!.type));
 
         const req = http.expectOne('/api/v1/report-delegations/abcd-123/medical-reports/7/attachment');
         expect(req.request.method).toBe('GET');
         expect(req.request.responseType).toBe('blob');
+        expect(req.request.headers.get('X-Delegation-Access')).toBe('jwt');
         req.flush(new Blob(['%PDF-1.4'], { type: 'application/pdf' }));
 
         expect(type).toBe('application/pdf');
     });
     it('encodes the token of a download, too', () => {
-        service.downloadSharedAttachment('a/b?c', 7).subscribe();
+        service.downloadSharedAttachment('a/b?c', 7, 'jwt').subscribe();
         http.expectOne('/api/v1/report-delegations/a%2Fb%3Fc/medical-reports/7/attachment').flush(new Blob(['x']));
     });
 });

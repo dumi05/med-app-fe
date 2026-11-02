@@ -34,6 +34,7 @@ export class ReportDelegations implements OnInit {
     protected readonly sharedLink = signal<string | null>(null);
     protected readonly confirmingId = signal<number | null>(null);
     protected readonly busyId = signal<number | null>(null);
+    protected readonly createdCode = signal<string | null>(null);
 
     protected readonly form = this.formBuilder.group({
         delegateName: ['', Validators.required],
@@ -85,7 +86,8 @@ export class ReportDelegations implements OnInit {
                 this.delegations.update((l) => [created, ...(l ?? [])]);
                 this.form.reset();
                 this.sharedLink.set(delegationLink(created.token));
-                this.success.set('Delega creata. Copia il link qui sotto e condividilo con la persona scelta.');
+                this.createdCode.set(created.accessCode);
+                this.success.set('Delega creata. Qui sotto trovi il link e il codice di accesso: il codice non si vedrà più.');
                 this.loading.set(false);
             },
             error: (err: ApiError) => {
@@ -98,6 +100,7 @@ export class ReportDelegations implements OnInit {
     protected showLink(d: ReportDelegation): void {
         this.error.set(null);
         this.success.set(null);
+        this.createdCode.set(null);
         this.sharedLink.set(delegationLink(d.token));
     }
 
@@ -136,6 +139,7 @@ export class ReportDelegations implements OnInit {
                 this.delegations.update((l) => l?.map((x) => (x.id === updated.id ? updated : x)) ?? null);
                 this.confirmingId.set(null);
                 this.sharedLink.set(null);
+                this.createdCode.set(null);
                 this.success.set('Delega revocata con successo: il link non è più funzionante.');
                 this.busyId.set(null);
             },
@@ -145,5 +149,21 @@ export class ReportDelegations implements OnInit {
                 this.busyId.set(null);
             },
         });
+    }
+
+    protected async copyCode(): Promise<void> {
+        const code = this.createdCode();
+        if(code === null) {
+            return;
+        }
+
+        try{
+            await navigator.clipboard.writeText(code);
+            this.error.set(null);
+            this.success.set('Codice copiato negli appunti.');
+        } catch {
+            this.success.set(null);
+            this.error.set('La copia automatica non è riuscita: seleziona il codice e copialo a mano.');
+        }
     }
 }

@@ -34,6 +34,21 @@
             </div>
           }
         }
+      } @else {
+        <div class="card code-card">
+          <div class="card-body">
+            <h2 class="h5 card-title">Inserisci il codice di accesso</h2>
+            <p class="text-muted small">
+              Il link da solo non basta: serve anche il codice che la persona ti ha dato, di solito per telefono
+              o in un altro messaggio (per esempio <strong>K7MQ-4XPD</strong>).
+            </p>
+            <form [formGroup]="form" (ngSubmit)="unlock()" novalidate>
+              <app-form-field inputId="code" label="Codice di accesso" [control]="codeControl"
+                              autocomplete="off" errorText="Inserisci il codice" />
+              <app-submit-button label="Apri i referti" [loading]="unlocking()" />
+            </form>
+          </div>
+        </div>
       }
     </div>
   </div>

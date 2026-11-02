@@ -296,4 +296,78 @@ describe('ReportDelegations', () => {
 
     http.expectNone('/api/v1/report-delegations');
   });
+
+  it('shows the access code once, with the warning to give it by another way than the link', () => {
+    open([]);
+    fillInTheForm();
+    submit();
+
+    http.expectOne('/api/v1/report-delegations').flush(delegation(9, { token: 'new-token', accessCode: 'K7MQ-4XPD' }));
+    fixture.detectChanges();
+
+    expect((element().querySelector('#createdCode') as HTMLInputElement).value).toBe('K7MQ-4XPD');
+    expect(element().querySelector('.code-card')?.textContent).toContain('Non lo rivedrai');
+    expect(element().querySelector('.code-card')?.textContent).toContain('canale diverso');
+  });
+
+  it('does not show a code when the delegation is only listed or its link is shown again', () => {
+    open([delegation(1)]);
+    expect(element().querySelector('#createdCode')).toBeNull();
+
+    click('.show-link-button');
+
+    expect(element().querySelector('#createdCode')).toBeNull();
+  });
+
+  it('takes the code away when another link is shown', () => {
+    open([]);
+    fillInTheForm();
+    submit();
+    http.expectOne('/api/v1/report-delegations').flush(delegation(9, { accessCode: 'K7MQ-4XPD' }));
+    fixture.detectChanges();
+    expect(element().querySelector('#createdCode')).not.toBeNull();
+
+    click('tbody tr .show-link-button');
+
+    expect(element().querySelector('#createdCode')).toBeNull();
+  });
+
+  it('copies the code to the clipboard', async () => {
+    const write = spyOn(navigator.clipboard, 'writeText').and.resolveTo();
+    open([]);
+    fillInTheForm();
+    submit();
+    http.expectOne('/api/v1/report-delegations').flush(delegation(9, { accessCode: 'K7MQ-4XPD' }));
+    fixture.detectChanges();
+
+    click('.copy-code-button');
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(write).toHaveBeenCalledWith('K7MQ-4XPD');
+    expect(element().querySelector('.alert-success')?.textContent).toContain('Codice copiato');
+  });
+
+  it('asks to copy the code by hand when the browser refuses the clipboard', async () => {
+    spyOn(navigator.clipboard, 'writeText').and.rejectWith(new Error('denied'));
+    open([]);
+    fillInTheForm();
+    submit();
+    http.expectOne('/api/v1/report-delegations').flush(delegation(9, { accessCode: 'K7MQ-4XPD' }));
+    fixture.detectChanges();
+
+    click('.copy-code-button');
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(element().querySelector('.alert-danger')?.textContent).toContain('copialo a mano');
+    expect(element().querySelector('#createdCode')).not.toBeNull();
+  });
+
+  it('marks the delegations made before the code existed, because they cannot be opened', () => {
+    open([delegation(1), delegation(2, { hasAccessCode: false })]);
+
+    expect(rows()[0].querySelector('.no-code-badge')).toBeNull();
+    expect(rows()[1].querySelector('.no-code-badge')?.textContent).toContain('Senza codice');
+  });
 });

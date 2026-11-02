@@ -7,6 +7,8 @@ export interface ReportDelegation {
     expiresAt: string | null;
     revoked: boolean;
     active: boolean;
+    hasAccessCode: boolean;
+    accessCode: string | null;
     createdAt: string;
 }
 
@@ -15,6 +17,11 @@ export interface CreateReportDelegationRequest {
     delegateEmail: string;
     expiresAt: string | null;
     includeAttachments: boolean;
+}
+
+export interface AccessGrant {
+    accessToken: string;
+    expiresInSeconds: number;
 }
 
 export interface SharedMedicalReport {

@@ -12,7 +12,8 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
     return next(req).pipe(
         catchError((err: HttpErrorResponse) => {
             const isAuthCall = req.url.includes('/auth/');
-            if ((err.status === 401 || err.status === 403) && !isAuthCall && !auth.isLoggedIn()) {
+            const isCaregiverCall = /\/report-delegations\/[^/]+\/(access|medical-reports)/.test(req.url);
+            if ((err.status === 401 || err.status === 403) && !isAuthCall && !isCaregiverCall && !auth.isLoggedIn()) {
                 router.navigateByUrl('/login');
             }
             const apiError = toApiError(err);
