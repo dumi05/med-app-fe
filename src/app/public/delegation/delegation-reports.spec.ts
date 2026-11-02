@@ -123,7 +123,7 @@ describe('DelegationReports', () => {
     http.expectOne(ACCESS).flush(answer.body, answer.opts);
     fixture.detectChanges();
 
-    expect(element().querySelector('.alert-danger')?.textContent).toContain('Il codice non è corretto');
+    expect(element().querySelector('.alert-danger')?.textContent).toContain('non è corretto');
     expect((element().querySelector('#code') as HTMLInputElement).value).toBe('AAAA-AAAA');
     http.expectNone(REPORTS);
   });

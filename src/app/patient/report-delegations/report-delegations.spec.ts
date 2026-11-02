@@ -6,7 +6,7 @@ import { ReportDelegations } from './report-delegations';
 
 const delegation = (id: number, overrides: Record<string, unknown> = {}) => ({
   id, delegateName: 'Luigi Neri', delegateEmail: 'luigi@example.com', token: `token-${id}`,
-  expiresAt: '2099-12-31', revoked: false, active: true, createdAt: '2026-10-24T10:00:00Z', ...overrides,
+  expiresAt: '2099-12-31', revoked: false, hasAccessCode: true, active: true, createdAt: '2026-10-24T10:00:00Z', ...overrides,
 });
 
 describe('ReportDelegations', () => {
