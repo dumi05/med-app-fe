@@ -22,6 +22,12 @@
                 <a class="btn btn-sm btn-outline-primary" [routerLink]="['/patient/appointments', appointment.id, 'report']">Vedi referto</a>
               }
             </td>
+            <td>
+              <app-status-badge [status]="appointment.status" />
+              @if (appointment.bookedByRole === 'DOCTOR' || appointment.bookedByRole === 'ADMIN') {
+                <span class="badge text-bg-light border ms-1 booked-by-studio">Prenotata dallo studio</span>
+              }
+            </td>
           </tr>
         </ng-template>
       </app-data-table>

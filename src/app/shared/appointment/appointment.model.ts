@@ -10,10 +10,12 @@ export interface Appointment {
     patientFirstName: string;
     patientLastName: string;
     noShowRisk: boolean | null;
+    bookedByRole: 'PATIENT' | 'DOCTOR' | 'ADMIN';
 }
 
 export interface CreateAppointmentRequest {
     slotId: number;
+    patientId?: number;
 }
 
 export function hasReport(status: AppointmentStatus): boolean {

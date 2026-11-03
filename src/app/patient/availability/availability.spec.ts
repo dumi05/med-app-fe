@@ -382,4 +382,31 @@ describe('Availability', () => {
 
     expect(element().querySelector('.alert-danger')).not.toBeNull();
   });
+
+  // ---- with price
+
+  it('shows the price of the visit in every row of the list', () => {
+    open();
+    searchCardiology([{ ...slot(10, addDays(TODAY, 1), '09:00'), price: 120.5 }, { ...slot(11, addDays(TODAY, 1), '09:30'), price: 120.5 }]);
+
+    const prices = Array.from(element().querySelectorAll('.price')).map((p) => p.textContent!.replace(/\u00A0/g, ' ').trim());
+    expect(prices).toEqual(['120,50 €', '120,50 €']);
+  });
+
+  it('says that the price is to be defined when the list has none, and still lets the user book', () => {
+    open();
+    searchCardiology([{ ...slot(10, addDays(TODAY, 1), '09:00'), price: null }]);
+
+    expect(element().querySelector('.price')?.textContent).toContain('prezzo da definire');
+    expect(element().querySelector('.book-button')).not.toBeNull();
+  });
+
+  it('shows the cost again in the question that asks to confirm the booking', () => {
+    open();
+    searchCardiology([{ ...slot(10, addDays(TODAY, 1), '09:00'), price: 95 }]);
+
+    click('.book-button');
+
+    expect((element().querySelector('.confirm-price')?.textContent ?? '').replace(/\u00A0/g, ' ')).toContain('95,00 €');
+  });
 });

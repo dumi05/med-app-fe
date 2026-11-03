@@ -5,7 +5,8 @@ export interface Slot {
     doctorLastName: string;
     startTime: string;
     durationMinutes: number;
-    booked: boolean
+    booked: boolean;
+    price: number;
 }
 
 export interface CreateSlotRequest {

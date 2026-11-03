@@ -8,8 +8,8 @@ import { Observable } from "rxjs";
 export class AppointmentService {
     private readonly http = inject(HttpClient);
 
-    createAppointment(slotId: number): Observable<Appointment> {
-        const request: CreateAppointmentRequest = { slotId };
+    createAppointment(slotId: number, patientId?: number): Observable<Appointment> {
+        const request: CreateAppointmentRequest = patientId === undefined ? { slotId } : { slotId, patientId };
         return this.http.post<Appointment>(`${API_BASE}/appointments`, request);
     }
 

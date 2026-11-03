@@ -1,0 +1,94 @@
+<div class="container-fluid py-4">
+  <h1 class="h3 mb-3">Prenota per un paziente</h1>
+  <p class="text-muted">
+    Il paziente ha telefonato allo studio: cercalo (deve essere già registrato) e scegli un posto libero.
+  </p>
+
+  <app-alert-message [message]="error()" />
+  <app-alert-message [message]="success()" type="success" />
+
+  <h2 class="h5 mb-2">1. Il paziente</h2>
+  @if (patient(); as chosen) {
+    <p class="chosen-patient">
+      <strong>{{ chosen.firstName }} {{ chosen.lastName }}</strong>
+      <span class="text-muted ms-2">{{ chosen.email }}</span>
+      <button type="button" class="btn btn-sm btn-outline-secondary ms-3 change-patient-button" (click)="changePatient()">Cambia</button>
+    </p>
+  } @else {
+    <form [formGroup]="searchForm" (ngSubmit)="search()" novalidate class="row g-2 align-items-start mb-2">
+      <div class="col-12 col-md-6 col-lg-4">
+        <app-form-field inputId="query" label="Cognome, nome o email" [control]="searchControl"
+                        errorText="Scrivi almeno tre lettere" />
+      </div>
+      <div class="col-auto pt-md-4">
+        <button type="submit" class="btn btn-primary mt-md-2 search-button" [disabled]="searching()">Cerca</button>
+      </div>
+    </form>
+    @if (results(); as found) {
+      @if (found.length === 0) {
+        <p class="text-muted no-patients">Nessun paziente registrato con questi dati. Il paziente deve prima registrarsi.</p>
+      } @else {
+        <ul class="list-group mb-3 patient-results">
+          @for (candidate of found; track candidate.id) {
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <span>{{ candidate.lastName }} {{ candidate.firstName }} <span class="text-muted ms-2">{{ candidate.email }}</span></span>
+              <button type="button" class="btn btn-sm btn-primary choose-button" (click)="choose(candidate)">Scegli</button>
+            </li>
+          }
+        </ul>
+        @if (found.length === 10) {
+          <p class="text-muted small">Ci sono al massimo 10 risultati: scrivi di più per restringere la ricerca.</p>
+        }
+      }
+    }
+  }
+
+  @if (patient() !== null) {
+    <h2 class="h5 mb-2 mt-4">2. Il posto</h2>
+    @if (isAdmin) {
+      <div class="row">
+        <div class="col-12 col-md-6 col-lg-5">
+          <app-select-field inputId="doctor" label="Medico" [control]="doctorControl" [options]="doctorOptions()" />
+        </div>
+      </div>
+    }
+
+    @if (doctor() === null) {
+      <p class="text-muted no-doctor">Scegli un medico per vedere i suoi posti liberi.</p>
+    } @else {
+      @if (pendingSlot(); as slot) {
+        <div class="card border-primary mb-3">
+          <div class="card-body">
+            <p class="mb-2 confirm-text">
+              Prenotare per <strong>{{ patient()!.firstName }} {{ patient()!.lastName }}</strong> la visita con
+              <strong>{{ slot.doctorFirstName }} {{ slot.doctorLastName }}</strong> {{ when(slot) }} ({{ slot.durationMinutes }} min)?
+            </p>
+            <p class="mb-3 confirm-price">
+              Costo della visita: <strong>{{ slot.price == null ? 'da definire' : euro(slot.price) }}</strong>.
+            </p>
+            <button type="button" class="btn btn-primary me-2 confirm-button" [disabled]="booking()" (click)="confirm()">Conferma</button>
+            <button type="button" class="btn btn-outline-secondary cancel-button" [disabled]="booking()" (click)="cancel()">Annulla</button>
+          </div>
+        </div>
+      }
+
+      @if (slots() !== null && shownSlots().length === 0) {
+        <p class="text-muted no-slots">Nessun posto libero nei prossimi 30 giorni.</p>
+      }
+      <ul class="list-group mb-3 free-slots">
+        @for (slot of shownSlots(); track slot.id) {
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <span>
+              <strong>{{ shortDayLabel(dayOf(slot.startTime)) }}, {{ timeOf(slot.startTime) }}</strong>
+              <span class="text-muted ms-2">{{ slot.durationMinutes }} min</span>
+            </span>
+            <button type="button" class="btn btn-sm btn-primary book-button" [disabled]="booking()" (click)="ask(slot)">Prenota</button>
+          </li>
+        }
+      </ul>
+      @if (hasMore()) {
+        <button type="button" class="btn btn-outline-primary btn-sm more-button" (click)="showMore()">Mostra altri</button>
+      }
+    }
+  }
+</div>

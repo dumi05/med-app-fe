@@ -41,6 +41,9 @@
             Prenotare la visita con <strong>{{ slot.doctorFirstName }} {{ slot.doctorLastName }}</strong>
             {{ when(slot) }} ({{ slot.durationMinutes }} min)?
           </p>
+          <p class="mb-3 confirm-price">
+            Costo della visita: <strong>{{ slot.price == null ? 'da definire' : formatEuro(slot.price) }}</strong>, da pagare in studio.
+          </p>
           <button type="button" class="btn btn-primary me-2 confirm-button" [disabled]="booking()" (click)="confirmBooking()">Conferma</button>
           <button type="button" class="btn btn-outline-secondary cancel-button" [disabled]="booking()" (click)="cancelBooking()">Annulla</button>
         </div>
@@ -59,6 +62,7 @@
             <span>
               <strong>{{ shortDayLabel(dayOf(slot.startTime)) }}, {{ timeOf(slot.startTime) }}</strong>
               <span class="text-muted ms-2">{{ slot.doctorFirstName }} {{ slot.doctorLastName }} · {{ slot.durationMinutes }} min</span>
+              <span class="ms-2 price">{{ slot.price == null ? 'prezzo da definire' : formatEuro(slot.price) }}</span>
             </span>
             <button type="button" class="btn btn-sm btn-primary book-button" [disabled]="booking()" (click)="askBooking(slot)">Prenota</button>
           </li>

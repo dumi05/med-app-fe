@@ -64,5 +64,21 @@ describe('AppointmentService', () => {
     req.flush({...APPOINTMENT, status: 'COMPLETED', noShowRisk: false});
 
     expect((result as {status: string}).status).toBe('COMPLETED');
-  })
+  });
+
+  it('books for a patient when a doctor or the admin say who', () => {
+    service.createAppointment(10, 42).subscribe();
+
+    const req = http.expectOne('/api/v1/appointments');
+    expect(req.request.body).toEqual({ slotId: 10, patientId: 42 });
+    req.flush(APPOINTMENT);
+  });
+
+  it('sends no patient when the patient books for themselves', () => {
+    service.createAppointment(10).subscribe();
+
+    const req = http.expectOne('/api/v1/appointments');
+    expect(Object.keys(req.request.body)).toEqual(['slotId']);
+    req.flush(APPOINTMENT);
+  });
 });

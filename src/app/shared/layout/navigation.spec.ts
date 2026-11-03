@@ -9,6 +9,11 @@ describe('navItemsFor',  () => {
         expect(areaOf('ADMIN').every((item) => item.path.startsWith('/admin'))).toBeTrue();
     });
 
+    it('lets the doctor and the admin book for a patient', () => {
+        expect(navItemsFor('DOCTOR').map((item) => item.path)).toContain('/doctor/book');
+        expect(navItemsFor('ADMIN').map((item) => item.path)).toContain('/admin/book');
+    });
+
     it('every role can change the password: the same last link', () => {
         for (const role of ['PATIENT', 'DOCTOR', 'ADMIN'] as const) {
             expect(navItemsFor(role).at(-1)).toEqual({ label: 'Cambia password', path: '/account/password' });

@@ -15,6 +15,10 @@ export const ADMIN_ROUTES: Routes = [
         loadComponent: () => import('./dashboard/dashboard').then((m) => m.Dashboard)
     },
     {
+        path: 'book',
+        loadComponent: () => import('../shared/booking/book-for-patient/book-for-patient').then((m) => m.BookForPatient)
+    },
+    {
         path: 'specializations',
         loadComponent: () => import('./specializations/specializations').then((m) => m.Specializations)
     },

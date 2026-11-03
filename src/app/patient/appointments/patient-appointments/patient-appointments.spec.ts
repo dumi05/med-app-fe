@@ -90,5 +90,17 @@ describe('PatientAppointments', () => {
     expect(rows[0].textContent).toContain('Referto disponibile');
     expect(rows[0].querySelector('a')!.textContent).toContain('Vedi referto');
     expect(rows[1].querySelector('a')).toBeNull();
-  })
+  });
+
+  it('says when the studio made the booking, and says nothing when the patient did', () => {
+    open([
+      { ...appointment(1, 'BOOKED'), bookedByRole: 'DOCTOR' },
+      { ...appointment(2, 'BOOKED'), bookedByRole: 'ADMIN' },
+      { ...appointment(3, 'BOOKED'), bookedByRole: 'PATIENT' },
+      appointment(4, 'BOOKED'),
+    ]);
+
+    const notes = Array.from(element().querySelectorAll('tbody tr')).map((row) => row.querySelector('.booked-by-studio') !== null);
+    expect(notes).toEqual([true, true, false, false]);
+  });
 });

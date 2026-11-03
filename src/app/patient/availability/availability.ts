@@ -6,7 +6,7 @@ import { AppointmentService } from '../../shared/appointment/appointment.service
 import { Appointment } from '../../shared/appointment/appointment.model';
 import { Doctor } from '../../shared/doctor/doctor.model';
 import { DoctorService } from '../../shared/doctor/doctor.service';
-import { todayIso } from '../../shared/format/format';
+import { formatEuro, todayIso } from '../../shared/format/format';
 import { ApiError } from '../../shared/http/api-error';
 import { userMessage } from '../../shared/http/error-messages';
 import { ScheduleService } from '../../shared/schedule/schedule.service';
@@ -56,6 +56,7 @@ export class Availability implements OnInit {
   protected readonly error = signal<string | null>(null);
   protected readonly success = signal<string | null>(null);
   private searchId = 0;
+  protected readonly formatEuro = formatEuro;
 
   protected readonly form = this.formBuilder.group({
     specializationId: ['', [Validators.required]],

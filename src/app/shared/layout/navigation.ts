@@ -17,12 +17,14 @@ const NAV_ITEMS: Record<Role, NavItem[]> = {
         { label: 'Home', path: '/doctor'}, 
         { label: 'Agenda', path: '/doctor/schedule'}, 
         {label: 'Le mie visite', path: '/doctor/visits'},
+        {label: 'Prenota per un paziente', path: '/doctor/book'},
         { label: 'Deleghe', path: '/doctor/delegations'}
     ],
     ADMIN: [
         { label: 'Home', path: '/admin'}, 
         { label: 'Medici', path: '/admin/doctors' },
         { label: 'Agenda medici', path: '/admin/schedule' },
+        {label: 'Prenota per un paziente', path: '/admin/book'},
         { label: 'Specializzazioni', path: '/admin/specializations'}, 
         { label: 'Dashboard', path: '/admin/dashboard'},
         { label: 'Listino', path: '/admin/price-list'}
