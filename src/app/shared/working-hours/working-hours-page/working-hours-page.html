@@ -1,0 +1,63 @@
+<div class="container-fluid py-4">
+  <h1 class="h3 mb-3">Orari di lavoro</h1>
+  <p class="text-muted">
+    Per ogni giorno scegli le fasce in cui si ricevono i pazienti (per esempio mattino e pomeriggio). I posti da 30 minuti
+    vengono creati da soli per le prossime otto settimane. La domenica è sempre chiusa.
+  </p>
+
+  <app-alert-message [message]="error()" />
+  <app-alert-message [message]="success()" type="success" />
+
+  @if (isAdmin) {
+    <div class="row">
+      <div class="col-12 col-md-6 col-lg-5">
+        <app-select-field inputId="doctor" label="Medico" [control]="doctorControl" [options]="doctorOptions()" />
+      </div>
+    </div>
+  }
+
+  @if (!loaded()) {
+    @if (isAdmin) {
+      <p class="text-muted no-doctor">Scegli un medico per vedere e cambiare i suoi orari.</p>
+    }
+  } @else {
+    <div class="row g-3 mb-3">
+      @for (day of days; track day.key) {
+        <div class="col-12 col-md-6 col-xl-4">
+          <div class="card h-100" [attr.data-day]="day.key">
+            <div class="card-body">
+              <h2 class="h6 d-flex justify-content-between align-items-center">
+                {{ day.label }}
+                <button type="button" class="btn btn-sm btn-outline-primary add-band-button" [disabled]="week()[day.key].length >= maxBands"
+                        (click)="addBand(day.key)">Aggiungi fascia</button>
+              </h2>
+              @if (week()[day.key].length === 0) {
+                <p class="text-muted small mb-0 closed">Chiuso</p>
+              }
+              @for (band of week()[day.key]; track $index) {
+                <div class="d-flex align-items-center gap-2 mb-2 band">
+                  <input type="time" step="300" class="form-control form-control-sm start-input" [value]="band.start"
+                         [attr.aria-label]="day.label + ': dalle'" (input)="setTime(day.key, $index, 'start', $any($event.target).value)" />
+                  <span>–</span>
+                  <input type="time" step="300" class="form-control form-control-sm end-input" [value]="band.end"
+                         [attr.aria-label]="day.label + ': alle'" (input)="setTime(day.key, $index, 'end', $any($event.target).value)" />
+                  <button type="button" class="btn btn-sm btn-outline-danger remove-band-button" aria-label="Togli la fascia"
+                          (click)="removeBand(day.key, $index)">&times;</button>
+                </div>
+              }
+              @if (tried() && problems()[day.key]; as problem) {
+                <p class="text-danger small mb-0 problem">{{ problem }}</p>
+              }
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+
+    <p class="text-muted small">
+      Salvando, i posti liberi futuri vengono rifatti secondo il nuovo orario. I posti già prenotati, quelli creati a mano e
+      quelli di una visita cancellata restano come sono.
+    </p>
+    <button type="button" class="btn btn-primary save-button" [disabled]="saving()" (click)="save()">Salva gli orari</button>
+  }
+</div>

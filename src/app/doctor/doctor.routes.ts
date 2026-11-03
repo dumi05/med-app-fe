@@ -22,6 +22,11 @@ export const DOCTOR_ROUTES: Routes = [
                                 .then((m) => m.AppointmentReport),
     },
     {
+        path: 'hours',
+        loadComponent: () => import('../shared/working-hours/working-hours-page/working-hours-page')
+                                .then((m) => m.WorkingHoursPage),
+    },
+    {
         path: 'book',
         loadComponent: () => import('../shared/booking/book-for-patient/book-for-patient')
                                 .then((m) => m.BookForPatient),
