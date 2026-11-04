@@ -1,0 +1,36 @@
+<div class="card h-100 news-card">
+  <div class="card-body">
+    <h2 class="h5">Avvisi dallo studio</h2>
+    @if (error(); as message) {
+      <p class="text-danger small news-error">{{ message }}</p>
+    }
+    @if (news() === null) {
+      <p class="text-muted mb-0">&nbsp;</p>
+    } @else if (news()!.length === 0) {
+      <p class="text-muted mb-0 no-news">Nessun avviso al momento.</p>
+    } @else {
+      <ul class="list-group list-group-flush">
+        @for (item of news(); track item.id) {
+          <li class="list-group-item px-0 news-item">
+            <p class="fw-semibold mb-1">{{ item.title }}</p>
+            <p class="pre-wrap mb-1">{{ item.body }}</p>
+            <p class="text-muted small mb-0">
+              Dott. {{ item.authorFirstName }} {{ item.authorLastName }} · {{ item.createdAt | date: 'dd/MM/yyyy' }}
+              · fino al {{ formatDate(item.expiresAt) }}
+            </p>
+            @if (canRemove && !item.automatic) {
+              <div class="mt-2">
+                @if (confirmingId() === item.id) {
+                  <button type="button" class="btn btn-sm btn-danger confirm-remove-button me-2" [disabled]="busyId() !== null" (click)="remove(item)">Conferma</button>
+                  <button type="button" class="btn btn-sm btn-outline-secondary cancel-remove-button" (click)="cancelRemove()">Annulla</button>
+                } @else {
+                  <button type="button" class="btn btn-sm btn-outline-danger remove-button" (click)="askRemove(item)">Togli l'avviso</button>
+                }
+              </div>
+            }
+          </li>
+        }
+      </ul>
+    }
+  </div>
+</div>

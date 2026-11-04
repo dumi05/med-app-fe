@@ -9,6 +9,10 @@ describe('navItemsFor',  () => {
         expect(areaOf('ADMIN').every((item) => item.path.startsWith('/admin'))).toBeTrue();
     });
 
+    it('lets the doctor to create news', () => {
+        expect(navItemsFor('DOCTOR').map((item) => item.path)).toContain('/doctor/news');
+    })
+
     it('lets the doctor and the admin book for a patient', () => {
         expect(navItemsFor('DOCTOR').map((item) => item.path)).toContain('/doctor/book');
         expect(navItemsFor('ADMIN').map((item) => item.path)).toContain('/admin/book');

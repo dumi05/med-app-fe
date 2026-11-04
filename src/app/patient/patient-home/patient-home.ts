@@ -9,6 +9,7 @@ import { ApiError } from '../../shared/http/api-error';
 import { userMessage } from '../../shared/http/error-messages';
 import { dayLabel } from '../../shared/calendar/calendar-grid';
 import { dayOf, timeOf } from '../../shared/schedule/slot-time';
+import { NewsCard } from '../../shared/news/news-card/news-card';
 
 const LATEST_REPORTS = 3;
 
@@ -16,7 +17,7 @@ const byStart = (a: Appointment, b: Appointment) => a.slot.startTime.localeCompa
 
 @Component({
   selector: 'app-patient-home',
-  imports: [RouterLink,AlertMessage,Shortcuts],
+  imports: [RouterLink,AlertMessage,Shortcuts,NewsCard],
   templateUrl: './patient-home.html',
   styleUrl: './patient-home.scss',
 })

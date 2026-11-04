@@ -14,12 +14,13 @@ import { ApiError } from '../../shared/http/api-error';
 import { userMessage } from '../../shared/http/error-messages';
 import { addDays } from '../../shared/calendar/calendar-grid';
 import { forkJoin } from 'rxjs';
+import { NewsCard } from '../../shared/news/news-card/news-card';
 
 const AGENDA_DAYS = 7;
 
 @Component({
   selector: 'app-doctor-home',
-  imports: [RouterLink, Shortcuts, StatCard],
+  imports: [RouterLink, Shortcuts, StatCard, NewsCard],
   templateUrl: './doctor-home.html',
   styleUrl: './doctor-home.scss',
 })

@@ -22,6 +22,10 @@ export const DOCTOR_ROUTES: Routes = [
                                 .then((m) => m.AppointmentReport),
     },
     {
+        path: 'news',
+        loadComponent: () => import('./news/doctor-news').then((m) => m.DoctorNews)
+    },
+    {
         path: 'hours',
         loadComponent: () => import('../shared/working-hours/working-hours-page/working-hours-page')
                                 .then((m) => m.WorkingHoursPage),

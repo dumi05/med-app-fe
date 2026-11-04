@@ -33,6 +33,7 @@ describe('PatientHome', () => {
 
   afterEach(() => {
     try {
+      http.match('/api/v1/news').forEach((request) => request.flush([]));
       http.verify();
     } finally {
       jasmine.clock().uninstall();
@@ -125,5 +126,16 @@ describe('PatientHome', () => {
 
     expect(element().querySelector('.alert-danger')?.textContent).toContain('errore imprevisto');
     expect(element().querySelectorAll('a.shortcut').length).toBeGreaterThan(0);
+  });
+
+  it('shows the notices of the studio in the Home', () => {
+    open([]);
+    http.expectOne('/api/v1/news').flush([
+      { id: 1, title: 'Studio chiuso il 24', body: 'Riapriamo il 27.', authorFirstName: 'Mario', authorLastName: 'Rossi',
+        createdAt: '2026-11-02T09:00:00', expiresAt: '2026-12-24', automatic: false },
+    ]);
+    fixture.detectChanges();
+
+    expect(element().querySelector('app-news-card')?.textContent).toContain('Studio chiuso il 24');
   });
 });

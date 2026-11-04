@@ -1,0 +1,67 @@
+<div class="container-fluid py-4">
+  <h1 class="h3 mb-3">Avvisi per i pazienti</h1>
+  <p class="text-muted">
+    Quello che scrivi qui lo leggono tutti i pazienti nella loro Home, fino al giorno che indichi (per esempio
+    una chiusura, o un collega da contattare). È solo testo.
+  </p>
+
+  <app-alert-message [message]="error()" />
+  <app-alert-message [message]="success()" type="success" />
+
+  <div class="row g-4">
+    <div class="col-12 col-lg-5">
+      <h2 class="h5 mb-3">Nuovo avviso</h2>
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        <app-form-field inputId="title" label="Titolo" [control]="form.controls.title"
+                        errorText="Scrivi il titolo (al massimo 120 caratteri)" />
+        <app-form-field inputId="body" label="Testo" type="textarea" [control]="form.controls.body"
+                        errorText="Scrivi il testo (al massimo 2000 caratteri)" />
+        <p class="small text-muted body-counter">{{ bodyLength() }} / {{ maxBodyLength }}</p>
+        <app-form-field inputId="expiresAt" label="Visibile fino al" type="date" [control]="form.controls.expiresAt"
+                        errorText="Scegli un giorno da oggi a un anno da oggi" />
+        <app-submit-button label="Pubblica l'avviso" [loading]="loading()" />
+      </form>
+    </div>
+
+    <div class="col-12 col-lg-7">
+      <h2 class="h5 mb-3">I tuoi avvisi</h2>
+      @if (news(); as list) {
+        @if (list.length === 0) {
+          <p class="text-muted no-news">Non hai ancora scritto avvisi.</p>
+        } @else {
+          <ul class="list-group">
+            @for (item of list; track item.id) {
+              <li class="list-group-item news-item">
+                <div class="d-flex justify-content-between align-items-start">
+                  <p class="fw-semibold mb-1">{{ item.title }}</p>
+                  <span>
+                    @if (item.automatic) {
+                      <span class="badge text-bg-info automatic-badge">Automatico (assenza)</span>
+                    }
+                    @if (isExpired(item)) {
+                      <span class="badge text-bg-secondary expired-badge ms-1">Scaduto</span>
+                    }
+                  </span>
+                </div>
+                <p class="pre-wrap mb-1">{{ item.body }}</p>
+                <p class="text-muted small mb-0">Pubblicato il {{ item.createdAt | date: 'dd/MM/yyyy' }} · fino al {{ formatDate(item.expiresAt) }}</p>
+                @if (!item.automatic) {
+                  <div class="mt-2">
+                    @if (confirmingId() === item.id) {
+                      <button type="button" class="btn btn-sm btn-danger confirm-remove-button me-2" [disabled]="busyId() !== null" (click)="remove(item)">Conferma</button>
+                      <button type="button" class="btn btn-sm btn-outline-secondary cancel-remove-button" (click)="cancelRemove()">Annulla</button>
+                    } @else {
+                      <button type="button" class="btn btn-sm btn-outline-danger remove-button" (click)="askRemove(item)">Togli l'avviso</button>
+                    }
+                  </div>
+                } @else {
+                  <p class="small text-muted mb-0 mt-2">Si toglie annullando l'assenza.</p>
+                }
+              </li>
+            }
+          </ul>
+        }
+      }
+    </div>
+  </div>
+</div>

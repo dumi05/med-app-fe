@@ -12,12 +12,13 @@ import { formatEuro, formatPercent } from '../../shared/format/format';
 import { actionLabel } from '../../shared/audit/audit-labels';
 import { ApiError } from '../../shared/http/api-error';
 import { userMessage } from '../../shared/http/error-messages';
+import { NewsCard } from '../../shared/news/news-card/news-card';
 
 const LATEST_ACTIVITY = 10;
 
 @Component({
   selector: 'app-admin-home',
-  imports: [DatePipe, Shortcuts, StatCard],
+  imports: [DatePipe, Shortcuts, StatCard, NewsCard],
   templateUrl: './admin-home.html',
   styleUrl: './admin-home.scss',
 })
