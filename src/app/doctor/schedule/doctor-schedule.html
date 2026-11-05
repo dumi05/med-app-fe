@@ -8,6 +8,11 @@
     <div class="col-12 col-lg-7">
       <app-month-calendar [month]="month()" [summaries]="summaries()" [selectedDay]="selectedDay()"
                           (monthChange)="changeMonth($event)" (daySelect)="selectDay($event)" />
+      @if (selectedDayAway()) {
+          <div class="alert alert-warning on-leave" role="alert">
+            Sei assente in questo giorno: i posti liberi non si possono prenotare.
+          </div>
+      }
       <p class="small text-muted mt-2 mb-4">
         <span class="badge text-bg-success">n</span> posti liberi
         <span class="badge text-bg-info ms-2">n</span> prenotati
@@ -25,7 +30,11 @@
                 @if (slot.booked) {
                   <span><span class="badge text-bg-info me-2">Prenotato</span><a routerLink="/doctor/visits">Le mie visite</a></span>
                 } @else {
-                  <span class="badge text-bg-success">Libero</span>
+                  @if (selectedDayAway()) {
+                    <span class="badge text-bg-secondary not-bookable">Non prenotabile</span>
+                  } @else {
+                    <span class="badge text-bg-success">Libero</span>
+                  }
                 }
               </li>
             }

@@ -3,6 +3,25 @@
 
   <app-alert-message [message]="error()" />
 
+  @if (changedVisits().length > 0) {
+    <div class="alert alert-warning changed-visits" role="alert">
+      <p class="fw-semibold mb-2">Alcune tue visite sono cambiate perché il medico è assente</p>
+      <ul class="mb-2">
+        @for (visit of changedVisits(); track visit.id) {
+          <li>
+            {{ when(visit) }} con {{ visit.slot.doctorFirstName }} {{ visit.slot.doctorLastName }}:
+            @if (visit.status === 'CANCELLED') {
+              <strong>annullata</strong>
+            } @else {
+              <strong>spostata</strong> (era con il dott. {{ visit.reassignedFromName }})
+            }
+          </li>
+        }
+      </ul>
+      <a routerLink="/patient/appointments" class="alert-link">Vai alle tue prenotazioni</a>
+    </div>
+  }
+
   <div class="row g-4 mb-4">
     <div class="col-12 col-lg-6">
       <div class="card h-100">

@@ -21,6 +21,11 @@
               } @else if (hasReport(appointment.status)) {
                 <a class="btn btn-sm btn-outline-primary" [routerLink]="['/patient/appointments', appointment.id, 'report']">Vedi referto</a>
               }
+              @if (appointment.status === 'BOOKED' && appointment.reassignedFromName) {
+                <div class="small text-muted mt-1 reassigned">Spostata: il dott. {{ appointment.reassignedFromName }} è assente, ti riceve il dott. {{ appointment.slot.doctorLastName }}.</div>
+              } @else if (appointment.status === 'CANCELLED' && appointment.cancellationReason === 'DOCTOR_ABSENCE') {
+                <div class="small text-muted mt-1 cancelled-by-absence">Annullata: il medico è assente. <a routerLink="/patient/availability">Prenota un'altra visita</a>.</div>
+              }
             </td>
             <td>
               <app-status-badge [status]="appointment.status" />

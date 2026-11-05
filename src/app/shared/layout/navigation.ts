@@ -19,6 +19,7 @@ const NAV_ITEMS: Record<Role, NavItem[]> = {
         { label: 'Le mie visite', path: '/doctor/visits'},
         { label: 'Prenota per un paziente', path: '/doctor/book'},
         { label: 'Orari di lavoro', path: '/doctor/hours'},
+        { label: 'Assenze', path: '/doctor/leaves'},
         { label: 'Avvisi', path: '/doctor/news'},
         { label: 'Deleghe', path: '/doctor/delegations'}
     ],
@@ -28,6 +29,7 @@ const NAV_ITEMS: Record<Role, NavItem[]> = {
         { label: 'Agenda medici', path: '/admin/schedule' },
         { label: 'Prenota per un paziente', path: '/admin/book'},
         { label: 'Orari dei medici', path: '/admin/hours'},
+        { label: 'Assenze dei medici', path : '/admin/leaves'},
         { label: 'Specializzazioni', path: '/admin/specializations'}, 
         { label: 'Dashboard', path: '/admin/dashboard'},
         { label: 'Listino', path: '/admin/price-list'}

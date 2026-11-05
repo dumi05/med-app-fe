@@ -14,6 +14,9 @@ import { Slot } from '../../shared/schedule/slot.model';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { dayOf, timeRange } from '../../shared/schedule/slot-time';
 import { planProblem, planSlots } from '../../shared/schedule/plan-slots';
+import { DoctorLeave } from '../../shared/leaves/leave.model';
+import { isAway } from '../../shared/leaves/leave-rules';
+import { LeaveService } from '../../shared/leaves/leave.service';
 
 @Component({
   selector: 'app-doctor-schedule',
@@ -24,6 +27,7 @@ export class DoctorSchedule {
 
   private readonly formBuilder = inject(NonNullableFormBuilder);
   private readonly scheduleService = inject(ScheduleService);
+  private readonly leaveService = inject(LeaveService);
 
   protected readonly month = signal(monthOf(todayIso()));
   protected readonly slots = signal<Slot[]>([]);
@@ -32,6 +36,12 @@ export class DoctorSchedule {
   protected readonly loading = signal(false);
   protected readonly error = signal<string | null>(null);
   protected readonly success = signal<string | null>(null);
+
+  private readonly leaves = signal<DoctorLeave[]>([]);
+  protected readonly selectedDayAway = computed(() => {
+    const day = this.selectedDay();
+    return day !== null && isAway(this.leaves(), day);
+  });
 
   protected readonly form = this.formBuilder.group({
     date: ['', [Validators.required]],
@@ -87,6 +97,7 @@ export class DoctorSchedule {
 
   ngOnInit(): void {
     this.load();
+    this.leaveService.getUpcoming().subscribe({ next: (leaves) => this.leaves.set(leaves), error: () => this.leaves.set([]) });
   }
 
   protected changeMonth(delta: number): void {

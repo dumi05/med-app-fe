@@ -3,7 +3,7 @@ import { RouterLink } from '@angular/router';
 import { AlertMessage } from '../../shared/ui/alert-message/alert-message';
 import { Shortcuts } from '../../shared/ui/shortcuts/shortcuts';
 import { AppointmentService } from '../../shared/appointment/appointment.service';
-import { Appointment, hasReport } from '../../shared/appointment/appointment.model';
+import { Appointment, changedByAbsence, hasReport } from '../../shared/appointment/appointment.model';
 import { formatDate, nowIso } from '../../shared/format/format';
 import { ApiError } from '../../shared/http/api-error';
 import { userMessage } from '../../shared/http/error-messages';
@@ -33,6 +33,13 @@ export class PatientHome implements OnInit{
     return (this.appointments() ?? []) 
       .filter((app) => app.status === 'BOOKED' && app.slot.startTime > now)
       .sort(byStart)[0] ?? null;
+  });
+
+  protected readonly changedVisits = computed(() => {
+    const now = nowIso();
+    return (this.appointments() ?? [])
+      .filter((app) => changedByAbsence(app) && app.slot.startTime > now)
+      .sort(byStart);
   });
 
   protected readonly latestReports = computed(() => 

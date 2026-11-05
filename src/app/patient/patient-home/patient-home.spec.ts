@@ -138,4 +138,29 @@ describe('PatientHome', () => {
 
     expect(element().querySelector('app-news-card')?.textContent).toContain('Studio chiuso il 24');
   });
+  
+  it('warns about the visits to come that the absence of a doctor moved or cancelled, and only those', () => {
+    open([
+      { ...appointment(1, 'BOOKED', '2026-11-12T09:00:00', 'Bianchi'), reassignedFromName: 'Mario Rossi' },
+      { ...appointment(2, 'CANCELLED', '2026-11-13T09:00:00'), cancellationReason: 'DOCTOR_ABSENCE' },
+      { ...appointment(3, 'CANCELLED', '2026-10-01T09:00:00'), cancellationReason: 'DOCTOR_ABSENCE' },
+      { ...appointment(4, 'CANCELLED', '2026-11-14T09:00:00'), cancellationReason: 'PATIENT' },
+      appointment(5, 'BOOKED', '2026-11-15T09:00:00'),
+      // moved to a colleague, and then cancelled by the patient: it is not a change of the absence any more
+      { ...appointment(6, 'CANCELLED', '2026-11-16T09:00:00'), reassignedFromName: 'Mario Rossi', cancellationReason: 'PATIENT' },
+    ]);
+
+    const items = element().querySelectorAll('.changed-visits li');
+    expect(items.length).toBe(2);
+    expect(items[0].textContent).toContain('spostata');
+    expect(items[0].textContent).toContain('era con il dott. Mario Rossi');
+    expect(items[0].textContent).toContain('Luca Bianchi');
+    expect(items[1].textContent).toContain('annullata');
+  });
+
+  it('does not show the warning when no visit was changed by an absence', () => {
+    open([appointment(1, 'BOOKED', '2026-11-12T09:00:00'), { ...appointment(2, 'CANCELLED', '2026-11-13T09:00:00'), cancellationReason: 'PATIENT' }]);
+
+    expect(element().querySelector('.changed-visits')).toBeNull();
+  });
 });

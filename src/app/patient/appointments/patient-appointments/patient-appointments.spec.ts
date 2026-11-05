@@ -57,6 +57,36 @@ describe('PatientAppointments', () => {
     expect(element().querySelector('table')).toBeNull();
   });
 
+  it('says that a visit was moved to a colleague because the doctor is away, with who was away', () => {
+    open([
+      { ...appointment(1, 'BOOKED'), reassignedFromName: 'Mario Rossi', reassignedAt: '2026-11-02T10:00:00Z' },
+      appointment(2, 'BOOKED'),
+    ]);
+
+    const rows = element().querySelectorAll('tbody tr');
+    expect(rows[0].querySelector('.reassigned')?.textContent).toContain('il dott. Mario Rossi è assente');
+    expect(rows[0].querySelector('.reassigned')?.textContent).toContain('ti riceve il dott. Verdi');
+    expect(rows[1].querySelector('.reassigned')).toBeNull();
+  });
+
+  it('says that a visit was cancelled because the doctor is away, and offers to book another; a visit cancelled by the patient says nothing', () => {
+    open([
+      { ...appointment(1, 'CANCELLED'), cancellationReason: 'DOCTOR_ABSENCE' },
+      { ...appointment(2, 'CANCELLED'), cancellationReason: 'PATIENT' },
+      appointment(3, 'CANCELLED'),
+      { ...appointment(4, 'CANCELLED'), reassignedFromName: 'Mario Rossi', cancellationReason: 'PATIENT' },
+    ]);
+
+    const rows = element().querySelectorAll('tbody tr');
+    expect(rows[0].querySelector('.cancelled-by-absence')?.textContent).toContain('il medico è assente');
+    expect(rows[0].querySelector('.cancelled-by-absence a')?.getAttribute('href')).toBe('/patient/availability');
+    expect(rows[1].querySelector('.cancelled-by-absence')).toBeNull();
+    expect(rows[2].querySelector('.cancelled-by-absence')).toBeNull();
+    // moved to a colleague and then cancelled by the patient: neither of the two notes
+    expect(rows[3].querySelector('.cancelled-by-absence')).toBeNull();
+    expect(rows[3].querySelector('.reassigned')).toBeNull();
+  });
+
   it('cancels an appointment and updates its status in the table', () => {
     open([appointment(1, 'BOOKED')]);
 

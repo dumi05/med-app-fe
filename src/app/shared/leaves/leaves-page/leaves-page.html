@@ -1,0 +1,127 @@
+<div class="container-fluid py-4">
+  <h1 class="h3 mb-3">{{ isAdmin ? 'Assenze dei medici' : 'Le mie assenze' }}</h1>
+  <p class="text-muted">
+    Quando un medico è assente, le visite già prenotate in quei giorni passano a un collega della stessa specializzazione
+    (allo stesso orario, se è libero) oppure si annullano. I pazienti leggono un avviso nella loro Home. Prima di confermare
+    puoi vedere che cosa succede.
+  </p>
+
+  <app-alert-message [message]="error()" />
+  <app-alert-message [message]="success()" type="success" />
+
+  @if (isAdmin) {
+    <div class="row">
+      <div class="col-12 col-md-6 col-lg-5">
+        <app-select-field inputId="doctor" label="Medico" [control]="doctorControl" [options]="doctorOptions()" />
+      </div>
+    </div>
+  }
+
+  @if (subject() === null) {
+    @if (isAdmin) {
+      <p class="text-muted no-doctor">Scegli un medico per vedere e registrare le sue assenze.</p>
+    }
+  } @else {
+    <div class="row g-4">
+      <div class="col-12 col-lg-5">
+        <h2 class="h5 mb-3">Nuova assenza</h2>
+        <form [formGroup]="form" (ngSubmit)="check()" novalidate>
+          <app-form-field inputId="startDate" label="Primo giorno di assenza" type="date"
+                          [control]="form.controls.startDate" errorText="Scegli il primo giorno" />
+          <app-form-field inputId="endDate" label="Ultimo giorno di assenza (incluso)" type="date"
+                          [control]="form.controls.endDate" errorText="Scegli l'ultimo giorno" />
+          <app-select-field inputId="replacement" label="Collega che prende le visite" [control]="form.controls.replacement"
+                            [options]="replacementOptions()" />
+          @if (tried() && problem(); as text) {
+            <p class="text-danger small problem">{{ text }}</p>
+          }
+          <button type="submit" class="btn btn-primary w-100 check-button" [disabled]="checking()">Controlla cosa succede</button>
+        </form>
+      </div>
+
+      <div class="col-12 col-lg-7">
+        @if (preview(); as result) {
+          <h2 class="h5 mb-3">Che cosa succede</h2>
+          @if (result.shortNotice) {
+            <div class="alert alert-danger short-notice" role="alert">
+              Preavviso breve (meno di 7 giorni): i pazienti hanno poco tempo per organizzarsi.
+            </div>
+          }
+          <p class="summary">
+            Visite che passano al collega: <strong class="reassign-count">{{ result.reassign }}</strong>.
+            Visite che si annullano: <strong class="cancel-count">{{ result.cancel }}</strong>.
+          </p>
+          @if (result.appointments.length === 0) {
+            <p class="text-muted no-appointments">Nessuna visita prenotata in quel periodo.</p>
+          } @else {
+            <table class="table table-sm affected">
+              <thead><tr><th>Quando</th><th>Paziente</th><th>Che cosa succede</th></tr></thead>
+              <tbody>
+                @for (item of result.appointments; track item.id) {
+                  <tr>
+                    <td>{{ item.startTime | date: 'dd/MM/yyyy HH:mm' }}</td>
+                    <td>{{ item.patientFirstName }} {{ item.patientLastName }}</td>
+                    <td>
+                      @if (item.outcome === 'REASSIGN') {
+                        <span class="badge text-bg-success outcome-reassign">Passa al collega</span>
+                      } @else {
+                        <span class="badge text-bg-danger outcome-cancel">Si annulla</span>
+                      }
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          }
+          <h3 class="h6">L'avviso che leggeranno i pazienti</h3>
+          <div class="border rounded p-3 mb-3 bg-light news-preview">
+            <p class="fw-semibold mb-1 news-title">{{ result.newsTitle }}</p>
+            <p class="mb-0 news-body">{{ result.newsBody }}</p>
+          </div>
+          <button type="button" class="btn btn-primary me-2 confirm-button" [disabled]="saving()" (click)="confirm()">Conferma l'assenza</button>
+          <button type="button" class="btn btn-outline-secondary discard-button" (click)="discardPreview()">Annulla</button>
+        }
+      </div>
+    </div>
+
+    <h2 class="h5 mt-4 mb-3">Assenze in programma</h2>
+    @if (leaves(); as list) {
+      @if (list.length === 0) {
+        <p class="text-muted no-leaves">Nessuna assenza in programma.</p>
+      } @else {
+        <ul class="list-group">
+          @for (leave of list; track leave.id) {
+            <li class="list-group-item leave-item">
+              <div class="d-flex justify-content-between align-items-center">
+                <span>
+                  Dal <strong>{{ formatDate(leave.startDate) }}</strong> al <strong>{{ formatDate(leave.endDate) }}</strong> (incluso)
+                  <span class="text-muted">
+                    ·
+                    @if (leave.replacementDoctorName; as colleague) {
+                      sostituto: {{ colleague }}
+                    } @else {
+                      nessun sostituto
+                    }
+                  </span>
+                </span>
+                <span>
+                  @if (confirmingId() === leave.id) {
+                    <button type="button" class="btn btn-sm btn-danger confirm-cancel-button me-2" [disabled]="busyId() !== null" (click)="cancelLeave(leave)">Conferma</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary keep-button" (click)="keepLeave()">Annulla</button>
+                  } @else {
+                    <button type="button" class="btn btn-sm btn-outline-danger cancel-leave-button" (click)="askCancel(leave)">Annulla l'assenza</button>
+                  }
+                </span>
+              </div>
+              @if (confirmingId() === leave.id) {
+                <p class="small text-muted mb-0 mt-2">
+                  Il medico torna disponibile e l'avviso sparisce. Le visite già spostate o annullate non tornano come prima.
+                </p>
+              }
+            </li>
+          }
+        </ul>
+      }
+    }
+  }
+</div>

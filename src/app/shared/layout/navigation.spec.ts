@@ -11,7 +11,11 @@ describe('navItemsFor',  () => {
 
     it('lets the doctor to create news', () => {
         expect(navItemsFor('DOCTOR').map((item) => item.path)).toContain('/doctor/news');
-    })
+    });
+    it('lets the doctor and admin to manage doctor\'s leaves', () => {
+        expect(navItemsFor('DOCTOR').map((item) => item.path)).toContain('/doctor/leaves');
+        expect(navItemsFor('ADMIN').map((item) => item.path)).toContain('/admin/leaves');
+    });
 
     it('lets the doctor and the admin book for a patient', () => {
         expect(navItemsFor('DOCTOR').map((item) => item.path)).toContain('/doctor/book');

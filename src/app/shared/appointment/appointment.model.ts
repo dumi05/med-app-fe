@@ -10,12 +10,20 @@ export interface Appointment {
     patientFirstName: string;
     patientLastName: string;
     noShowRisk: boolean | null;
-    bookedByRole: 'PATIENT' | 'DOCTOR' | 'ADMIN';
+    bookedByRole?: 'PATIENT' | 'DOCTOR' | 'ADMIN';
+    cancellationReason?: 'PATIENT' | 'DOCTOR_ABSENCE' | null;
+    reassignedFromName?: string | null;
+    reassignedAt: string | null;
 }
 
 export interface CreateAppointmentRequest {
     slotId: number;
     patientId?: number;
+}
+
+export function changedByAbsence(appointment: Appointment): boolean {
+    return (appointment.status === 'BOOKED' && !!appointment.reassignedFromName) 
+            || (appointment.status === 'CANCELLED' && appointment.cancellationReason === 'DOCTOR_ABSENCE');
 }
 
 export function hasReport(status: AppointmentStatus): boolean {

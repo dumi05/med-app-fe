@@ -31,6 +31,10 @@ export const DOCTOR_ROUTES: Routes = [
                                 .then((m) => m.WorkingHoursPage),
     },
     {
+        path: 'leaves',
+        loadComponent: () => import('../shared/leaves/leaves-page/leaves-page').then((m) => m.LeavesPage),
+    },
+    {
         path: 'book',
         loadComponent: () => import('../shared/booking/book-for-patient/book-for-patient')
                                 .then((m) => m.BookForPatient),

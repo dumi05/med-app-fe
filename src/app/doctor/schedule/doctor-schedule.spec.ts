@@ -35,7 +35,10 @@ describe('DoctorSchedule', () => {
     fixture.detectChanges();
   });
 
-  afterEach(() => http.verify());
+  afterEach(() => {
+    http.match('/api/v1/doctor-leaves').forEach((req) => req.flush([]));
+    http.verify();
+  });
 
   /** The page asks for the slots of the month when it opens. */
   const open = (slots: unknown[] = []) => {
@@ -286,4 +289,72 @@ describe('DoctorSchedule', () => {
     expect(element().querySelector('.alert-danger')?.textContent).toContain("Esistono gia' slot");
     expect((element().querySelector('#startTime') as HTMLInputElement).value).toBe('09:00');
   });
+
+  const leave = (startDate: string, endDate: string) => ({
+    id: 1, doctorId: 1, startDate, endDate, replacementDoctorId: null, replacementDoctorName: null,
+  });
+
+  it('asks for the leaves in programme without saying who (the server knows the logged doctor)', () => {
+    open([]);
+
+    const request = http.expectOne('/api/v1/doctor-leaves');
+    expect(request.request.method).toBe('GET');
+    request.flush([]);
+  });
+
+  it('warns on a day of leave and marks its free places as not bookable, but not the booked ones', () => {
+    const d = `${THIS_MONTH}-10`;
+    open([slot(1, d, '09:00'), slot(2, d, '09:30', true)]);
+    http.expectOne('/api/v1/doctor-leaves').flush([leave(`${THIS_MONTH}-09`, `${THIS_MONTH}-11`)]);
+
+    day(d).click();
+    fixture.detectChanges();
+
+    expect(element().querySelector('.on-leave')?.textContent).toContain('Sei assente in questo giorno');
+    const rows = element().querySelectorAll('li.list-group-item');
+    expect(rows[0].querySelector('.not-bookable')).not.toBeNull();
+    expect(rows[0].textContent).not.toContain('Libero');
+    expect(rows[1].querySelector('.not-bookable')).toBeNull();
+    expect(rows[1].textContent).toContain('Prenotato');
+  });
+
+  it('marks the first and the last day of the leave, and not the day before or after', () => {
+    const marked: boolean[] = [];
+    open([]);
+    http.expectOne('/api/v1/doctor-leaves').flush([leave(`${THIS_MONTH}-10`, `${THIS_MONTH}-12`)]);
+
+    for (const d of ['09', '10', '12', '13']) {
+      day(`${THIS_MONTH}-${d}`).click();
+      fixture.detectChanges();
+      marked.push(element().querySelector('.on-leave') !== null);
+    }
+
+    expect(marked).toEqual([false, true, true, false]);
+  });
+
+  it('shows no warning on a day that is not in a leave', () => {
+    const d = `${THIS_MONTH}-10`;
+    open([slot(1, d, '09:00')]);
+    http.expectOne('/api/v1/doctor-leaves').flush([leave(`${THIS_MONTH}-20`, `${THIS_MONTH}-21`)]);
+
+    day(d).click();
+    fixture.detectChanges();
+
+    expect(element().querySelector('.on-leave')).toBeNull();
+    expect(element().querySelector('.not-bookable')).toBeNull();
+    expect(element().querySelector('li.list-group-item')?.textContent).toContain('Libero');
+  });
+
+  it('keeps working, with no marks and no error message, when the leaves cannot be read', () => {
+    const d = `${THIS_MONTH}-10`;
+    open([slot(1, d, '09:00')]);
+    http.expectOne('/api/v1/doctor-leaves').flush({ code: 'SERVER_ERROR', message: 'x', timestamp: 'x' }, { status: 500, statusText: 'Server Error' });
+
+    day(d).click();
+    fixture.detectChanges();
+
+    expect(element().querySelector('.alert-danger')).toBeNull();
+    expect(element().querySelector('li.list-group-item')?.textContent).toContain('Libero');
+  });
+
 });
