@@ -26,6 +26,10 @@ export function changedByAbsence(appointment: Appointment): boolean {
             || (appointment.status === 'CANCELLED' && appointment.cancellationReason === 'DOCTOR_ABSENCE');
 }
 
-export function hasReport(status: AppointmentStatus): boolean {
+export function hasInvoice(status: AppointmentStatus): boolean {
     return status === 'REPORTED' || status === 'INVOICED';
+}
+
+export function hasReport(status: AppointmentStatus): boolean {
+    return status === 'REPORTED';
 }

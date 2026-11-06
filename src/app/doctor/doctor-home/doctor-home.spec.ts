@@ -65,23 +65,6 @@ describe('DoctorHome', () => {
 
   // ---- counters -------------------------------------------------------------------------------
 
-  it('counts the visits of today, the ones to complete and the ones to report', () => {
-    open([
-      appointment(1, 'BOOKED', '2026-11-04T08:30:00'),    // today, already begun: today AND to complete
-      appointment(2, 'BOOKED', '2026-11-04T15:00:00'),    // today, still to come
-      appointment(3, 'BOOKED', '2026-11-02T10:00:00'),    // a past day: to complete
-      appointment(4, 'BOOKED', '2026-11-06T10:00:00'),    // future: counts nowhere
-      appointment(5, 'COMPLETED', '2026-11-03T10:00:00'), // to report
-      appointment(6, 'COMPLETED', '2026-11-01T10:00:00'), // to report
-      appointment(7, 'CANCELLED', '2026-11-04T10:00:00'), // counts nowhere
-      appointment(8, 'INVOICED', '2026-11-04T09:00:00'),  // counts nowhere
-    ]);
-
-    expect(stat('Visite di oggi')).toBe('2');
-    expect(stat('Da completare')).toBe('2');
-    expect(stat('Da refertare')).toBe('2');
-  });
-
   it('counts only the free slots that are still to come', () => {
     open([], [
       slot(1, '2026-11-04T08:00:00'),         // today, but gone
@@ -188,7 +171,7 @@ describe('DoctorHome', () => {
     http.expectOne('/api/v1/doctor-delegations/me').flush([]);
     fixture.detectChanges();
 
-    expect(stat('Da refertare')).toBe('1');
+    expect(stat('Da fatturare')).toBe('1');
     expect(element().querySelectorAll('.alert-danger').length).toBe(1);
   });
 
@@ -201,5 +184,23 @@ describe('DoctorHome', () => {
     fixture.detectChanges();
 
     expect(element().querySelector('app-news-card')?.textContent).toContain('Studio chiuso il 24');
+  });
+    it('counts the visits of today, the ones to complete, to invoice and to report', () => {
+    open([
+      appointment(1, 'BOOKED', '2026-11-04T08:30:00'),    // today, already begun: today AND to complete
+      appointment(2, 'BOOKED', '2026-11-04T15:00:00'),    // today, still to come
+      appointment(3, 'BOOKED', '2026-11-02T10:00:00'),    // a past day: to complete
+      appointment(4, 'BOOKED', '2026-11-06T10:00:00'),    // future: counts nowhere
+      appointment(5, 'COMPLETED', '2026-11-03T10:00:00'), // to invoice
+      appointment(6, 'COMPLETED', '2026-11-01T10:00:00'), // to invoice
+      appointment(7, 'CANCELLED', '2026-11-04T10:00:00'), // counts nowhere
+      appointment(8, 'INVOICED', '2026-11-04T09:00:00'),  // paid: to report
+      appointment(9, 'REPORTED', '2026-11-02T09:00:00'),  // done: counts nowhere
+    ]);
+
+    expect(stat('Visite di oggi')).toBe('2');
+    expect(stat('Da completare')).toBe('2');
+    expect(stat('Da fatturare')).toBe('2');
+    expect(stat('Da refertare')).toBe('1');
   });
 });

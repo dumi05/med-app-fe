@@ -47,15 +47,6 @@ describe('Dashboard', () => {
     expect(text()).toContain('2');
   });
 
-  it('draws the appointments by status in the order of the pipeline', () => {
-    http.expectOne('/api/v1/dashboard/kpi').flush(KPI);
-    fixture.detectChanges();
-
-    const chart = Chart.getChart(canvases()[0])!;
-    expect(chart.data.labels).toEqual(['Prenotate', 'Visite effettuate', 'Refertate', 'Fatturate', 'Cancellate']);
-    expect(chart.data.datasets[0].data).toEqual([5, 2, 1, 3, 1]);
-  });
-
   it('draws the revenue by specialization', () => {
     http.expectOne('/api/v1/dashboard/kpi').flush(KPI);
     fixture.detectChanges();
@@ -81,5 +72,14 @@ describe('Dashboard', () => {
     fixture.detectChanges();
 
     expect(element().querySelector('.alert-danger')?.textContent).toContain('permessi');
+  });
+
+  it('draws the appointments by status in the order of the pipeline', () => {
+    http.expectOne('/api/v1/dashboard/kpi').flush(KPI);
+    fixture.detectChanges();
+
+    const chart = Chart.getChart(canvases()[0])!;
+    expect(chart.data.labels).toEqual(['Prenotate', 'Da fatturare', 'Pagate, da refertare', 'Refertate', 'Cancellate']);
+    expect(chart.data.datasets[0].data).toEqual([5, 2, 3, 1, 1]);
   });
 });

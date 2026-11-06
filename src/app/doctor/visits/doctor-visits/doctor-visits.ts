@@ -8,7 +8,9 @@ import { Appointment, hasReport } from '../../../shared/appointment/appointment.
 import { ApiError } from '../../../shared/http/api-error';
 import { userMessage } from '../../../shared/http/error-messages';
 import { DataTable, DataTableColumn, DataTableRow } from '../../../shared/ui/data-table/data-table';
-import { formatDateTime } from '../../../shared/format/format';
+import { formatDateTime, formatEuro } from '../../../shared/format/format';
+import { InvoiceService } from '../../../shared/invoice/invoice.service';
+import { issueErrorMessage } from '../../../shared/invoice/invoice-messages';
 
 @Component({
   selector: 'app-doctor-visits',
@@ -18,11 +20,15 @@ import { formatDateTime } from '../../../shared/format/format';
 export class DoctorVisits implements OnInit{
 
   private readonly appointmentService = inject(AppointmentService);
+  private readonly invoiceService = inject(InvoiceService);
 
   protected readonly appointments = signal<Appointment[] | null>(null);
   protected readonly error = signal<string | null>(null);
   protected readonly completingId = signal<number | null>(null);
   protected readonly hasReport = hasReport;
+  protected readonly confirmingInvoiceId = signal<number | null>(null);
+  protected readonly invoicingId = signal<number | null>(null);
+  protected readonly success = signal<string | null>(null);
 
   protected readonly columns: DataTableColumn<Appointment>[] = [
     { header: 'Data e ora', value: (app) => app.slot.startTime, text: (app) => formatDateTime(app.slot.startTime) },
@@ -43,6 +49,7 @@ export class DoctorVisits implements OnInit{
   protected complete(app: Appointment): void {
     this.completingId.set(app.id);
     this.error.set(null);
+    this.success.set(null);
 
     this.appointmentService.completeVisit(app.id).subscribe({
       next: (updated) => {
@@ -55,6 +62,34 @@ export class DoctorVisits implements OnInit{
       }
     })
 
+  }
+
+  protected askInvoice(app: Appointment): void{
+    this.confirmingInvoiceId.set(app.id);
+  }
+
+  protected cancelInvoice(): void {
+    this.confirmingInvoiceId.set(null);
+  }
+
+  protected invoice(app: Appointment): void {
+    this.invoicingId.set(app.id);
+    this.error.set(null);
+    this.success.set(null);
+
+    this.invoiceService.issue(app.id).subscribe({
+      next: (invoice) => {
+        this.appointments.update((list) => list?.map((x) => (x.id === app.id ? { ...x, status: 'INVOICED'} : x)) ?? null);
+        this.success.set(`Pagamento registrato: fattura ${invoice.number} di ${formatEuro(invoice.amount)}. Ora puoi scrivere il referto.`);
+        this.confirmingInvoiceId.set(null);
+        this.invoicingId.set(null);
+      },
+      error: (err: ApiError) => {
+        this.error.set(issueErrorMessage(err));
+        this.confirmingInvoiceId.set(null);
+        this.invoicingId.set(null);
+      }
+    });
   }
 
 }

@@ -85,23 +85,6 @@ describe('PatientHome', () => {
 
   // ---- reports --------------------------------------------------------------------------------
 
-  it('lists the latest three reports, the most recent first, each with a link to it', () => {
-    open([
-      appointment(1, 'REPORTED', '2026-10-01T09:00:00'),
-      appointment(2, 'INVOICED', '2026-10-20T09:00:00'),
-      appointment(3, 'INVOICED', '2026-10-10T09:00:00'),
-      appointment(4, 'INVOICED', '2026-09-15T09:00:00'),
-      appointment(5, 'COMPLETED', '2026-10-30T09:00:00'),   // no report yet
-    ]);
-
-    const items = Array.from(element().querySelectorAll('li'));
-    expect(items.length).toBe(3);
-    expect(items[0].textContent).toContain('20/10/2026');
-    expect(items[1].textContent).toContain('10/10/2026');
-    expect(items[2].textContent).toContain('01/10/2026');
-    expect(items[0].querySelector('a')?.getAttribute('href')).toBe('/patient/appointments/2/report');
-  });
-
   it('says so when there are no reports yet', () => {
     open([appointment(1, 'BOOKED', '2026-11-12T09:00:00')]);
 
@@ -162,5 +145,23 @@ describe('PatientHome', () => {
     open([appointment(1, 'BOOKED', '2026-11-12T09:00:00'), { ...appointment(2, 'CANCELLED', '2026-11-13T09:00:00'), cancellationReason: 'PATIENT' }]);
 
     expect(element().querySelector('.changed-visits')).toBeNull();
+  });
+
+  it('lists the latest three reports, the most recent first, each with a link to it', () => {
+    open([
+      appointment(1, 'REPORTED', '2026-10-01T09:00:00'),
+      appointment(2, 'REPORTED', '2026-10-20T09:00:00'),
+      appointment(3, 'REPORTED', '2026-10-10T09:00:00'),
+      appointment(4, 'REPORTED', '2026-09-15T09:00:00'),
+      appointment(5, 'COMPLETED', '2026-10-30T09:00:00'),   // no report yet
+      appointment(6, 'INVOICED', '2026-10-31T09:00:00'),    // paid, but the report is still to come
+    ]);
+
+    const items = Array.from(element().querySelectorAll('li'));
+    expect(items.length).toBe(3);
+    expect(items[0].textContent).toContain('20/10/2026');
+    expect(items[1].textContent).toContain('10/10/2026');
+    expect(items[2].textContent).toContain('01/10/2026');
+    expect(items[0].querySelector('a')?.getAttribute('href')).toBe('/patient/appointments/2/report');
   });
 });

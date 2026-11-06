@@ -15,10 +15,16 @@
             <td>{{ appointment.slot.durationMinutes }} min</td>
             <td><app-status-badge [status]="appointment.status" /></td>
             <td class="text-end">
+            <td class="text-end">
               @if (appointment.status === 'BOOKED') {
                 <button type="button" class="btn btn-sm btn-outline-danger"
                         [disabled]="cancellingId() !== null" (click)="cancel(appointment)">Cancella</button>
-              } @else if (hasReport(appointment.status)) {
+              }
+              @if (hasInvoice(appointment.status)) {
+                <button type="button" class="btn btn-sm btn-outline-secondary me-1 invoice-button"
+                        [disabled]="downloadingInvoiceId() !== null" (click)="downloadInvoice(appointment)">Scarica fattura</button>
+              }
+              @if (hasReport(appointment.status)) {
                 <a class="btn btn-sm btn-outline-primary" [routerLink]="['/patient/appointments', appointment.id, 'report']">Vedi referto</a>
               }
               @if (appointment.status === 'BOOKED' && appointment.reassignedFromName) {

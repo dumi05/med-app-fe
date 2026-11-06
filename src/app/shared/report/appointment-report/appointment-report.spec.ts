@@ -122,33 +122,16 @@ describe('AppointmentReport', () => {
     expect(element().textContent).toContain('Nessun rilievo.');
   });
 
-  it('shows the Italian message when the backend refuses the report', () => {
-    open('DOCTOR');
-    notFound();
-    fixture.detectChanges();
-
-    setDiagnosis('Nessun rilievo.');
-    submit();
-    http.expectOne('/api/v1/medical-reports').flush(
-      { code: 'INVALID_STATE_TRANSITION', message: 'x', timestamp: 'x' },
-      { status: 409, statusText: 'Conflict' },
-    );
-    fixture.detectChanges();
-
-    expect(element().querySelector('.alert-danger')?.textContent).toContain('Operazione non consentita');
-    expect(element().querySelector('form')).not.toBeNull();
-  });
-
   // ---- the attachment -------------------------------------------------------------------------
 
-  it('offers a file chooser that is limited to PDF, JPEG and PNG', () => {
+  it('offers a file chooser that is limited to PDF, Word (.docx), JPEG and PNG', () => {
     open('DOCTOR');
     notFound();
     fixture.detectChanges();
 
     const input = element().querySelector('#attachment') as HTMLInputElement;
     expect(input.type).toBe('file');
-    expect(input.accept).toBe('.pdf,image/jpeg,image/png');
+    expect(input.accept).toBe('.pdf,.docx,image/jpeg,image/png');
   });
 
   it('sends the chosen file together with the report', () => {
@@ -177,7 +160,7 @@ describe('AppointmentReport', () => {
     setDiagnosis('Nessun rilievo.');
     chooseFile(new File(['MZ'], 'virus.exe', { type: 'application/x-msdownload' }));
 
-    expect(element().querySelector('#attachment + .invalid-feedback')?.textContent).toContain('Sono ammessi solo file PDF, JPEG e PNG.');
+    expect(element().querySelector('#attachment + .invalid-feedback')?.textContent).toContain('Sono ammessi solo file PDF, Word (.docx), JPEG e PNG.');
     expect((element().querySelector('#attachment') as HTMLInputElement).value).toBe('');
 
     submit();
@@ -234,5 +217,39 @@ describe('AppointmentReport', () => {
 
     expect(element().querySelector('.alert-danger')).not.toBeNull();
     expect(element().querySelector('form')).toBeNull();
+  });
+
+  it('shows the Italian message when the backend refuses the report', () => {
+    open('DOCTOR');
+    notFound();
+    fixture.detectChanges();
+
+    setDiagnosis('Nessun rilievo.');
+    submit();
+    http.expectOne('/api/v1/medical-reports').flush(
+      { code: 'INVALID_STATE_TRANSITION', message: 'x', timestamp: 'x' },
+      { status: 409, statusText: 'Conflict' },
+    );
+    fixture.detectChanges();
+
+    expect(element().querySelector('.alert-danger')?.textContent).toContain('devi registrare il pagamento ed emettere la fattura');
+    expect(element().querySelector('form')).not.toBeNull();
+  });
+
+  it('shows the usual message when the report is refused for another reason', () => {
+    open('DOCTOR');
+    notFound();
+    fixture.detectChanges();
+
+    setDiagnosis('Nessun rilievo.');
+    submit();
+    http.expectOne('/api/v1/medical-reports').flush(
+      { code: 'SERVER_ERROR', message: 'x', timestamp: 'x' },
+      { status: 500, statusText: 'Server Error' },
+    );
+    fixture.detectChanges();
+
+    expect(element().querySelector('.alert-danger')?.textContent).toContain('errore imprevisto');
+    expect(element().querySelector('.alert-danger')?.textContent).not.toContain('fattura');
   });
 });

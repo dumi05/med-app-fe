@@ -35,6 +35,7 @@ export class DoctorHome implements OnInit{
   protected readonly slots = signal<Slot[] | null>(null);
   protected readonly pendingDelegations = signal<number | null>(null);
   protected readonly errors = signal<string[]>([]);
+  protected readonly toInvoice = computed(()=> (this.appointments() ?? []).filter((app) => app.status === 'COMPLETED').length);
 
   protected readonly todayVisits = computed(() => {
     const today = todayIso();
@@ -48,7 +49,7 @@ export class DoctorHome implements OnInit{
     return (this.appointments() ?? []).filter((app) => app.status === 'BOOKED' && app.slot.startTime <= now).length; 
   });
 
-  protected readonly toReport = computed(() => (this.appointments() ?? []).filter((app) => app.status === 'COMPLETED').length);
+  protected readonly toReport = computed(() => (this.appointments() ?? []).filter((app) => app.status === 'INVOICED').length);
 
   protected readonly freeSlots = computed(() => {
     const now = nowIso();

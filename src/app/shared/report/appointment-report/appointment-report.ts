@@ -96,7 +96,9 @@ export class AppointmentReport implements OnInit{
                           this.loading.set(false);
                         },
                         error: (err: ApiError) => {
-                          this.error.set(userMessage(err));
+                          this.error.set(err.code === 'INVALID_STATE_TRANSITION' 
+                            ? 'Prima del referto devi registrare il pagamento ed emettere la fattura, dalla pagina delle visite.'
+                            : userMessage(err));
                           this.loading.set(false);
                         }
                       });

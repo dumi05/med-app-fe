@@ -8,12 +8,12 @@ import { ApiError } from "../../shared/http/api-error";
 import { userMessage } from "../../shared/http/error-messages";
 import { DashboardKpi } from "../../shared/dashboard/dashboard.model";
 
-const STATUS_ORDER: AppointmentStatus[] = ['BOOKED', 'COMPLETED', 'REPORTED', 'INVOICED', 'CANCELLED'];
+const STATUS_ORDER: AppointmentStatus[] = ['BOOKED', 'COMPLETED', 'INVOICED', 'REPORTED', 'CANCELLED'];
 const STATUS_LABELS: Record<AppointmentStatus, string> = {
     BOOKED: 'Prenotate',
-    COMPLETED: 'Visite effettuate',
+    COMPLETED: 'Da fatturare',
+    INVOICED: 'Pagate, da refertare',
     REPORTED: 'Refertate',
-    INVOICED: 'Fatturate',
     CANCELLED: 'Cancellate'
 };
 

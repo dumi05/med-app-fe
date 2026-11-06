@@ -4,17 +4,24 @@ import { AttachmentInfo } from "./medical-report.model";
 
 export const MAX_ATTACHMENT_BYTES = 10 * 1024 * 1024;
 
-export const ATTACHMENT_ACCEPT = '.pdf,image/jpeg,image/png';
+export const DOCX_TYPE = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+
+export const ATTACHMENT_ACCEPT = '.pdf,.docx,image/jpeg,image/png';
 
 const TYPE_NAMES: Record<string, string> = {
     'application/pdf': 'PDF',
+    [DOCX_TYPE]: 'Word',
     'image/jpeg': 'JPEG',
     'image/png': 'PNG'
 };
 
+export function isAccepted(file: File): boolean {
+    return Object.hasOwn(TYPE_NAMES, file.type) || (file.type === '' && file.name.toLowerCase().endsWith('.docx'));
+}
+
 export function attachmentProblem(file: File): string | null {
-    if(!Object.hasOwn(TYPE_NAMES, file.type)) {
-        return 'Sono ammessi solo file PDF, JPEG e PNG.';
+    if (!isAccepted(file)) {
+        return 'Sono ammessi solo file PDF, Word (.docx), JPEG e PNG.';
     }
     if(file.size === 0){
         return 'Il file è vuoto.';

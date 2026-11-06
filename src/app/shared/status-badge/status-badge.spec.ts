@@ -32,8 +32,17 @@ describe('StatusBadge', () => {
   it('Shows "Referto disponibile" both when reported and invoiced', () => {
     show('REPORTED');
     expect(badge().textContent).toContain('Referto disponibile');
-    show('INVOICED');
-    expect(badge().textContent).toContain('Referto disponibile');
     expect(badge().classList.contains('text-bg-success')).toBeTrue();
-  })
+  });
+  it('says that the visit is paid and the report is coming, when it is invoiced', () => {
+    show('INVOICED');
+    expect(badge().textContent).toContain('Pagata, referto in arrivo');
+    expect(badge().textContent).not.toContain('Referto disponibile');
+    expect(badge().classList.contains('text-bg-warning')).toBeTrue();
+  });
+
+  it('says "Visita effettuata" when the visit is completed and not yet paid', () => {
+    show('COMPLETED');
+    expect(badge().textContent).toContain('Visita effettuata');
+  });
 });

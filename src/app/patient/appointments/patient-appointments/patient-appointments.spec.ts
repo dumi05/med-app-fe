@@ -113,14 +113,6 @@ describe('PatientAppointments', () => {
 
     expect(element().querySelector('.alert-danger')?.textContent).toContain('Operazione non consentita');
   });
-  it('offers the report link when the report is available', () => {
-    open([appointment(1, 'INVOICED'), appointment(2, 'BOOKED')]);
-
-    const rows = element().querySelectorAll('tbody tr');
-    expect(rows[0].textContent).toContain('Referto disponibile');
-    expect(rows[0].querySelector('a')!.textContent).toContain('Vedi referto');
-    expect(rows[1].querySelector('a')).toBeNull();
-  });
 
   it('says when the studio made the booking, and says nothing when the patient did', () => {
     open([
@@ -132,5 +124,77 @@ describe('PatientAppointments', () => {
 
     const notes = Array.from(element().querySelectorAll('tbody tr')).map((row) => row.querySelector('.booked-by-studio') !== null);
     expect(notes).toEqual([true, true, false, false]);
+  });
+
+    it('offers the report link only when the report is written, and says that it is coming when the visit is only paid', () => {
+    open([appointment(1, 'REPORTED'), appointment(2, 'INVOICED'), appointment(3, 'BOOKED')]);
+
+    const rows = element().querySelectorAll('tbody tr');
+    expect(rows[0].textContent).toContain('Referto disponibile');
+    expect(rows[0].querySelector('a')!.textContent).toContain('Vedi referto');
+    expect(rows[1].textContent).toContain('Pagata, referto in arrivo');
+    expect(rows[1].querySelector('a')).toBeNull();
+    expect(rows[2].querySelector('a')).toBeNull();
+  })
+
+  // ---- the invoice ----------------------------------------------------------------------------
+
+  /** The browser's save is replaced: what the page would save is collected here. */
+  const catchDownloads = () => {
+    const clicked: HTMLAnchorElement[] = [];
+    spyOn(URL, 'createObjectURL').and.returnValue('blob:test');
+    spyOn(URL, 'revokeObjectURL');
+    spyOn(HTMLAnchorElement.prototype, 'click').and.callFake(function (this: HTMLAnchorElement) {
+      clicked.push(this);
+    });
+    return clicked;
+  };
+  const invoiceButtons = () => Array.from(element().querySelectorAll('tbody tr')).map((row) => row.querySelector('.invoice-button') !== null);
+
+  it('offers the invoice once the visit is paid, before and after the report, and not before', () => {
+    open([appointment(1, 'BOOKED'), appointment(2, 'COMPLETED'), appointment(3, 'INVOICED'), appointment(4, 'REPORTED'), appointment(5, 'CANCELLED')]);
+
+    expect(invoiceButtons()).toEqual([false, false, true, true, false]);
+    expect(element().querySelector('.invoice-button')!.textContent).toContain('Scarica fattura');
+  });
+
+  it('downloads the invoice with the name that the server proposes', () => {
+    const clicked = catchDownloads();
+    open([appointment(3, 'INVOICED')]);
+
+    (element().querySelector('.invoice-button') as HTMLButtonElement).click();
+    fixture.detectChanges();
+    expect((element().querySelector('.invoice-button') as HTMLButtonElement).disabled).toBeTrue();
+    http.expectOne('/api/v1/appointments/3/invoice/pdf').flush(
+      new Blob(['%PDF-1.4']), { headers: { 'Content-Disposition': 'attachment; filename="FT-2026-00003.pdf"' } });
+    fixture.detectChanges();
+
+    expect(clicked.length).toBe(1);
+    expect(clicked[0].download).toBe('FT-2026-00003.pdf');
+    expect((element().querySelector('.invoice-button') as HTMLButtonElement).disabled).toBeFalse();
+    expect(element().querySelector('.alert-danger')).toBeNull();
+  });
+
+  it('proposes a name of its own when the server proposes none', () => {
+    const clicked = catchDownloads();
+    open([appointment(3, 'INVOICED')]);
+
+    (element().querySelector('.invoice-button') as HTMLButtonElement).click();
+    http.expectOne('/api/v1/appointments/3/invoice/pdf').flush(new Blob(['%PDF-1.4']));
+
+    expect(clicked[0].download).toBe('fattura-3.pdf');
+  });
+
+  it('says why the invoice cannot be downloaded and lets the user try again', () => {
+    const clicked = catchDownloads();
+    open([appointment(3, 'INVOICED')]);
+
+    (element().querySelector('.invoice-button') as HTMLButtonElement).click();
+    http.expectOne('/api/v1/appointments/3/invoice/pdf').flush(new Blob(['{}']), { status: 404, statusText: 'Not Found' });
+    fixture.detectChanges();
+
+    expect(clicked.length).toBe(0);
+    expect(element().querySelector('.alert-danger')?.textContent).toContain('La fattura non è disponibile');
+    expect((element().querySelector('.invoice-button') as HTMLButtonElement).disabled).toBeFalse();
   });
 });

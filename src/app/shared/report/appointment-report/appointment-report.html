@@ -24,7 +24,7 @@
                             @if (fileError(); as problem) {
                                 <div class="invalid-feedback">{{ problem }}</div>
                             }
-                            <div class="form-text">PDF, JPEG o PNG, al massimo 10 MB. Dopo il salvataggio il referto e il suo allegato non si possono più modificare.</div>
+                            <div class="form-text">PDF, Word (.docx), JPEG o PNG, al massimo 10 MB. Dopo il salvataggio il referto e il suo allegato non si possono più modificare.</div>
                         </div>
                         <app-submit-button label="Salva referto" [loading]="loading()"/>
                     </form>

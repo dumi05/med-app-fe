@@ -2,6 +2,7 @@
   <h1 class="h3 mb-4">Le mie visite</h1>
 
   <app-alert-message [message]="error()" />
+  <app-alert-message [message]="success()" type="success" />
 
   @if (appointments(); as list) {
     @if (list.length === 0) {
@@ -23,6 +24,17 @@
                 <button type="button" class="btn btn-sm btn-primary"
                         [disabled]="completingId() !== null" (click)="complete(appointment)">Completa visita</button>
               } @else if (appointment.status === 'COMPLETED') {
+                @if (confirmingInvoiceId() === appointment.id) {
+                  <span class="small me-2">Il paziente ha pagato?</span>
+                  <button type="button" class="btn btn-sm btn-success confirm-invoice-button me-1"
+                          [disabled]="invoicingId() !== null" (click)="invoice(appointment)">Sì, emetti la fattura</button>
+                  <button type="button" class="btn btn-sm btn-outline-secondary cancel-invoice-button"
+                          (click)="cancelInvoice()">No</button>
+                } @else {
+                  <button type="button" class="btn btn-sm btn-primary invoice-button"
+                          (click)="askInvoice(appointment)">Registra pagamento ed emetti fattura</button>
+                }
+              } @else if (appointment.status === 'INVOICED') {
                 <a class="btn btn-sm btn-outline-primary"
                   [routerLink]="['/doctor/visits', appointment.id, 'report']">Scrivi referto</a>
               } @else if (hasReport(appointment.status)) {
