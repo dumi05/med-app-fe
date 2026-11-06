@@ -1,0 +1,6 @@
+@if (asking()) {
+    <button type="button" class="btn btn-sm btn-danger confirm-action-yes me-2" [disabled]="busy()" (click)="confirm()">{{ confirmLabel() }}</button>
+    <button type="button" class="btn btn-sm btn-outline-secondary confirm-action-no" (click)="asking.set(false)">Annulla</button>
+} @else {
+    <button type="button" [class]="'btn btn-sm confirm-action-ask ' + buttonStyle()" [disabled]="busy()" (click)="asking.set(true)">{{ label() }}</button>
+}

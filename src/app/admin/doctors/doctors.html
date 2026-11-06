@@ -89,6 +89,9 @@
           <span class="badge" [class]="doctor.active ? 'text-bg-success' : 'text-bg-secondary'">
             {{ doctor.active ? 'Attivo' : 'Disattivato' }}
           </span>
+          @if (doctor.mustChangePassword) {
+            <span class="badge text-bg-warning ms-1 pending-badge">Cambio password richiesto</span>
+          }
         </td>
         <td class="text-end text-nowrap">
           <button type="button" class="btn btn-sm btn-outline-primary edit-button me-2" (click)="edit(doctor)">Modifica</button>
@@ -106,6 +109,8 @@
             <button type="button" class="btn btn-sm btn-outline-success activate-button"
                     [disabled]="busyId() !== null" (click)="activate(doctor)">Riattiva</button>
           }
+          <app-confirm-action class="ms-2" label="Richiedi cambio password" [busy]="busyId() === doctor.id"
+                              (confirmed)="forcePasswordChange(doctor)" />
         </td>
       </tr>
     </ng-template>

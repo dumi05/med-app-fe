@@ -10,6 +10,7 @@ export interface DoctorAdmin extends Doctor {
     email: string;
     delegationConsent: boolean;
     active: boolean;
+    mustChangePassword: boolean;
 }
 
 export interface CreateDoctorRequest {

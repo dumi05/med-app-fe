@@ -87,4 +87,16 @@ describe('DoctorService', () => {
 
     expect((result as { id: number }).id).toBe(1);
   });
+
+  it('asks a doctor to choose a new password, with no body', () => {
+    let result: unknown;
+    service.forcePasswordChange(4).subscribe((v) => (result = v));
+
+    const req = http.expectOne('/api/v1/doctors/4/force-password-change');
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toBeNull();
+    req.flush({ id: 4, mustChangePassword: true });
+
+    expect((result as { mustChangePassword: boolean }).mustChangePassword).toBeTrue();
+  });
 });

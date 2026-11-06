@@ -35,4 +35,8 @@ export class DoctorService {
     getMe(): Observable<Doctor> {
         return this.http.get<Doctor>(`${API_BASE}/doctors/me`);
     }
+
+    forcePasswordChange(id: number): Observable<DoctorAdmin> {
+        return this.http.post<DoctorAdmin>(`${API_BASE}/doctors/${id}/force-password-change`, null);
+    }
 }

@@ -1,0 +1,30 @@
+<div class="container-fluid py-4">
+  <h1 class="h3 mb-2">Pazienti</h1>
+  <p class="text-muted">
+    I pazienti registrati. «Richiedi cambio password» chiude le sessioni aperte del paziente e gli chiede di scegliere una
+    nuova password al prossimo accesso: la password attuale non viene cambiata né mostrata.
+  </p>
+
+  <app-alert-message [message]="error()" />
+  <app-alert-message [message]="success()" type="success" />
+
+  <app-data-table [columns]="columns" [rows]="patients()" [rowKey]="rowKey">
+    <ng-template [appDataTableRow]="patients()" let-patient>
+      <tr>
+        <td>{{ patient.lastName }}</td>
+        <td>{{ patient.firstName }}</td>
+        <td>{{ patient.email }}</td>
+        <td>{{ formatDate(patient.registeredAt) }}</td>
+        <td>
+          @if (patient.mustChangePassword) {
+            <span class="badge text-bg-warning pending-badge">Cambio richiesto</span>
+          }
+        </td>
+        <td class="text-end text-nowrap">
+          <app-confirm-action label="Richiedi cambio password" [busy]="busyId() === patient.id"
+                              (confirmed)="forcePasswordChange(patient)" />
+        </td>
+      </tr>
+    </ng-template>
+  </app-data-table>
+</div>

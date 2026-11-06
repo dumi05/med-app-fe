@@ -11,9 +11,9 @@ describe('Doctors', () => {
   let http: HttpTestingController;
 
   const VERDI = { id: 1, firstName: 'Luca', lastName: 'Verdi', email: 'luca@studio-medico.it',
-                  specialization: 'Cardiologia', delegationConsent: false, active: true };
+                  specialization: 'Cardiologia', delegationConsent: false, active: true, mustChangePassword: false };
   const NERI = { id: 2, firstName: 'Anna', lastName: 'Neri', email: 'anna@studio-medico.it',
-                 specialization: 'Dermatologia', delegationConsent: true, active: false };
+                 specialization: 'Dermatologia', delegationConsent: true, active: false, mustChangePassword: true };
 
   const element = () => fixture.nativeElement as HTMLElement;
   const rows = () => Array.from(element().querySelectorAll('tbody tr'));
@@ -314,5 +314,47 @@ describe('Doctors', () => {
     fixture.detectChanges();
 
     expect(element().querySelector('.alert-danger')?.textContent).toContain('Questa email è già registrata.');
+  });
+
+  
+  // forced change of the password
+
+  it('shows the badge only for the doctors with a pending change', () => {
+    expect(rows()[0].querySelector('.pending-badge')).toBeNull();
+    expect(rows()[1].querySelector('.pending-badge')?.textContent).toContain('Cambio password richiesto');
+  });
+
+  it('sends nothing until the admin confirms the request of a new password', () => {
+    click('.confirm-action-ask');
+    expect(button('.confirm-action-yes')).not.toBeNull();
+    http.expectNone('/api/v1/doctors/1/force-password-change');
+    click('.confirm-action-no');
+    http.expectNone('/api/v1/doctors/1/force-password-change');
+    expect(element().querySelector('.confirm-action-yes')).toBeNull();
+  });
+
+  it('asks the doctor to change the password after the confirmation, and shows it in the row', () => {
+    click('.confirm-action-ask');
+    click('.confirm-action-yes');
+
+    const req = http.expectOne('/api/v1/doctors/1/force-password-change');
+    expect(req.request.method).toBe('POST');
+    req.flush({ ...VERDI, mustChangePassword: true });
+    fixture.detectChanges();
+
+    expect(rows()[0].querySelector('.pending-badge')).not.toBeNull();
+    expect(element().querySelector('.alert-success')?.textContent).toContain('Luca Verdi dovrà scegliere una nuova password');
+  });
+
+  it('shows the error and changes nothing when the request of a new password fails', () => {
+    click('.confirm-action-ask');
+    click('.confirm-action-yes');
+
+    http.expectOne('/api/v1/doctors/1/force-password-change').flush(
+      { code: 'RESOURCE_NOT_FOUND', message: 'x', timestamp: 'x' }, { status: 404, statusText: 'Not Found' });
+    fixture.detectChanges();
+
+    expect(element().querySelector('.alert-danger')).not.toBeNull();
+    expect(rows()[0].querySelector('.pending-badge')).toBeNull();
   });
 });

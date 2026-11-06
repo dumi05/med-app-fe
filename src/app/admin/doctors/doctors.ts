@@ -15,10 +15,11 @@ import { emailFormat } from '../../shared/validation/email-format';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { passwordChecks } from '../../shared/validation/password-checks';
 import { PasswordRules } from '../../shared/ui/password-rules/password-rules';
+import { ConfirmAction } from '../../shared/ui/confirm-action/confirm-action';
 
 @Component({
   selector: 'app-doctors',
-  imports: [ReactiveFormsModule, FormField, SelectField, AlertMessage, SubmitButton, DataTable, DataTableRow, PasswordRules],
+  imports: [ReactiveFormsModule, FormField, SelectField, AlertMessage, SubmitButton, DataTable, DataTableRow, PasswordRules, ConfirmAction],
   templateUrl: './doctors.html'
 })
 export class Doctors implements OnInit {
@@ -219,4 +220,19 @@ export class Doctors implements OnInit {
     this.success.set(null);
   }
 
+  protected forcePasswordChange(doctor: DoctorAdmin): void {
+    this.busyId.set(doctor.id);
+    this.clearMessages();
+    this.doctorService.forcePasswordChange(doctor.id).subscribe({
+      next: (updated) => {
+        this.replace(updated);
+        this.success.set(`${updated.firstName} ${updated.lastName} dovrà scegliere una nuova password al prossimo accesso.`);
+        this.busyId.set(null);
+      },
+      error: (err: ApiError) => {
+        this.error.set(userMessage(err));
+        this.busyId.set(null);
+      }
+    });
+  }
 }
