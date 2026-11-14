@@ -15,7 +15,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx ng test --watch=false --browsers=ChromeHeadless
-      - run: npx build
+      - run: npx ng build
   docker-build:
     needs: build-test
     runs-on: ubuntu-latest
